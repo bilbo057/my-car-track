@@ -1,0 +1,8 @@
+{
+  "name": "MyCarTrack",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "884b0e96"
+}
