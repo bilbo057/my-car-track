@@ -19,7 +19,7 @@ export class LoginPage {
   async login() {
     try {
       await this.authService.login(this.email, this.password);
-      this.router.navigate(['/']); // Navigate to the home page after login
+      this.router.navigate(['/cars']); // Navigate to the home page after login
     } catch (error) {
       console.error("Login failed", error);
       // Display an error message to the user
