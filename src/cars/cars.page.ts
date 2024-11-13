@@ -42,10 +42,6 @@ export class CarsPage implements OnInit {
 
   // Method to navigate to the car details page
   goToCarDetails(carId: string) {
-    if (carId) {
       this.router.navigate([`/car-details/${carId}`]);  // Pass the carId (which is the Firestore document ID)
-    } else {
-      console.error('Car ID is undefined');
-    }
   }
 }

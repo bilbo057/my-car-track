@@ -16,32 +16,32 @@
     <ion-item>
       <ion-label>Brand</ion-label>
       <ion-select [(ngModel)]="carData.Brand" (ionChange)="loadModel(carData.Brand)" name="Brand">
-        <ion-select-option *ngFor="let brand of brand" [value]="brand.BrandID">
+        <ion-select-option *ngFor="let brand of carBrands" [value]="brand.BrandID">
           {{ brand.BrandName }}
         </ion-select-option>
       </ion-select>
     </ion-item>
-    
+  
     <!-- Model Dropdown -->
     <ion-item>
       <ion-label>Model</ion-label>
       <ion-select [(ngModel)]="carData.Model" name="Model">
-        <ion-select-option *ngFor="let model of model" [value]="model.ModelName">
+        <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
           {{ model.ModelName }}
         </ion-select-option>
       </ion-select>
     </ion-item>
-    
+  
     <!-- Chassis Type Dropdown -->
     <ion-item>
       <ion-label>Chassis Type</ion-label>
       <ion-select [(ngModel)]="carData.Chassis_type" name="Chassis_type">
-        <ion-select-option *ngFor="let type of types" [value]="type.Chassis_type">
+        <ion-select-option *ngFor="let type of chassisTypes" [value]="type.Chassis_type">
           {{ type.Chassis_type }}
         </ion-select-option>
       </ion-select>
     </ion-item>
-
+  
     <!-- Engine Type Dropdown -->
     <ion-item>
       <ion-label>Engine Type</ion-label>
@@ -51,13 +51,13 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
-
+  
     <!-- Year Picker -->
     <ion-item>
       <ion-label>Year</ion-label>
       <ion-datetime display-format="YYYY" picker-format="YYYY" [(ngModel)]="carData.Year" name="Year"></ion-datetime>
     </ion-item>
-
+  
     <!-- Transmission Type Dropdown -->
     <ion-item>
       <ion-label>Transmission Type</ion-label>
@@ -67,26 +67,26 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
-
-    <!-- current KM  -->
+  
+    <!-- Current KM -->
     <ion-item>
-      <ion-label>current KM</ion-label>
+      <ion-label>Current KM</ion-label>
       <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number"></ion-input>
     </ion-item>
-
+  
     <!-- Price of Buying Input -->
     <ion-item>
       <ion-label>Price of Buying</ion-label>
       <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number"></ion-input>
     </ion-item>
-
+  
     <!-- License Plate Input -->
     <ion-item>
       <ion-label>License Plate</ion-label>
       <ion-input [(ngModel)]="carData.License_plate" name="License_plate"></ion-input>
     </ion-item>
-
+  
     <!-- Submit Button -->
     <ion-button expand="full" type="submit">Add Car</ion-button>
-  </form>
+  </form>  
 </ion-content>

@@ -5,10 +5,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
-    Add New Car
-  </ion-button>
-
   <ion-content>
     <ion-list>
       <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
@@ -18,11 +14,10 @@
         </ion-label>
       </ion-item>
     </ion-list>
+    <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
+      Add New Car
+    </ion-button>  
   </ion-content>
-
-  <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
-    <ion-label>{{ car.Model }}</ion-label>
-  </ion-item>
 
   <!-- Message when no cars are available -->
   <ion-card *ngIf="cars.length === 0">

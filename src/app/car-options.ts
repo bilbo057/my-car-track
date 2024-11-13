@@ -6,10 +6,10 @@ export const carBrands = [
 ];
 
 export const carModels: Record<string, { ModelName: string }[]> = {
-  '1': [{ ModelName: 'Corolla' }, { ModelName: 'Camry' }, { ModelName: 'Prius' }],
-  '2': [{ ModelName: 'Civic' }, { ModelName: 'Accord' }, { ModelName: 'CR-V' }],
-  '3': [{ ModelName: 'Focus' }, { ModelName: 'Fusion' }, { ModelName: 'Mustang' }],
-  '4': [{ ModelName: '3 Series' }, { ModelName: '5 Series' }, { ModelName: 'X5' }],
+  '1': [{ ModelName: 'Corolla' }, { ModelName: 'Camry' }, { ModelName: 'Prius' },],
+  '2': [{ ModelName: 'Civic' }, { ModelName: 'Accord' }, { ModelName: 'CR-V' },],
+  '3': [{ ModelName: 'Focus' }, { ModelName: 'Fusion' }, { ModelName: 'Mustang' },],
+  '4': [{ ModelName: '3 Series' }, { ModelName: '5 Series' }, { ModelName: 'X5' },],
 };
 
 export const chassisTypes = [
