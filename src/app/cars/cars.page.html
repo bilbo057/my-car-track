@@ -9,19 +9,20 @@
     Add New Car
   </ion-button>
 
-  <!-- Display cars for the logged-in user -->
-  <ion-list *ngIf="cars.length > 0">
-    <ion-item *ngFor="let car of cars">
-      <ion-thumbnail slot="start">
-        <img src="path_to_image_placeholder_or_car_image" alt="Car Image">
-      </ion-thumbnail>
-      <ion-label>
-        <h2>{{ car.Brand }} {{ car.Model }}</h2>
-        <p>License Plate: {{ car.License_plate }}</p>
-        <p>Current KM: {{ car.Current_KM }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ion-content>
+    <ion-list>
+      <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
+        <ion-label>
+          <h2>{{ car.Brand }} - {{ car.Model }}</h2>
+          <p>License Plate: {{ car.License_plate }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+  <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
+    <ion-label>{{ car.Model }}</ion-label>
+  </ion-item>
 
   <!-- Message when no cars are available -->
   <ion-card *ngIf="cars.length === 0">
