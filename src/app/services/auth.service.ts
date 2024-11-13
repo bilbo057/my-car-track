@@ -19,4 +19,10 @@ export class AuthService {
   async logout() {
     return this.afAuth.signOut();
   }
+
+  // Method to get the current user ID
+  async getUserId(): Promise<string | null> {
+    const user = await this.afAuth.currentUser;
+    return user ? user.uid : null; // Return user ID or null if no user is logged in
+  }
 }

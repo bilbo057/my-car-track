@@ -1,0 +1,102 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Add Car</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Add Car</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form (ngSubmit)="addCar()">
+    <ion-item>
+      <ion-label>Brand</ion-label>
+      <ion-select [(ngModel)]="carData.Brand" (ionChange)="loadModel(carData.Brand)">
+        <ion-select-option *ngFor="let brand of brand" [value]="brand.BrandID">
+          {{ brand.BrandName }}
+        </ion-select-option>
+      </ion-select>
+      
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>Model</ion-label>
+      <ion-select [(ngModel)]="carData.Model">
+        <ion-select-option *ngFor="let model of model" [value]="model.ModelName">
+          {{ model.ModelName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>Chassis Type</ion-label>
+      <ion-select [(ngModel)]="carData.Chassis_type">
+        <ion-select-option *ngFor="let type of types" [value]="type.Chassis_type">
+          {{ type.Chassis_type }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Engine Type Dropdown -->
+    <ion-item>
+      <ion-label>Engine Type</ion-label>
+      <ion-select [(ngModel)]="carData.Engine_type" name="Engine_type">
+        <ion-select-option *ngFor="let type of types" [value]="type.Engine_type">{{ type.Engine_type }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Year Dropdown -->
+    <ion-item>
+      <ion-label>Year</ion-label>
+      <ion-datetime [(ngModel)]="carData.Year" name="Year" display-format="YYYY"></ion-datetime>
+    </ion-item>
+
+    <!-- Engine Size Dropdown -->
+    <ion-item>
+      <ion-label>Engine Size</ion-label>
+      <ion-select [(ngModel)]="carData.Engine_size" name="Engine_size">
+        <ion-select-option *ngFor="let size of ['Small', 'Medium', 'Large']" [value]="size">{{ size }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Transmission Type Dropdown -->
+    <ion-item>
+      <ion-label>Transmission Type</ion-label>
+      <ion-select [(ngModel)]="carData.Transmission_type" name="Transmission_type">
+        <ion-select-option *ngFor="let type of types" [value]="type.Transmission_type">{{ type.Transmission_type }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- KM Added -->
+    <ion-item>
+      <ion-label>KM Added</ion-label>
+      <ion-input [(ngModel)]="carData.KM_added" name="KM_added" type="number"></ion-input>
+    </ion-item>
+
+    <!-- Price of Buying -->
+    <ion-item>
+      <ion-label>Price of Buying</ion-label>
+      <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number"></ion-input>
+    </ion-item>
+
+    <!-- License Plate -->
+    <ion-item>
+      <ion-label>License Plate</ion-label>
+      <ion-input [(ngModel)]="carData.License_plate" name="License_plate"></ion-input>
+    </ion-item>
+
+    <!-- Submit Button -->
+    <ion-button expand="full" type="submit">Add Car</ion-button>
+  </form>
+</ion-content>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">car-add</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</ion-content>

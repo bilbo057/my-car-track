@@ -18,11 +18,11 @@ const routes: Routes = [
   {
     path: 'cars',
     loadChildren: () => import('./cars/cars.module').then( m => m.CarsPageModule)
-  },  {
-    path: 'add-car',
-    loadChildren: () => import('./add-car/add-car.module').then( m => m.AddCarPageModule)
   },
-
+  {
+    path: 'car-add',
+    loadChildren: () => import('./car-add/car-add.module').then( m => m.CarAddPageModule)
+  },
 ];
 
 @NgModule({

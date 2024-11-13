@@ -1,13 +1,22 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>cars</ion-title>
+    <ion-title>Cars</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">cars</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Button to navigate to Add Car page -->
+  <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
+    Add New Car
+  </ion-button>
+
+  <!-- Message when no cars are available -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>No Cars Available</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      You don't have any cars added. Click the "Add New Car" button above to add a car.
+    </ion-card-content>
+  </ion-card>
 </ion-content>
