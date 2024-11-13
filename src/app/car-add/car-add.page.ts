@@ -2,6 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import {
+  carBrands,
+  carModels,
+  chassisTypes,
+  engineTypes,
+  transmissionTypes,
+} from '../car-options';
 
 @Component({
   selector: 'app-car-add',
@@ -15,7 +22,6 @@ export class CarAddPage implements OnInit {
     Chassis_type: '',
     Year: '',
     Engine_type: '',
-    Engine_size: '',
     Transmission_type: '',
     KM_added: null,
     Oil_change: null,
@@ -25,9 +31,11 @@ export class CarAddPage implements OnInit {
     Fuel_Consumed: null,
   };
 
-  brand: any[] = [];
-  model: any[] = [];
-  types: any[] = [];
+  brand = carBrands;
+  model: { ModelName: string }[] = [];
+  types = chassisTypes;
+  engineTypes = engineTypes;
+  transmissionTypes = transmissionTypes;
 
   constructor(
     private firestore: AngularFirestore,
@@ -35,52 +43,16 @@ export class CarAddPage implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
-    this.loadBrand();
-    this.loadTypes();
-  }
+  ngOnInit() {}
 
-  async loadBrand() {
-    try {
-      const brandRef = this.firestore.collection('Brand');
-      const brandSnapshot = await brandRef.get().toPromise();
-      if (brandSnapshot) {
-        this.brand = brandSnapshot.docs.map(doc => doc.data());
-        console.log('Brand loaded:', this.brand); // Debugging log
-      } else {
-        console.log('No brand data found');
-      }
-    } catch (error) {
-      console.error('Error loading brand:', error);
-    }
-  }
-  
-  async loadModel(brandId: string) {
-    try {
-      const modelRef = this.firestore.collection('Model', ref => ref.where('BrandID', '==', brandId));
-      const modelSnapshot = await modelRef.get().toPromise();
-      if (modelSnapshot) {
-        this.model = modelSnapshot.docs.map(doc => doc.data());
-        console.log('Model loaded for brand:', brandId, this.model); // Debugging log
-      } else {
-        console.log('No model data found');
-      }
-    } catch (error) {
-      console.error('Error loading model:', error);
-    }
-  }
-
-  async loadTypes() {
-    const typesRef = this.firestore.collection('types');
-    const typesSnapshot = await typesRef.get().toPromise();
-    if (typesSnapshot) {
-      this.types = typesSnapshot.docs.map(doc => doc.data());
-    }
+  loadModel(brandId: string) {
+    this.model = carModels[brandId] || [];
   }
 
   async addCar() {
     const userId = await this.authService.getUserId();
     if (userId) {
+      this.carData.KM_added = this.carData.Current_KM;
       await this.firestore.collection('Cars').add({
         ...this.carData,
         UserID: userId,
@@ -88,7 +60,7 @@ export class CarAddPage implements OnInit {
       });
       this.router.navigate(['/cars']);
     } else {
-      console.error("User ID is not available.");
+      console.error('User ID is not available.');
     }
   }
 }
