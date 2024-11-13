@@ -1,18 +1,30 @@
-<!-- cars.page.html -->
-><ion-header [translucent]="true">
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Cars</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Button to navigate to Add Car page -->
   <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
     Add New Car
   </ion-button>
 
+  <!-- Display cars for the logged-in user -->
+  <ion-list *ngIf="cars.length > 0">
+    <ion-item *ngFor="let car of cars">
+      <ion-thumbnail slot="start">
+        <img src="path_to_image_placeholder_or_car_image" alt="Car Image">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ car.Brand }} {{ car.Model }}</h2>
+        <p>License Plate: {{ car.License_plate }}</p>
+        <p>Current KM: {{ car.Current_KM }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
   <!-- Message when no cars are available -->
-  <ion-card>
+  <ion-card *ngIf="cars.length === 0">
     <ion-card-header>
       <ion-card-title>No Cars Available</ion-card-title>
     </ion-card-header>

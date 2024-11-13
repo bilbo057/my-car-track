@@ -20,9 +20,15 @@ export class AuthService {
     return this.afAuth.signOut();
   }
 
-  // Method to get the current user ID
-  async getUserId(): Promise<string | null> {
-    const user = await this.afAuth.currentUser;
-    return user ? user.uid : null; // Return user ID or null if no user is logged in
+  getUserId(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState.subscribe(user => {
+        if (user) {
+          resolve(user.uid); // Return the user ID
+        } else {
+          resolve(null); // No user logged in
+        }
+      }, error => reject(error)); // Handle any error
+    });
   }
 }
