@@ -19,6 +19,9 @@
       <p><strong>Oil Change:</strong> {{ carDetails.Oil_change }}</p>
       <p><strong>Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
     </ion-card-content>
+    <ion-button color="danger" expand="full" (click)="deleteCar()">
+      Delete Car
+    </ion-button>
   </ion-card>
 </ion-content>
 

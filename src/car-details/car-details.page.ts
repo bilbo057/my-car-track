@@ -37,4 +37,15 @@ export class CarDetailsPage implements OnInit {
       console.error('Error loading car details:', error);
     }
   }
+  async deleteCar() {
+    if (this.carId) {
+      try {
+        await this.firestore.collection('Cars').doc(this.carId).delete();  // Delete the car document
+        console.log('Car deleted successfully');
+        this.router.navigate(['/cars']);  // Navigate back to the car listing page
+      } catch (error) {
+        console.error('Error deleting car:', error);
+      }
+    }
+  }
 }

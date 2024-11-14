@@ -8,10 +8,11 @@
   <ion-content>
     <ion-list>
       <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
-        <ion-label>
-          <h2>{{ car.Brand }} - {{ car.Model }}</h2>
-          <p>License Plate: {{ car.License_plate }}</p>
-        </ion-label>
+        <ion-card>
+          <ion-label>
+            <h1>{{ car.License_plate }}</h1>
+          </ion-label>
+        </ion-card>
       </ion-item>
     </ion-list>
     <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
