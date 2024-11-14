@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getFirestore, collection, addDoc } from '@angular/fire/firestore';
+import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore';  // Import required Firestore functions
 import { AuthService } from '../services/auth.service';
 import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../app/car-options';  // Ensure you're importing the correct structure
 
@@ -58,28 +58,34 @@ export class CarAddPage implements OnInit {
     return this.authService.getUserId();  // Get the user ID
   }
 
-  // Add the car to the "Cars" collection in Firestore
+  // Add the car to the "Cars" collection in Firestore and update with CarID
   private async addCarToFirestore(userId: string): Promise<string> {
-    // Get a reference to the Cars collection using Firestore methods
     const carCollectionRef = collection(this.firestore, 'Cars');
 
-    // Create a new document with the car data, include Date_added and UserID
+    // First, add the car to Firestore without CarID
     const carDocRef = await addDoc(carCollectionRef, {
       ...this.carData,
       Date_added: new Date(),
       UserID: userId,
     });
 
-    // Return the CarID which is the Firestore document ID
-    return carDocRef.id;  // Firestore automatically generates the document ID
+    // Use the generated document ID as CarID
+    const carId = carDocRef.id;
+
+    // Update the car document with its CarID
+    await updateDoc(doc(this.firestore, 'Cars', carId), {
+      CarID: carId,
+    });
+
+    return carId;  // Return the CarID for further use
   }
 
   // Create a document in the "User_car" table with UserID and CarID
   private async createUserCarEntry(userId: string, carId: string): Promise<void> {
-    const userCarCollectionRef = collection(this.firestore, 'User_car');  // Reference to the User_car collection
+    const userCarCollectionRef = collection(this.firestore, 'User_car');
     await addDoc(userCarCollectionRef, {
-      UserID: userId,  // Set the User ID
-      CarID: carId,    // Set the Car ID
+      UserID: userId,
+      CarID: carId,
     });
   }
 

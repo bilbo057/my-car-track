@@ -1,5 +1,6 @@
+// car-details.page.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
@@ -8,36 +9,29 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
   styleUrls: ['./car-details.page.scss'],
 })
 export class CarDetailsPage implements OnInit {
-  carId: string = '';  // Initialize carId as an empty string
+  carId: string = '';
   carDetails: any;
 
   constructor(
     private route: ActivatedRoute,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    // Get the carId from the route parameters
     this.route.paramMap.subscribe(params => {
-      this.carId = params.get('id') || '';  // Retrieve the carId from URL
+      this.carId = params.get('id') || '';
       if (this.carId) {
         this.loadCarDetails();
-      } else {
-        console.error('Car ID is missing');
       }
     });
   }
 
-  // Function to load car details from Firestore
   async loadCarDetails() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-      
-      // Check if the document exists
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-      } else {
-        console.error('Car not found');
       }
     } catch (error) {
       console.error('Error loading car details:', error);
