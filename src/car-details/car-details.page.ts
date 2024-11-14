@@ -51,7 +51,7 @@ export class CarDetailsPage implements OnInit {
       }
     }
   }
-  
+
   private async deleteUserCarDocument() {
     try {
       // Query to find the User_car document associated with the car ID
@@ -71,5 +71,7 @@ export class CarDetailsPage implements OnInit {
       console.error('Error deleting User_car document:', error);
     }
   }
-  
+  goHome() {
+    this.router.navigate(['/cars']);
+  }
 }

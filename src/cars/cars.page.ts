@@ -44,4 +44,7 @@ export class CarsPage implements OnInit {
   goToCarDetails(carId: string) {
       this.router.navigate([`/car-details/${carId}`]);  // Pass the carId (which is the Firestore document ID)
   }
+  goHome() {
+    this.router.navigate(['/cars']);
+  }
 }

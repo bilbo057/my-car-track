@@ -93,4 +93,7 @@ export class CarAddPage implements OnInit {
   private navigateToCarsPage(): void {
     this.router.navigate(['/cars']);
   }
+  goHome() {
+    this.router.navigate(['/cars']);
+  }
 }
