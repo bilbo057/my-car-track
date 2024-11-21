@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-button (click)="goHome()" fill="clear">
+      <img src="assets/img/logo.png" alt="Logo" />
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Edit Car</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form (ngSubmit)="updateCar()">
+    <ion-item>
+      <ion-label>Brand</ion-label>
+      <ion-select [(ngModel)]="carData.Brand" (ionChange)="loadModel(carData.Brand)" name="Brand">
+        <ion-select-option *ngFor="let brand of carBrands" [value]="brand.BrandID">
+          {{ brand.BrandName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Model</ion-label>
+      <ion-select [(ngModel)]="carData.Model" name="Model">
+        <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
+          {{ model.ModelName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Chassis Type</ion-label>
+      <ion-select [(ngModel)]="carData.Chassis_type" name="Chassis_type">
+        <ion-select-option *ngFor="let type of chassisTypes" [value]="type.Chassis_type">
+          {{ type.Chassis_type }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Engine Type</ion-label>
+      <ion-select [(ngModel)]="carData.Engine_type" name="Engine_type">
+        <ion-select-option *ngFor="let type of engineTypes" [value]="type.Engine_type">
+          {{ type.Engine_type }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Year</ion-label>
+      <ion-datetime display-format="YYYY" picker-format="YYYY" [(ngModel)]="carData.Year" name="Year"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Transmission Type</ion-label>
+      <ion-select [(ngModel)]="carData.Transmission_type" name="Transmission_type">
+        <ion-select-option *ngFor="let type of transmissionTypes" [value]="type.Transmission_type">
+          {{ type.Transmission_type }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Current KM</ion-label>
+      <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Price of Buying</ion-label>
+      <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>License Plate</ion-label>
+      <ion-input [(ngModel)]="carData.License_plate" name="License_plate"></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">Update Car</ion-button>
+  </form>
+</ion-content>
