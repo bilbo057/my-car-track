@@ -1,7 +1,7 @@
+// car-edit.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../car-options'; // Import options
 
 @Component({
   selector: 'app-car-edit',
@@ -10,67 +10,76 @@ import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } fr
 })
 export class CarEditPage implements OnInit {
   carId: string = '';
-  carData: any = {};
-  carBrands = carBrands;
-  carModels: { ModelName: string }[] = [];
-  chassisTypes = chassisTypes;
-  engineTypes = engineTypes;
-  transmissionTypes = transmissionTypes;
+  carEdit: any;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.carId = params.get('id') || '';
       if (this.carId) {
-        this.loadCarDetails();
-      } else {
-        console.error('Car ID is missing');
+        this.loadCarEdit();
       }
     });
   }
 
-  // Load car details from Firestore
-  async loadCarDetails() {
+  async loadCarEdit() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-      if (carDoc?.exists) {
-        this.carData = carDoc.data();
-        this.carData.id = carDoc.id;
-        this.loadModel(this.carData.Brand); // Populate models based on brand
-      } else {
-        console.error('Car not found');
+      if (carDoc && carDoc.exists) {
+        this.carEdit = carDoc.data();
       }
     } catch (error) {
-      console.error('Error loading car details:', error);
+      console.error('Error loading car Edit:', error);
+    }
+  }
+  async deleteCar() {
+    if (this.carId) {
+      try {
+        await this.firestore.collection('Cars').doc(this.carId).delete();  // Delete the car document
+        console.log('Car deleted successfully');
+
+        await this.deleteUserCarDocument();
+
+        this.router.navigate(['/cars']);  // Navigate back to the car listing page
+      } catch (error) {
+        console.error('Error deleting car:', error);
+      }
     }
   }
 
-  // Update the car in Firestore
-  async updateCar() {
+  // Method to navigate to the edit car page
+editCar() {
+  if (this.carId) {
+    this.router.navigate([`/edit-car/${this.carId}`]);
+  } else {
+    console.error('Car ID is missing. Unable to navigate to edit page.');
+  }
+}
+
+  private async deleteUserCarDocument() {
     try {
-      await this.firestore.collection('Cars').doc(this.carId).update(this.carData);
-      console.log('Car updated successfully');
-      this.router.navigate(['/cars']); // Redirect to cars list
+      // Query to find the User_car document associated with the car ID
+      const userCarSnapshot = await this.firestore.collection('User_car', ref =>
+        ref.where('CarID', '==', this.carId)
+      ).get().toPromise();
+  
+      // Check if the snapshot exists and is not empty
+      if (userCarSnapshot && !userCarSnapshot.empty) {
+        const userCarDocId = userCarSnapshot.docs[0].id; // Get the ID of the User_car document
+        await this.firestore.collection('User_car').doc(userCarDocId).delete();
+        console.log('User_car document deleted successfully');
+      } else {
+        console.log('No User_car document found for this car.');
+      }
     } catch (error) {
-      console.error('Error updating car:', error);
+      console.error('Error deleting User_car document:', error);
     }
   }
-
-  // Load models based on the selected brand
-  loadModel(brandId: string) {
-    if (brandId && carModels[brandId]) {
-      this.carModels = carModels[brandId];
-    } else {
-      this.carModels = [];
-    }
-  }
-
-  // Navigate to the cars list
   goHome() {
     this.router.navigate(['/cars']);
   }
