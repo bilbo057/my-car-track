@@ -55,7 +55,7 @@ export class CarDetailsPage implements OnInit {
   // Method to navigate to the edit car page
 editCar() {
   if (this.carId) {
-    this.router.navigate(['/edit-car', this.carId]);
+    this.router.navigate(['/car-edit', this.carId]);
   } else {
     console.error('Car ID is missing. Unable to navigate to edit page.');
   }

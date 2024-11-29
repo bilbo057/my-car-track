@@ -1,27 +1,25 @@
 <ion-header>
-  <ion-button (click)="goHome()" fill="clear">
-    <img src="assets/img/logo.png" alt="Logo" />
-  </ion-button>
+  <ion-toolbar>
+    <ion-title>Edit Car</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cars"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="carEdit">
   <ion-card>
-    <img [src]="carEdit.photoUrl" alt="Car Image" />
     <ion-card-header>
-      <ion-card-title>{{ carEdit.Brand }} - {{ carEdit.Model }}</ion-card-title>
-      <ion-card-subtitle>{{ carEdit.License_plate }}</ion-card-subtitle>
+      <ion-card-title>Edit {{ carEdit.Brand }} - {{ carEdit.Model }}</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
-      <p><strong>Chassis Type:</strong> {{ carEdit.Chassis_type }}</p>
-      <p><strong>Engine Type:</strong> {{ carEdit.Engine_type }}</p>
-      <p><strong>Year:</strong> {{ carEdit.Year }}</p>
-      <p><strong>Current KM:</strong> {{ carEdit.Current_KM }}</p>
-      <p><strong>Oil Change:</strong> {{ carEdit.Oil_change }}</p>
-      <p><strong>Price:</strong> {{ carEdit.Price_of_buying | currency }}</p>
-    </ion-card-content>
-    <ion-button color="danger" expand="full" (click)="deleteCar()">
-      Delete Car
-    </ion-button>
-  </ion-card>
-</ion-content>
 
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Brand</ion-label>
+        <ion-input [(ngModel)]="carEdit.Brand"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" (click)="saveCar()">Save Changes</ion-button>
+</ion-content>

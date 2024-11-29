@@ -1,7 +1,6 @@
-// car-edit.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-car-edit',
@@ -9,69 +8,48 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
   styleUrls: ['./car-edit.page.scss'],
 })
 export class CarEditPage implements OnInit {
+  carEdit: any = null; // The car object being edited
   carId: string = '';
-  carEdit: any;
 
   constructor(
     private route: ActivatedRoute,
-    private firestore: AngularFirestore,
-    private router: Router
+    private router: Router,
+    private firestore: Firestore
   ) {}
 
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.carId = params.get('id') || '';
-      if (this.carId) {
-        this.loadCarEdit();
-      }
-    });
+  async ngOnInit() {
+    this.carId = this.route.snapshot.paramMap.get('id')!;
+    await this.loadCarData();
   }
 
-  async loadCarEdit() {
+  async loadCarData() {
     try {
-      const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-      if (carDoc && carDoc.exists) {
+      const carDocRef = doc(this.firestore, `cars/${this.carId}`);
+      const carDoc = await getDoc(carDocRef);
+      if (carDoc.exists()) {
         this.carEdit = carDoc.data();
-      }
-    } catch (error) {
-      console.error('Error loading car edit:', error);
-    }
-  }
-  async deleteCar() {
-    if (this.carId) {
-      try {
-        await this.firestore.collection('Cars').doc(this.carId).delete();  // Delete the car document
-        console.log('Car deleted successfully');
-
-        await this.deleteUserCarDocument();
-
-        this.router.navigate(['/cars']);  // Navigate back to the car listing page
-      } catch (error) {
-        console.error('Error deleting car:', error);
-      }
-    }
-  }
-
-  private async deleteUserCarDocument() {
-    try {
-      // Query to find the User_car document associated with the car ID
-      const userCarSnapshot = await this.firestore.collection('User_car', ref =>
-        ref.where('CarID', '==', this.carId)
-      ).get().toPromise();
-  
-      // Check if the snapshot exists and is not empty
-      if (userCarSnapshot && !userCarSnapshot.empty) {
-        const userCarDocId = userCarSnapshot.docs[0].id; // Get the ID of the User_car document
-        await this.firestore.collection('User_car').doc(userCarDocId).delete();
-        console.log('User_car document deleted successfully');
       } else {
-        console.log('No User_car document found for this car.');
+        console.error('Car not found');
+        this.router.navigate(['/cars']);
       }
     } catch (error) {
-      console.error('Error deleting User_car document:', error);
+      console.error('Error loading car:', error);
+      this.router.navigate(['/cars']);
     }
   }
-  goHome() {
+
+  async saveCar() {
+    try {
+      const carDocRef = doc(this.firestore, `cars/${this.carId}`);
+      await updateDoc(carDocRef, this.carEdit);
+      console.log('Car updated successfully');
+      this.router.navigate(['/cars']);
+    } catch (error) {
+      console.error('Error updating car:', error);
+    }
+  }
+
+  goBack() {
     this.router.navigate(['/cars']);
   }
 }
