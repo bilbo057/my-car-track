@@ -22,14 +22,6 @@
     <ion-button color="danger" expand="full" (click)="deleteCar()">
       Delete Car
     </ion-button>
-    <ion-button color="danger" expand="full" (click)="editCar()">
-      Edit Car
-    </ion-button>
   </ion-card>
 </ion-content>
 
-<ion-content *ngIf="!carEdit">
-  <ion-text color="danger">
-    <h2>Car Edit not found.</h2>
-  </ion-text>
-</ion-content>

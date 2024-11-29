@@ -13,8 +13,8 @@ import { CarEditPage } from './car-edit.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    CarEditPageRoutingModule
+    CarEditPageRoutingModule,
   ],
-  declarations: [CarEditPage]
+  declarations: [CarEditPage],
 })
 export class CarEditPageModule {}

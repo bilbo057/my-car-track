@@ -34,7 +34,7 @@ export class CarEditPage implements OnInit {
         this.carEdit = carDoc.data();
       }
     } catch (error) {
-      console.error('Error loading car Edit:', error);
+      console.error('Error loading car edit:', error);
     }
   }
   async deleteCar() {
@@ -51,15 +51,6 @@ export class CarEditPage implements OnInit {
       }
     }
   }
-
-  // Method to navigate to the edit car page
-editCar() {
-  if (this.carId) {
-    this.router.navigate([`/edit-car/${this.carId}`]);
-  } else {
-    console.error('Car ID is missing. Unable to navigate to edit page.');
-  }
-}
 
   private async deleteUserCarDocument() {
     try {
