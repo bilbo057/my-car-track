@@ -78,8 +78,10 @@ export class CarEditPage implements OnInit {
 
   async saveCar() {
     try {
+      // Ensure brand is updated correctly before saving
       const updatedCarDetails = { ...this.carDetails };
-      delete updatedCarDetails.Brand;  // Exclude the Brand field before saving
+
+      // Save the car details, including the brand
       await this.firestore.collection('Cars').doc(this.carId).update(updatedCarDetails);
       console.log('Car updated successfully');
       this.router.navigate(['/cars']);
