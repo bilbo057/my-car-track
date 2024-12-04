@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-car-edit',
@@ -8,7 +8,7 @@ import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
   styleUrls: ['./car-edit.page.scss'],
 })
 export class CarEditPage implements OnInit {
-  carEdit: any = null; // The car object being edited
+  carData: any = null; // The car object to display
   carId: string = '';
 
   constructor(
@@ -17,35 +17,25 @@ export class CarEditPage implements OnInit {
     private firestore: Firestore
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('id')!;
-    await this.loadCarData();
+    this.loadCarData();
   }
 
   async loadCarData() {
     try {
       const carDocRef = doc(this.firestore, `cars/${this.carId}`);
       const carDoc = await getDoc(carDocRef);
+
       if (carDoc.exists()) {
-        this.carEdit = carDoc.data();
+        this.carData = carDoc.data();
       } else {
-        console.error('Car not found');
+        console.error(`Car with ID ${this.carId} not found.`);
         this.router.navigate(['/cars']);
       }
     } catch (error) {
-      console.error('Error loading car:', error);
+      console.error('Error loading car data:', error);
       this.router.navigate(['/cars']);
-    }
-  }
-
-  async saveCar() {
-    try {
-      const carDocRef = doc(this.firestore, `cars/${this.carId}`);
-      await updateDoc(carDocRef, this.carEdit);
-      console.log('Car updated successfully');
-      this.router.navigate(['/cars']);
-    } catch (error) {
-      console.error('Error updating car:', error);
     }
   }
 

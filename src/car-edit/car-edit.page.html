@@ -1,25 +1,27 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Edit Car</ion-title>
+    <ion-title>Car Details</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/cars"></ion-back-button>
+      <ion-button (click)="goBack()">Back</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="carEdit">
-  <ion-card>
+<ion-content>
+  <ion-card *ngIf="carData">
     <ion-card-header>
-      <ion-card-title>Edit {{ carEdit.Brand }} - {{ carEdit.Model }}</ion-card-title>
+      <ion-card-title>{{ carData.Brand }} {{ carData.Model }}</ion-card-title>
     </ion-card-header>
-
     <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Brand</ion-label>
-        <ion-input [(ngModel)]="carEdit.Brand"></ion-input>
-      </ion-item>
+      <p><strong>Year:</strong> {{ carData.Year }}</p>
+      <p><strong>Chassis Type:</strong> {{ carData.Chassis_type }}</p>
+      <p><strong>Engine:</strong> {{ carData.Engine_size }} {{ carData.Engine_type }}</p>
+      <p><strong>Transmission:</strong> {{ carData.Transmission_type }}</p>
+      <p><strong>Current KM:</strong> {{ carData.Current_KM }}</p>
+      <p><strong>License Plate:</strong> {{ carData.License_plate }}</p>
     </ion-card-content>
   </ion-card>
-
-  <ion-button expand="block" (click)="saveCar()">Save Changes</ion-button>
+  <ion-text *ngIf="!carData">
+    Loading car details...
+  </ion-text>
 </ion-content>
