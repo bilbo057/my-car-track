@@ -50,6 +50,19 @@ export class CarEditPage implements OnInit {
     }
   }
 
+  async saveCar() {
+    try {
+      // Save the updated car details (excluding the Brand field)
+      const updatedCarDetails = { ...this.carDetails };
+      delete updatedCarDetails.Brand;  // Ensure the Brand field is not updated
+      await this.firestore.collection('Cars').doc(this.carId).update(updatedCarDetails);
+      console.log('Car updated successfully');
+      this.router.navigate(['/cars']);
+    } catch (error) {
+      console.error('Error updating car:', error);
+    }
+  }
+
   goHome() {
     this.router.navigate(['/cars']);
   }
