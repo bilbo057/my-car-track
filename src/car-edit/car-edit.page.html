@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Car Details</ion-title>
+    <ion-title>Edit Car Details</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="goHome()">Back</ion-button>
     </ion-buttons>
@@ -10,15 +10,43 @@
 <ion-content>
   <ion-card *ngIf="carDetails">
     <ion-card-header>
-      <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
+      <ion-card-title>Edit {{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Year:</strong> {{ carDetails.Year }}</p>
-      <p><strong>Chassis Type:</strong> {{ carDetails.Chassis_type }}</p>
-      <p><strong>Engine:</strong> {{ carDetails.Engine_size }} {{ carDetails.Engine_type }}</p>
-      <p><strong>Transmission:</strong> {{ carDetails.Transmission_type }}</p>
-      <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
-      <p><strong>License Plate:</strong> {{ carDetails.License_plate }}</p>
+      <ion-item>
+        <ion-label position="stacked">Brand</ion-label>
+        <ion-input [(ngModel)]="carDetails.Brand"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Model</ion-label>
+        <ion-input [(ngModel)]="carDetails.Model"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Year</ion-label>
+        <ion-input type="number" [(ngModel)]="carDetails.Year"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Chassis Type</ion-label>
+        <ion-input [(ngModel)]="carDetails.Chassis_type"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Engine</ion-label>
+        <ion-input [(ngModel)]="carDetails.Engine_size"></ion-input>
+        <ion-input [(ngModel)]="carDetails.Engine_type"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Transmission</ion-label>
+        <ion-input [(ngModel)]="carDetails.Transmission_type"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Current KM</ion-label>
+        <ion-input type="number" [(ngModel)]="carDetails.Current_KM"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">License Plate</ion-label>
+        <ion-input [(ngModel)]="carDetails.License_plate"></ion-input>
+      </ion-item>
+      <ion-button expand="full" (click)="saveCar()">Save Changes</ion-button>
     </ion-card-content>
   </ion-card>
   <ion-text *ngIf="!carDetails">

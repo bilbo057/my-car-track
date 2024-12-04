@@ -9,7 +9,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 })
 export class CarEditPage implements OnInit {
   carId: string = '';
-  carDetails: any;
+  carDetails: any = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +37,16 @@ export class CarEditPage implements OnInit {
       }
     } catch (error) {
       console.error('Error loading car details:', error);
+    }
+  }
+
+  async saveCar() {
+    try {
+      await this.firestore.collection('Cars').doc(this.carId).update(this.carDetails);
+      console.log('Car updated successfully');
+      this.router.navigate(['/cars']);
+    } catch (error) {
+      console.error('Error updating car:', error);
     }
   }
 
