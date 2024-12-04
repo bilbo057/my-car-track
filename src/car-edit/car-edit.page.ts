@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-car-edit',
@@ -8,38 +8,39 @@ import { Firestore, doc, getDoc } from '@angular/fire/firestore';
   styleUrls: ['./car-edit.page.scss'],
 })
 export class CarEditPage implements OnInit {
-  carData: any = null; // The car object to display
   carId: string = '';
+  carDetails: any;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private firestore: Firestore
+    private firestore: AngularFirestore,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.carId = this.route.snapshot.paramMap.get('id')!;
-    this.loadCarData();
+    this.route.paramMap.subscribe(params => {
+      this.carId = params.get('id') || '';
+      if (this.carId) {
+        this.loadCarDetails();
+      }
+    });
   }
 
-  async loadCarData() {
+  async loadCarDetails() {
     try {
-      const carDocRef = doc(this.firestore, `cars/${this.carId}`);
-      const carDoc = await getDoc(carDocRef);
-
-      if (carDoc.exists()) {
-        this.carData = carDoc.data();
+      const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
+      if (carDoc && carDoc.exists) {
+        this.carDetails = carDoc.data();
       } else {
-        console.error(`Car with ID ${this.carId} not found.`);
+        console.error('Car not found');
         this.router.navigate(['/cars']);
       }
     } catch (error) {
-      console.error('Error loading car data:', error);
-      this.router.navigate(['/cars']);
+      console.error('Error loading car details:', error);
     }
   }
 
-  goBack() {
+  goHome() {
     this.router.navigate(['/cars']);
   }
 }

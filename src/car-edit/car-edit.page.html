@@ -2,26 +2,26 @@
   <ion-toolbar>
     <ion-title>Car Details</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">Back</ion-button>
+      <ion-button (click)="goHome()">Back</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card *ngIf="carData">
+  <ion-card *ngIf="carDetails">
     <ion-card-header>
-      <ion-card-title>{{ carData.Brand }} {{ carData.Model }}</ion-card-title>
+      <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Year:</strong> {{ carData.Year }}</p>
-      <p><strong>Chassis Type:</strong> {{ carData.Chassis_type }}</p>
-      <p><strong>Engine:</strong> {{ carData.Engine_size }} {{ carData.Engine_type }}</p>
-      <p><strong>Transmission:</strong> {{ carData.Transmission_type }}</p>
-      <p><strong>Current KM:</strong> {{ carData.Current_KM }}</p>
-      <p><strong>License Plate:</strong> {{ carData.License_plate }}</p>
+      <p><strong>Year:</strong> {{ carDetails.Year }}</p>
+      <p><strong>Chassis Type:</strong> {{ carDetails.Chassis_type }}</p>
+      <p><strong>Engine:</strong> {{ carDetails.Engine_size }} {{ carDetails.Engine_type }}</p>
+      <p><strong>Transmission:</strong> {{ carDetails.Transmission_type }}</p>
+      <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
+      <p><strong>License Plate:</strong> {{ carDetails.License_plate }}</p>
     </ion-card-content>
   </ion-card>
-  <ion-text *ngIf="!carData">
+  <ion-text *ngIf="!carDetails">
     Loading car details...
   </ion-text>
 </ion-content>
