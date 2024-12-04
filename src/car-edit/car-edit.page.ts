@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { carBrands } from '../car-options';  // Import carBrands array
+import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../car-options'; // Adjust the path if needed
+
+interface CarModel {
+  ModelName: string;
+}
 
 @Component({
   selector: 'app-car-edit',
@@ -11,7 +15,15 @@ import { carBrands } from '../car-options';  // Import carBrands array
 export class CarEditPage implements OnInit {
   carId: string = '';
   carDetails: any = {};
-  brandName: string = '';  // Variable to hold the human-readable brand name
+  brandName: string = '';
+  filteredModels: CarModel[] = [];  // Filtered models based on the selected brand
+  carBrands = carBrands;  // Expose to the template
+  chassisTypes = chassisTypes;  // Expose to the template
+  engineTypes = engineTypes;  // Expose to the template
+  transmissionTypes = transmissionTypes;  // Expose to the template
+
+  // Explicitly type carModels as Record<string, CarModel[]>
+  carModels = carModels;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +46,7 @@ export class CarEditPage implements OnInit {
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
         this.setBrandName();  // Set the brand name after loading the car details
+        this.loadModel(this.carDetails.Brand);  // Initialize the model options based on the brand
       } else {
         console.error('Car not found');
         this.router.navigate(['/cars']);
@@ -46,15 +59,27 @@ export class CarEditPage implements OnInit {
   private setBrandName() {
     if (this.carDetails && this.carDetails.Brand) {
       const brand = carBrands.find(b => b.BrandID === this.carDetails.Brand);
-      this.brandName = brand ? brand.BrandName : 'Unknown';  // Set to 'Unknown' if brand not found
+      this.brandName = brand ? brand.BrandName : 'Unknown';
+    }
+  }
+
+  // Method to filter models based on the selected brand
+  loadModel(brandId: string) {
+    if (brandId && this.carModels[brandId]) {
+      this.filteredModels = this.carModels[brandId];
+      // If the selected model isn't in the filtered list, reset to an empty string
+      if (!this.filteredModels.some(model => model.ModelName === this.carDetails.Model)) {
+        this.carDetails.Model = '';
+      }
+    } else {
+      this.filteredModels = []; // Clear models if no brand is selected
     }
   }
 
   async saveCar() {
     try {
-      // Save the updated car details (excluding the Brand field)
       const updatedCarDetails = { ...this.carDetails };
-      delete updatedCarDetails.Brand;  // Ensure the Brand field is not updated
+      delete updatedCarDetails.Brand;  // Exclude the Brand field before saving
       await this.firestore.collection('Cars').doc(this.carId).update(updatedCarDetails);
       console.log('Car updated successfully');
       this.router.navigate(['/cars']);
