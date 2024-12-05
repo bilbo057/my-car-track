@@ -17,7 +17,13 @@
     <!-- Brand Dropdown -->
     <ion-item>
       <ion-label>Brand</ion-label>
-      <ion-select [(ngModel)]="carData.Brand" (ionChange)="loadModel(carData.Brand)" name="Brand">
+      <ion-select
+        interface="popover"
+        placeholder="Select Brand"
+        [(ngModel)]="carData.Brand"
+        (ionChange)="loadModel(carData.Brand)"
+        name="Brand"
+      >
         <ion-select-option *ngFor="let brand of carBrands" [value]="brand.BrandID">
           {{ brand.BrandName }}
         </ion-select-option>
@@ -25,14 +31,22 @@
     </ion-item>
   
     <!-- Model Dropdown -->
-    <ion-item>
-      <ion-label>Model</ion-label>
-      <ion-select [(ngModel)]="carData.Model" name="Model">
-        <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
-          {{ model.ModelName }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+    <ion-list>
+      <ion-item>
+        <ion-label>Model</ion-label>
+        <ion-select
+          interface="popover"
+          placeholder="Select Model"
+          [(ngModel)]="carData.Model"
+          name="Model"
+        >
+          <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
+            {{ model.ModelName }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    
   
     <!-- Chassis Type Dropdown -->
     <ion-item>

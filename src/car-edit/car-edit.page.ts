@@ -45,8 +45,12 @@ export class CarEditPage implements OnInit {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-        this.setBrandName();  // Set the brand name after loading the car details
-        this.loadModel(this.carDetails.Brand);  // Initialize the model options based on the brand
+  
+        // Convert Date from DD-MM-YYYY to ISO format for ion-datetime
+        if (this.carDetails.Date) {
+          const [day, month, year] = this.carDetails.Date.split('-');
+          this.carDetails.Date = `${year}-${month}-${day}`;
+        }
       } else {
         console.error('Car not found');
         this.router.navigate(['/cars']);
@@ -55,6 +59,7 @@ export class CarEditPage implements OnInit {
       console.error('Error loading car details:', error);
     }
   }
+  
 
   private setBrandName() {
     if (this.carDetails && this.carDetails.Brand) {
@@ -78,10 +83,14 @@ export class CarEditPage implements OnInit {
 
   async saveCar() {
     try {
-      // Ensure brand is updated correctly before saving
       const updatedCarDetails = { ...this.carDetails };
-
-      // Save the car details, including the brand
+  
+      // Convert Date from ISO format to DD-MM-YYYY
+      if (updatedCarDetails.Date) {
+        const date = new Date(updatedCarDetails.Date);
+        updatedCarDetails.Date = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+      }
+  
       await this.firestore.collection('Cars').doc(this.carId).update(updatedCarDetails);
       console.log('Car updated successfully');
       this.router.navigate(['/cars']);
@@ -89,6 +98,9 @@ export class CarEditPage implements OnInit {
       console.error('Error updating car:', error);
     }
   }
+  
+  
+
 
   goHome() {
     this.router.navigate(['/cars']);
