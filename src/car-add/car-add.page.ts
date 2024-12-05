@@ -44,7 +44,12 @@ export class CarAddPage implements OnInit {
   async addCar() {
     const userId = await this.getUserId();
     if (userId) {
-      this.carData.KM_added = this.carData.Current_KM;
+      this.carData.KM_added = this.carData.Current_KM;  
+      if (this.carData.Year) {
+        const date = new Date(this.carData.Year);
+        // Format the date as DD-MM-YYYY
+        this.carData.Year = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+      }
       const carId = await this.addCarToFirestore(userId);  // Add the car to Firestore and get CarID
       await this.createUserCarEntry(userId, carId);  // Create a User_car document with CarID
       this.navigateToCarsPage();  // Navigate to the cars page

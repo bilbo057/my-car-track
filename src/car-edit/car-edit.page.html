@@ -54,12 +54,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Year Picker -->
-    <ion-item>
-      <ion-label>Year</ion-label>
-      <ion-datetime display-format="YYYY" picker-format="YYYY" [(ngModel)]="carDetails.Year" name="Year"></ion-datetime>
-    </ion-item>
-
     <!-- Transmission Type Dropdown -->
     <ion-item>
       <ion-label>Transmission Type</ion-label>
@@ -68,6 +62,12 @@
           {{ type.Transmission_type }}
         </ion-select-option>
       </ion-select>
+    </ion-item>
+
+    <!-- Year Picker -->
+    <ion-item class="custom-date-picker">
+      <ion-label>Year</ion-label>
+      <ion-datetime [(ngModel)]="carDetails.Date" name="Date" presentation="date" [preferWheel]="true"></ion-datetime>
     </ion-item>
 
     <!-- Current KM -->
