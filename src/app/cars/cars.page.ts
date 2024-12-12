@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { getFirestore, collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore'; // Ensure these imports are correct
 
 

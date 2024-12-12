@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore';  // Import required Firestore functions
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../../car-options';  // Ensure you're importing the correct structure
 
 @Component({
