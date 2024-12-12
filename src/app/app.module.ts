@@ -15,7 +15,7 @@ import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarComponent  // Declare the sidebar component
+    SidebarComponent,  // Declare the sidebar component
   ],
   imports: [
     BrowserModule,

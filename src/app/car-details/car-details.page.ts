@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
 import { carBrands } from '../../car-options';
+import { AuthService } from '../services/auth.service'; // Ensure the path is correct
 
 interface User {
   UID: string;
@@ -17,16 +18,19 @@ interface User {
 export class CarDetailsPage implements OnInit {
   carId: string = '';
   carDetails: any;
+  username: string = 'Loading...'; // Initial value to indicate loading
 
   constructor(
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService // Injecting AuthService
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.loadUsername();
+    this.route.paramMap.subscribe((params) => {
       this.carId = params.get('id') || '';
       if (this.carId) {
         this.loadCarDetails();
@@ -40,7 +44,7 @@ export class CarDetailsPage implements OnInit {
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
         if (this.carDetails && this.carDetails.Brand) {
-          const brand = carBrands.find(b => b.BrandID === this.carDetails.Brand);
+          const brand = carBrands.find((b) => b.BrandID === this.carDetails.Brand);
           if (brand) {
             this.carDetails.Brand = brand.BrandName;
           }
@@ -50,6 +54,29 @@ export class CarDetailsPage implements OnInit {
       console.error('Error loading car details:', error);
     }
   }
+
+  async loadUsername() {
+    try {
+      const userId = await this.authService.getUserId();
+      if (userId) {
+        const userDoc = await this.firestore.collection('Users').doc(userId).get().toPromise();
+        if (userDoc && userDoc.exists) {
+          const userData = userDoc.data() as { username?: string };
+          this.username = userData?.username || 'Unknown User';
+        } else {
+          console.warn(`User document does not exist for ID: ${userId}`);
+          this.username = 'Unknown User';
+        }
+      } else {
+        console.warn('User ID is null or undefined.');
+        this.username = 'Unknown User';
+      }
+    } catch (error) {
+      console.error('Error loading username:', error);
+      this.username = 'Unknown User';
+    }
+  }
+  
 
   async deleteCar() {
     if (this.carId) {
@@ -103,7 +130,7 @@ export class CarDetailsPage implements OnInit {
 
   async addUserToCar(username: string) {
     try {
-      const userSnapshot = await this.firestore.collection('Users', ref =>
+      const userSnapshot = await this.firestore.collection('Users', (ref) =>
         ref.where('username', '==', username)
       ).get().toPromise();
 
@@ -162,21 +189,21 @@ export class CarDetailsPage implements OnInit {
 
   async executeTransferOwnership(username: string) {
     try {
-      const userSnapshot = await this.firestore.collection('Users', ref =>
+      const userSnapshot = await this.firestore.collection('Users', (ref) =>
         ref.where('username', '==', username)
       ).get().toPromise();
 
       if (userSnapshot && !userSnapshot.empty) {
         const newOwnerDoc = userSnapshot.docs[0].data() as User;
 
-        const userCarSnapshot = await this.firestore.collection('User_car', ref =>
+        const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
           ref.where('CarID', '==', this.carId)
         ).get().toPromise();
 
         if (userCarSnapshot && !userCarSnapshot.empty) {
           const batch = this.firestore.firestore.batch();
 
-          userCarSnapshot.docs.forEach(doc => {
+          userCarSnapshot.docs.forEach((doc) => {
             batch.delete(doc.ref);
           });
 
@@ -202,7 +229,7 @@ export class CarDetailsPage implements OnInit {
 
   async deleteUserCarDocument() {
     try {
-      const userCarSnapshot = await this.firestore.collection('User_car', ref =>
+      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
         ref.where('CarID', '==', this.carId)
       ).get().toPromise();
 

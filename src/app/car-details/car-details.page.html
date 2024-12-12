@@ -1,12 +1,15 @@
 <ion-header>
-  <ion-button (click)="goHome()" fill="clear">
-    <img src="assets/img/logo.png" alt="Logo" />
-  </ion-button>
-  <ion-button menu="first">
-    Open Sidebar
-  </ion-button>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goHome()" fill="clear">
+        <img src="assets/img/logo.png" alt="Logo" />
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button>{{ username }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
-
 <ion-content *ngIf="carDetails">
   <ion-card>
     <img [src]="carDetails.photoUrl" alt="Car Image" />
