@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { carBrands } from '../car-options';  // Import the car brands
+import { carBrands } from '../../car-options';  // Import the car brands
 
 @Component({
   selector: 'app-car-details',

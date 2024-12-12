@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('../login/login.module').then((m) => m.LoginPageModule),
+    loadChildren: () => import('./login/login.module').then((m) => m.LoginPageModule),
   },
   {
     path: 'register',
@@ -25,7 +25,7 @@ const routes: Routes = [
   },
   {
     path: 'car-details/:id',
-    loadChildren: () => import('../car-details/car-details.module').then((m) => m.CarDetailsPageModule),
+    loadChildren: () => import('./car-details/car-details.module').then((m) => m.CarDetailsPageModule),
   },
   {
     path: 'car-edit/:id',
