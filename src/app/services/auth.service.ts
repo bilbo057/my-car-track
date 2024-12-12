@@ -21,14 +21,12 @@ export class AuthService {
     return this.afAuth.signOut();
   }
 
-  async getUserId(): Promise<string | null> {
+  async getUserId(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.afAuth.authState.subscribe(
         (user) => {
           if (user) {
             resolve(user.uid); // Return the user ID
-          } else {
-            resolve(null); // No user logged in
           }
         },
         (error) => {

@@ -4,6 +4,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
 import { carBrands } from '../../car-options';
 import { AuthService } from '../services/auth.service'; // Ensure the path is correct
+import { firstValueFrom } from 'rxjs';
 
 interface User {
   UID: string;
@@ -36,7 +37,32 @@ export class CarDetailsPage implements OnInit {
         this.loadCarDetails();
       }
     });
+  }  
+
+  async loadUsername() {
+    try {
+      const userId = await this.authService.getUserId(); // Fetch the current user's ID
+      if (!userId) {
+        console.warn('User ID is null or undefined.');
+        this.username = 'Unknown User';
+        return;
+      }
+  
+      // Fetch username from the Users collection
+      const userDoc = await this.firestore.collection('Users').doc(userId).get().toPromise();
+      if (userDoc && userDoc.exists) {
+        const userData = userDoc.data() as { username?: string };
+        this.username = userData?.username || 'Unknown User';
+      } else {
+        console.warn(`User document does not exist for UserID: ${userId}`);
+        this.username = 'Unknown User';
+      }
+    } catch (error) {
+      console.error('Error loading username:', error);
+      this.username = 'Unknown User';
+    }
   }
+  
 
   async loadCarDetails() {
     try {
@@ -54,30 +80,7 @@ export class CarDetailsPage implements OnInit {
       console.error('Error loading car details:', error);
     }
   }
-
-  async loadUsername() {
-    try {
-      const userId = await this.authService.getUserId();
-      if (userId) {
-        const userDoc = await this.firestore.collection('Users').doc(userId).get().toPromise();
-        if (userDoc && userDoc.exists) {
-          const userData = userDoc.data() as { username?: string };
-          this.username = userData?.username || 'Unknown User';
-        } else {
-          console.warn(`User document does not exist for ID: ${userId}`);
-          this.username = 'Unknown User';
-        }
-      } else {
-        console.warn('User ID is null or undefined.');
-        this.username = 'Unknown User';
-      }
-    } catch (error) {
-      console.error('Error loading username:', error);
-      this.username = 'Unknown User';
-    }
-  }
   
-
   async deleteCar() {
     if (this.carId) {
       try {
