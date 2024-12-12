@@ -13,15 +13,15 @@ const routes: Routes = [
   },
   {
     path: 'register',
-    loadChildren: () => import('../register/register.module').then((m) => m.RegisterPageModule),
+    loadChildren: () => import('./register/register.module').then((m) => m.RegisterPageModule),
   },
   {
     path: 'cars',
-    loadChildren: () => import('../cars/cars.module').then((m) => m.CarsPageModule),
+    loadChildren: () => import('./cars/cars.module').then((m) => m.CarsPageModule),
   },
   {
     path: 'car-add',
-    loadChildren: () => import('../car-add/car-add.module').then((m) => m.CarAddPageModule),
+    loadChildren: () => import('./car-add/car-add.module').then((m) => m.CarAddPageModule),
   },
   {
     path: 'car-details/:id',
@@ -29,7 +29,7 @@ const routes: Routes = [
   },
   {
     path: 'car-edit/:id',
-    loadChildren: () => import('../car-edit/car-edit.module').then((m) => m.CarEditPageModule),
+    loadChildren: () => import('./car-edit/car-edit.module').then((m) => m.CarEditPageModule),
   },
 ];
 

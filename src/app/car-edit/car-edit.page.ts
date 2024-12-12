@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../car-options'; // Adjust the path if needed
+import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../../car-options'; // Adjust the path if needed
 
 interface CarModel {
   ModelName: string;
