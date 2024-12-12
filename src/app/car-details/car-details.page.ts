@@ -1,19 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AlertController } from '@ionic/angular';
 import { carBrands } from '../../car-options';
-import { AlertController } from '@ionic/angular'; // Import AlertController
 
 interface User {
   UID: string;
   username: string;
-}
-
-interface Car {
-  Brand: string;
-  Model: string;
-  License_plate: string;
-  [key: string]: any; // Handle any additional properties
 }
 
 @Component({
@@ -29,7 +22,7 @@ export class CarDetailsPage implements OnInit {
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
     private router: Router,
-    private alertController: AlertController // Inject AlertController
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -44,11 +37,9 @@ export class CarDetailsPage implements OnInit {
   async loadCarDetails() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-  
       if (carDoc && carDoc.exists) {
-        this.carDetails = carDoc.data() as Car; // Type assertion
-  
-        if (this.carDetails.Brand) {
+        this.carDetails = carDoc.data();
+        if (this.carDetails && this.carDetails.Brand) {
           const brand = carBrands.find(b => b.BrandID === this.carDetails.Brand);
           if (brand) {
             this.carDetails.Brand = brand.BrandName;
@@ -81,7 +72,135 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
-  private async deleteUserCarDocument() {
+  async showAddUserPopup() {
+    const alert = await this.alertController.create({
+      header: 'Add User',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          placeholder: 'Enter username',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Add',
+          handler: async (data) => {
+            if (data.username) {
+              await this.addUserToCar(data.username);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async addUserToCar(username: string) {
+    try {
+      const userSnapshot = await this.firestore.collection('Users', ref =>
+        ref.where('username', '==', username)
+      ).get().toPromise();
+
+      if (userSnapshot && !userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0].data() as User;
+
+        const userCarCollectionRef = this.firestore.collection('User_car');
+        await userCarCollectionRef.add({
+          UserID: userDoc.UID,
+          CarID: this.carId,
+        });
+        console.log('User added to car successfully');
+      } else {
+        console.error('User not found');
+      }
+    } catch (error) {
+      console.error('Error adding user to car:', error);
+    }
+  }
+
+  async transferOwnership() {
+    const alert = await this.alertController.create({
+      header: 'Transfer Ownership',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          placeholder: 'Enter new owner username',
+        },
+        {
+          name: 'licensePlate',
+          type: 'text',
+          placeholder: 'Confirm car license plate',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Transfer',
+          handler: async (data) => {
+            if (data.username && data.licensePlate === this.carDetails.License_plate) {
+              await this.executeTransferOwnership(data.username);
+            } else {
+              console.error('License plate verification failed');
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async executeTransferOwnership(username: string) {
+    try {
+      const userSnapshot = await this.firestore.collection('Users', ref =>
+        ref.where('username', '==', username)
+      ).get().toPromise();
+
+      if (userSnapshot && !userSnapshot.empty) {
+        const newOwnerDoc = userSnapshot.docs[0].data() as User;
+
+        const userCarSnapshot = await this.firestore.collection('User_car', ref =>
+          ref.where('CarID', '==', this.carId)
+        ).get().toPromise();
+
+        if (userCarSnapshot && !userCarSnapshot.empty) {
+          const batch = this.firestore.firestore.batch();
+
+          userCarSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+
+          const userCarCollectionRef = this.firestore.collection('User_car').ref;
+          batch.set(userCarCollectionRef.doc(), {
+            UserID: newOwnerDoc.UID,
+            CarID: this.carId,
+          });
+
+          const carRef = this.firestore.collection('Cars').doc(this.carId).ref;
+          batch.update(carRef, { UserID: newOwnerDoc.UID });
+
+          await batch.commit();
+          console.log('Ownership transferred successfully');
+        }
+      } else {
+        console.error('New owner not found');
+      }
+    } catch (error) {
+      console.error('Error transferring ownership:', error);
+    }
+  }
+
+  async deleteUserCarDocument() {
     try {
       const userCarSnapshot = await this.firestore.collection('User_car', ref =>
         ref.where('CarID', '==', this.carId)
@@ -98,66 +217,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Error deleting User_car document:', error);
     }
   }
-
-  async addUserToCar(data: { username: string }) {
-    try {
-      const userSnapshot = await this.firestore
-        .collection<User>('Users', ref => ref.where('username', '==', data.username))
-        .get()
-        .toPromise();
-  
-      if (userSnapshot && !userSnapshot.empty) {
-        const user = userSnapshot.docs[0].data() as User; // Type assertion
-        const userId = user.UID;
-  
-        await this.firestore.collection('User_car').add({
-          UserID: userId,
-          CarID: this.carId,
-        });
-  
-        console.log(`User "${data.username}" added to car successfully.`);
-      } else {
-        console.error(`User "${data.username}" not found.`);
-      }
-    } catch (error) {
-      console.error('Error adding user to car:', error);
-    }
-  }
-
-  async showAddUserPopup() {
-    const alert = document.createElement('ion-alert');
-    alert.header = 'Add User';
-    alert.inputs = [
-      {
-        name: 'username',
-        type: 'text',
-        placeholder: 'Enter username',
-      },
-    ];
-    alert.buttons = [
-      {
-        text: 'Cancel',
-        role: 'cancel',
-        handler: () => {
-          console.log('Add user canceled');
-        },
-      },
-      {
-        text: 'Add',
-        handler: async (data) => {
-          if (data.username) {
-            await this.addUserToCar(data);
-          } else {
-            console.error('No username entered');
-          }
-        },
-      },
-    ];
-  
-    document.body.appendChild(alert);
-    await alert.present();
-  }
-  
 
   goHome() {
     this.router.navigate(['/cars']);
