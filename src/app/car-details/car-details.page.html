@@ -6,10 +6,33 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button>{{ username }}</ion-button>
+      <ion-button menuToggle="end-menu">{{ username }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-menu side="end" contentId="main-content" menuId="end-menu">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu Content</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-button color="danger" expand="full" (click)="deleteCar()">
+      Delete Car
+    </ion-button>
+    <ion-button color="primary" expand="full" (click)="editCar()">
+      Edit Car
+    </ion-button>
+    <ion-button color="primary" expand="full" (click)="showAddUserPopup()">
+      Add User to Car
+    </ion-button>
+    <ion-button color="danger" expand="full" (click)="transferOwnership()">
+      Transfer Ownership
+    </ion-button>
+  </ion-content>
+</ion-menu>
+
 <ion-content *ngIf="carDetails">
   <ion-card>
     <img [src]="carDetails.photoUrl" alt="Car Image" />
@@ -24,20 +47,7 @@
       <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
       <p><strong>Oil Change:</strong> {{ carDetails.Oil_change }}</p>
       <p><strong>Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
-    </ion-card-content>
-    <ion-button color="danger" expand="full" (click)="deleteCar()">
-      Delete Car
-    </ion-button>
-    <ion-button color="primary" expand="full" (click)="editCar()">
-      Edit Car
-    </ion-button>
-    <ion-button color="primary" expand="full" (click)="showAddUserPopup()">
-      Add User to Car
-    </ion-button>
-    <ion-button color="danger" expand="full" (click)="transferOwnership()">
-      Transfer Ownership
-    </ion-button>
-    
+    </ion-card-content> 
   </ion-card>
 </ion-content>
 

@@ -221,6 +221,7 @@ export class CarDetailsPage implements OnInit {
 
           await batch.commit();
           console.log('Ownership transferred successfully');
+          this.router.navigate(['/cars']);
         }
       } else {
         console.error('New owner not found');
