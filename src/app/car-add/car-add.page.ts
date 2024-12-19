@@ -161,7 +161,6 @@ export class CarAddPage implements OnInit {
       .toString()
       .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
-  
       // Use the Date_added field from carData, which is already formatted
       await addDoc(allTimeSpendingRef, {
         carID: carId,

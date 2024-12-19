@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
 import { carBrands } from '../../car-options';
-import { AuthService } from '../services/auth.service'; // Ensure the path is correct
 
 interface User {
   UID: string;
@@ -24,8 +23,7 @@ export class CarDetailsPage implements OnInit {
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
     private router: Router,
-    private alertController: AlertController,
-    private authService: AuthService // Injecting AuthService
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -42,17 +40,56 @@ export class CarDetailsPage implements OnInit {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
+  
+        // Map the Brand ID to the Brand Name
         if (this.carDetails && this.carDetails.Brand) {
           const brand = carBrands.find((b) => b.BrandID === this.carDetails.Brand);
           if (brand) {
             this.carDetails.Brand = brand.BrandName;
           }
         }
+  
+        // Fetch spending data from Monthly_Spending collection
+        const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+          ref.where('carID', '==', this.carId)
+        ).get().toPromise();
+  
+        if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
+          const monthlyData = monthlySpendingSnapshot.docs[0].data() as { spentsThisMonth: number };
+          this.carDetails.spentThisMonth = monthlyData.spentsThisMonth || 0;
+        } else {
+          this.carDetails.spentThisMonth = 0;
+        }
+  
+        // Fetch spending data from Yearly_Spending collection
+        const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+          ref.where('carID', '==', this.carId)
+        ).get().toPromise();
+  
+        if (yearlySpendingSnapshot && !yearlySpendingSnapshot.empty) {
+          const yearlyData = yearlySpendingSnapshot.docs[0].data() as { spentsThisYear: number };
+          this.carDetails.spentThisYear = yearlyData.spentsThisYear || 0;
+        } else {
+          this.carDetails.spentThisYear = 0;
+        }
+  
+        // Fetch spending data from All_Time_Spending collection
+        const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
+          ref.where('carID', '==', this.carId)
+        ).get().toPromise();
+  
+        if (allTimeSpendingSnapshot && !allTimeSpendingSnapshot.empty) {
+          const allTimeData = allTimeSpendingSnapshot.docs[0].data() as { moneySpent: number };
+          this.carDetails.totalSpent = allTimeData.moneySpent || 0;
+        } else {
+          this.carDetails.totalSpent = 0;
+        }
       }
     } catch (error) {
       console.error('Error loading car details:', error);
     }
   }
+  
   
   async deleteCar() {
     if (this.carId) {
