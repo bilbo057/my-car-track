@@ -20,7 +20,8 @@ export class AppComponent {
 
   public labels = [];
   username: string = 'Loading...'; // Displayed username
-  showHeaderAndMenu: boolean = true; // Control header and menu visibility
+  showHeader: boolean = true; // Control header visibility
+  showMenu: boolean = true; // Control menu visibility
 
   constructor(
     private firestore: AngularFirestore,
@@ -32,8 +33,11 @@ export class AppComponent {
 
     // Check current route and toggle header/menu visibility
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
-      const excludedRoutes = ['/login', '/register'];
-      this.showHeaderAndMenu = !excludedRoutes.includes(event.urlAfterRedirects);
+      const menuExcludedRoutes = ['/login', '/register', '/cars']; // Menu hidden for these pages
+      const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for login/register
+
+      this.showMenu = !menuExcludedRoutes.includes(event.urlAfterRedirects);
+      this.showHeader = !headerExcludedRoutes.includes(event.urlAfterRedirects);
     });
   }
 
