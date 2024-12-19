@@ -1,8 +1,7 @@
-// register.page.ts
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { getFirestore, doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Import Firestore functions
 
 @Component({
   selector: 'app-register',
@@ -49,6 +48,7 @@ export class RegisterPage {
       UID: userId,
       username: username,
       email: email,
+      lastLogin: serverTimestamp(), // Add last login timestamp
     });
   }
 }
