@@ -2,6 +2,11 @@ ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
+ion-button img {
+  width: 4rem; /* Adjust the size of the logo */
+  height: auto;
+}
+
 .content-top-margin {
   margin-top: 200px;
 }

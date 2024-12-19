@@ -4,7 +4,6 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
 import { carBrands } from '../../car-options';
 import { AuthService } from '../services/auth.service'; // Ensure the path is correct
-import { firstValueFrom } from 'rxjs';
 
 interface User {
   UID: string;
@@ -20,6 +19,7 @@ export class CarDetailsPage implements OnInit {
   carId: string = '';
   carDetails: any;
   username: string = 'Loading...'; // Initial value to indicate loading
+  menuType: string = 'overlay';
 
   constructor(
     private route: ActivatedRoute,
