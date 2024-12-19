@@ -53,6 +53,9 @@ export class CarAddPage implements OnInit {
       }
       const carId = await this.addCarToFirestore(userId);  // Add the car to Firestore and get CarID
       await this.createUserCarEntry(userId, carId);  // Create a User_car document with CarID
+      await this.createMonthlySpendingEntry(carId); // Create monthly spending collection for the car
+      await this.createYearlySpendingEntry(carId); // Create yearly spending collection for the car
+      await this.createAllTimeSpendingEntry(carId); // Create all-time spending collection for the car
       this.router.navigate(['/cars']);  // Navigate to the cars page
     } else {
       console.error('User ID is not available.');
@@ -67,25 +70,31 @@ export class CarAddPage implements OnInit {
   // Add the car to the "Cars" collection in Firestore and update with CarID
   private async addCarToFirestore(userId: string): Promise<string> {
     const carCollectionRef = collection(this.firestore, 'Cars');
-
-    // First, add the car to Firestore without CarID
+  
+    // Use Firestore-compatible timestamp or formatted string for Date_added
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+  
+    // Add the car to Firestore without CarID
     const carDocRef = await addDoc(carCollectionRef, {
       ...this.carData,
-      Date_added: new Date(),
+      Date_added: formattedDate, // Use formatted date
       UserID: userId,
     });
-
+  
     // Use the generated document ID as CarID
     const carId = carDocRef.id;
-
+  
     // Update the car document with its CarID
     await updateDoc(doc(this.firestore, 'Cars', carId), {
       CarID: carId,
     });
-
-    return carId;  // Return the CarID for further use
+  
+    return carId; // Return the CarID for further use
   }
-
+  
   // Create a document in the "User_car" table with UserID and CarID
   private async createUserCarEntry(userId: string, carId: string): Promise<void> {
     const userCarCollectionRef = collection(this.firestore, 'User_car');
@@ -94,4 +103,76 @@ export class CarAddPage implements OnInit {
       CarID: carId,
     });
   }
+
+  // Create a document in the "Monthly_Spending" collection for the car
+  private async createMonthlySpendingEntry(carId: string): Promise<void> {
+    try {
+      const monthlySpendingRef = collection(this.firestore, 'Monthly_Spending');
+      const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+      // Add a new document with the car's monthly spending data
+      await addDoc(monthlySpendingRef, {
+        carID: carId,
+        startOfMonth: formattedDate,
+        numberOfMonths: 1, // Start with the first month
+        spentsThisMonth: 0, // Initialize spending to zero
+        lastSpent: null, // Initialize as null (no spending yet)
+      });
+
+      console.log('Monthly spending entry created for car:', carId);
+    } catch (error) {
+      console.error('Error creating monthly spending entry:', error);
+    }
+  }
+
+  // Create a document in the "Yearly_Spending" collection for the car
+  private async createYearlySpendingEntry(carId: string): Promise<void> {
+    try {
+      const yearlySpendingRef = collection(this.firestore, 'Yearly_Spending');
+      const now = new Date();
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+      // Add a new document with the car's yearly spending data
+      await addDoc(yearlySpendingRef, {
+        carID: carId,
+        startOfYear: formattedDate,
+        numberOfYears: 1, // Start with the first year
+        spentsThisYear: 0, // Initialize spending to zero
+        lastSpent: null, // Initialize as null (no spending yet)
+      });
+
+      console.log('Yearly spending entry created for car:', carId);
+    } catch (error) {
+      console.error('Error creating yearly spending entry:', error);
+    }
+  }
+
+  // Create a document in the "All_Time_Spending" collection for the car
+  private async createAllTimeSpendingEntry(carId: string): Promise<void> {
+    try {
+      const allTimeSpendingRef = collection(this.firestore, 'All_Time_Spending');
+      const now = new Date();
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+  
+      // Use the Date_added field from carData, which is already formatted
+      await addDoc(allTimeSpendingRef, {
+        carID: carId,
+        dateAdded: formattedDate, // Ensure this is properly set and formatted
+        moneySpent: this.carData.Price_of_buying || 0, // Start with the price of buying
+        lastSpent: null, // Initialize as null (no spending yet)
+      });
+  
+      console.log('All-time spending entry created for car:', carId);
+    } catch (error) {
+      console.error('Error creating all-time spending entry:', error);
+    }
+  }  
 }
