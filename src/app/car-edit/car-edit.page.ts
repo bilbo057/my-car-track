@@ -60,7 +60,6 @@ export class CarEditPage implements OnInit {
     }
   }
   
-
   private setBrandName() {
     if (this.carDetails && this.carDetails.Brand) {
       const brand = carBrands.find(b => b.BrandID === this.carDetails.Brand);
@@ -97,12 +96,5 @@ export class CarEditPage implements OnInit {
     } catch (error) {
       console.error('Error updating car:', error);
     }
-  }
-  
-  
-
-
-  goHome() {
-    this.router.navigate(['/cars']);
   }
 }

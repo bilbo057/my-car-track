@@ -52,7 +52,7 @@ export class CarAddPage implements OnInit {
       }
       const carId = await this.addCarToFirestore(userId);  // Add the car to Firestore and get CarID
       await this.createUserCarEntry(userId, carId);  // Create a User_car document with CarID
-      this.navigateToCarsPage();  // Navigate to the cars page
+      this.router.navigate(['/cars']);  // Navigate to the cars page
     } else {
       console.error('User ID is not available.');
     }
@@ -92,13 +92,5 @@ export class CarAddPage implements OnInit {
       UserID: userId,
       CarID: carId,
     });
-  }
-
-  // Navigate to the Cars page
-  private navigateToCarsPage(): void {
-    this.router.navigate(['/cars']);
-  }
-  goHome() {
-    this.router.navigate(['/cars']);
   }
 }
