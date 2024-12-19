@@ -18,8 +18,6 @@ interface User {
 export class CarDetailsPage implements OnInit {
   carId: string = '';
   carDetails: any;
-  username: string = 'Loading...'; // Initial value to indicate loading
-  menuType: string = 'overlay';
 
   constructor(
     private route: ActivatedRoute,
@@ -30,7 +28,6 @@ export class CarDetailsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadUsername();
     this.route.paramMap.subscribe((params) => {
       this.carId = params.get('id') || '';
       if (this.carId) {
@@ -38,31 +35,6 @@ export class CarDetailsPage implements OnInit {
       }
     });
   }  
-
-  async loadUsername() {
-    try {
-      const userId = await this.authService.getUserId(); // Fetch the current user's ID
-      if (!userId) {
-        console.warn('User ID is null or undefined.');
-        this.username = 'Unknown User';
-        return;
-      }
-  
-      // Fetch username from the Users collection
-      const userDoc = await this.firestore.collection('Users').doc(userId).get().toPromise();
-      if (userDoc && userDoc.exists) {
-        const userData = userDoc.data() as { username?: string };
-        this.username = userData?.username || 'Unknown User';
-      } else {
-        console.warn(`User document does not exist for UserID: ${userId}`);
-        this.username = 'Unknown User';
-      }
-    } catch (error) {
-      console.error('Error loading username:', error);
-      this.username = 'Unknown User';
-    }
-  }
-  
 
   async loadCarDetails() {
     try {
@@ -127,7 +99,6 @@ export class CarDetailsPage implements OnInit {
         },
       ],
     });
-
     await alert.present();
   }
 
@@ -186,7 +157,6 @@ export class CarDetailsPage implements OnInit {
         },
       ],
     });
-
     await alert.present();
   }
 
@@ -247,9 +217,5 @@ export class CarDetailsPage implements OnInit {
     } catch (error) {
       console.error('Error deleting User_car document:', error);
     }
-  }
-
-  goHome() {
-    this.router.navigate(['/cars']);
   }
 }
