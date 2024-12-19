@@ -1,9 +1,10 @@
 //app.component.ts
 import { Component } from '@angular/core';
 import { MenuController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class AppComponent {
 
   public labels = [];
   username: string = 'Loading...'; // Displayed username
+  showHeaderAndMenu: boolean = true; // Control header and menu visibility
 
   constructor(
     private firestore: AngularFirestore,
@@ -27,6 +29,12 @@ export class AppComponent {
     private router: Router
   ) {
     this.loadUsername();
+
+    // Check current route and toggle header/menu visibility
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
+      const excludedRoutes = ['/login', '/register'];
+      this.showHeaderAndMenu = !excludedRoutes.includes(event.urlAfterRedirects);
+    });
   }
 
   // Toggles the menu
