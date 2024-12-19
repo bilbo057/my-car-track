@@ -1,2 +1,10 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+ion-router-outlet {
+    margin-top: var(--header-height, 5rem); /* Adjust for header height */
+   }
+
+   ion-router-outlet.no-header {
+    margin-top: 0rem; /* Reset for pages without header */
+  }

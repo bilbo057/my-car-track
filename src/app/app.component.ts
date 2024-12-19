@@ -33,7 +33,7 @@ export class AppComponent {
 
     // Check current route and toggle header/menu visibility
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
-      const menuExcludedRoutes = ['/login', '/register', '/cars']; // Menu hidden for these pages
+      const menuExcludedRoutes = ['/login', '/register', '/cars', '/car-add', '/car-edit']; // Menu hidden for these pages
       const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for login/register
 
       this.showMenu = !menuExcludedRoutes.includes(event.urlAfterRedirects);

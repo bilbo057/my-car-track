@@ -1,0 +1,5 @@
+:host {
+    ion-content {
+      --padding-top: var(--ion-safe-area-top, 56px); /* Adjust for header height */
+    }
+  }
