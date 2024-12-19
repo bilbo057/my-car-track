@@ -1,7 +1,6 @@
 // cars-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { CarsPage } from './cars.page';
 
 const routes: Routes = [
