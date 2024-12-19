@@ -162,13 +162,88 @@ export class CarDetailsPage implements OnInit {
       try {
         await this.firestore.collection('Cars').doc(this.carId).delete();
         console.log('Car deleted successfully');
+  
+        // Delete related documents
         await this.deleteUserCarDocument();
+        await this.deleteMonthlySpending();
+        await this.deleteYearlySpending();
+        await this.deleteAllTimeSpending();
+  
         this.router.navigate(['/cars']);
       } catch (error) {
-        console.error('Error deleting car:', error);
+        console.error('Error deleting car and related documents:', error);
       }
     }
   }
+
+  private async deleteUserCarDocument() {
+    try {
+      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
+        ref.where('CarID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (userCarSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        userCarSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('User_car documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting User_car documents:', error);
+    }
+  }
+  
+  private async deleteMonthlySpending() {
+    try {
+      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (monthlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        monthlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Monthly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Monthly_Spending documents:', error);
+    }
+  }
+
+  private async deleteYearlySpending() {
+    try {
+      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (yearlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        yearlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Yearly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Yearly_Spending documents:', error);
+    }
+  }
+
+  private async deleteAllTimeSpending() {
+    try {
+      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (allTimeSpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        allTimeSpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('All_Time_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting All_Time_Spending documents:', error);
+    }
+  }
+  
 
   editCar() {
     if (this.carId) {
@@ -302,24 +377,6 @@ export class CarDetailsPage implements OnInit {
       }
     } catch (error) {
       console.error('Error transferring ownership:', error);
-    }
-  }
-
-  async deleteUserCarDocument() {
-    try {
-      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
-        ref.where('CarID', '==', this.carId)
-      ).get().toPromise();
-
-      if (userCarSnapshot && !userCarSnapshot.empty) {
-        const userCarDocId = userCarSnapshot.docs[0].id;
-        await this.firestore.collection('User_car').doc(userCarDocId).delete();
-        console.log('User_car document deleted successfully');
-      } else {
-        console.log('No User_car document found for this car.');
-      }
-    } catch (error) {
-      console.error('Error deleting User_car document:', error);
     }
   }
 }
