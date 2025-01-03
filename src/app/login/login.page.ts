@@ -28,7 +28,6 @@ export class LoginPage {
 
         // Update last login and check/reset spendings
         await this.updateLastLogin(userId);
-        await this.checkAndResetSpending();
 
         // Navigate to the home page after login
         this.router.navigate(['/cars']);
@@ -53,79 +52,4 @@ export class LoginPage {
       console.error('Error updating last login timestamp:', error);
     }
   }
-
-  // Check and reset monthly and yearly spendings if needed
-  private async checkAndResetSpending(): Promise<void> {
-    try {
-      const carsSnapshot = await getDocs(collection(this.firestore, 'Cars'));
-      const currentDate = new Date();
-
-      for (const carDoc of carsSnapshot.docs) {
-        const carId = carDoc.id;
-
-        // Check and reset monthly spending
-        await this.checkAndResetMonthlySpending(carId, currentDate);
-
-        // Check and reset yearly spending
-        await this.checkAndResetYearlySpending(carId, currentDate);
-      }
-    } catch (error) {
-      console.error('Error checking and resetting spendings:', error);
-    }
-  }
-
-// Check and reset monthly spending
-private async checkAndResetMonthlySpending(carId: string, currentDate: Date): Promise<void> {
-  try {
-    const monthlySpendingRef = collection(this.firestore, 'Monthly_Spending');
-    const monthlySpendingQuery = query(monthlySpendingRef, where('carID', '==', carId));
-    const monthlySnapshot = await getDocs(monthlySpendingQuery);
-
-    if (!monthlySnapshot.empty) {
-      const latestDoc = monthlySnapshot.docs[0].data();
-      const lastMonth = new Date(latestDoc['startOfMonth'].toDate()).getMonth(); // Use ['startOfMonth']
-
-      if (currentDate.getMonth() !== lastMonth) {
-        await addDoc(monthlySpendingRef, {
-          carID: carId,
-          startOfMonth: currentDate,
-          monthNumber: currentDate.getMonth() + 1,
-          spentsThisMonth: 0,
-          lastSpent: null,
-        });
-        console.log(`New monthly spending document created for car ID: ${carId}`);
-      }
-    }
-  } catch (error) {
-    console.error('Error checking/resetting monthly spending:', error);
-  }
-}
-
-// Check and reset yearly spending
-private async checkAndResetYearlySpending(carId: string, currentDate: Date): Promise<void> {
-  try {
-    const yearlySpendingRef = collection(this.firestore, 'Yearly_Spending');
-    const yearlySpendingQuery = query(yearlySpendingRef, where('carID', '==', carId));
-    const yearlySnapshot = await getDocs(yearlySpendingQuery);
-
-    if (!yearlySnapshot.empty) {
-      const latestDoc = yearlySnapshot.docs[0].data();
-      const lastYear = new Date(latestDoc['startOfYear'].toDate()).getFullYear(); // Use ['startOfYear']
-
-      if (currentDate.getFullYear() !== lastYear) {
-        await addDoc(yearlySpendingRef, {
-          carID: carId,
-          startOfYear: currentDate,
-          yearNumber: currentDate.getFullYear(),
-          spentsThisYear: 0,
-          lastSpent: null,
-        });
-        console.log(`New yearly spending document created for car ID: ${carId}`);
-      }
-    }
-  } catch (error) {
-    console.error('Error checking/resetting yearly spending:', error);
-  }
-}
-
 }
