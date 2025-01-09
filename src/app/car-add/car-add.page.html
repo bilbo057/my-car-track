@@ -17,28 +17,26 @@
     </ion-item>
 
     <!-- Model Dropdown -->
-    <ion-list>
-      <ion-item>
-        <ion-label>Model</ion-label>
-        <ion-select
-          interface="popover"
-          placeholder="Select Model"
-          [(ngModel)]="carData.Model"
-          name="Model"
-        >
-          <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
-            {{ model.ModelName }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
+    <ion-item>
+      <ion-label>Model</ion-label>
+      <ion-select
+        interface="popover"
+        placeholder="Select Model"
+        [(ngModel)]="carData.Model"
+        name="Model"
+      >
+        <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
+          {{ model.ModelName }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
 
     <!-- Chassis Type Dropdown -->
     <ion-item>
       <ion-label>Chassis Type</ion-label>
       <ion-select [(ngModel)]="carData.Chassis_type" name="Chassis_type">
         <ion-select-option *ngFor="let type of chassisTypes" [value]="type.Chassis_type">
-          {{ type.Chassis_type }}
+          {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>

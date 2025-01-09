@@ -18,11 +18,3 @@ export const chassisTypes = [
   { Chassis_type: 'Hatchback' },
   { Chassis_type: 'Truck' },
 ];
-
-export const engineTypes = [
-  { Engine_type: 'Gasoline' },
-  { Engine_type: 'Diesel' },
-  { Engine_type: 'Electric' },
-  { Engine_type: 'Hybrid' },
-];
-
