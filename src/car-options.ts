@@ -26,7 +26,3 @@ export const engineTypes = [
   { Engine_type: 'Hybrid' },
 ];
 
-export const transmissionTypes = [
-  { Transmission_type: 'Automatic' },
-  { Transmission_type: 'Manual' },
-];

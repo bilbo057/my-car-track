@@ -1,11 +1,10 @@
-<!-- car-edit.page.html -->
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="saveCar()">
     <!-- Brand Dropdown -->
     <ion-item>
       <ion-label>Brand</ion-label>
-      <ion-select [(ngModel)]="carDetails.Brand" (ionChange)="loadModel(carDetails.Brand)" name="Brand">
-        <ion-select-option *ngFor="let brand of carBrands" [value]="brand.BrandID">
+      <ion-select [(ngModel)]="carDetails.Brand" (ionChange)="loadModels(carDetails.Brand)" name="Brand">
+        <ion-select-option *ngFor="let brand of brandOptions" [value]="brand.BrandID">
           {{ brand.BrandName }}
         </ion-select-option>
       </ion-select>
@@ -45,18 +44,17 @@
     <ion-item>
       <ion-label>Transmission Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Transmission_type" name="Transmission_type">
-        <ion-select-option *ngFor="let type of transmissionTypes" [value]="type.Transmission_type">
-          {{ type.Transmission_type }}
+        <ion-select-option *ngFor="let type of transmissionTypes" [value]="type.Type">
+          {{ type.Label }} ({{ type.Type }})
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <!-- Year Picker -->
+    <!-- Date Picker -->
     <ion-item class="custom-date-picker">
       <ion-label>Date</ion-label>
       <ion-datetime [(ngModel)]="carDetails.Date" name="Date" presentation="date" [preferWheel]="true"></ion-datetime>
     </ion-item>
-    
 
     <!-- Current KM -->
     <ion-item>
