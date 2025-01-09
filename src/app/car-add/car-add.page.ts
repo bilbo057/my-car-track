@@ -1,9 +1,8 @@
-// car-add.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore';  // Import required Firestore functions
+import { getFirestore, collection, addDoc, doc, updateDoc, getDocs } from 'firebase/firestore'; // Firestore functions
 import { AuthService } from '../services/auth.service';
-import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } from '../../car-options';  // Ensure you're importing the correct structure
+import { carBrands, carModels, chassisTypes, engineTypes } from '../../car-options'; // Static options
 
 @Component({
   selector: 'app-car-add',
@@ -11,33 +10,43 @@ import { carBrands, carModels, chassisTypes, engineTypes, transmissionTypes } fr
   styleUrls: ['./car-add.page.scss'],
 })
 export class CarAddPage implements OnInit {
-  carData: any = {};  // Your car data object
-  carBrands = carBrands;  // Brand options
-  carModels = [] as { ModelName: string }[];  // Start with an empty array, to be populated based on brand selection
-  chassisTypes = chassisTypes;  // Chassis type options
-  engineTypes = engineTypes;  // Engine type options
-  transmissionTypes = transmissionTypes;  // Transmission type options
+  carData: any = {}; // Car data object
+  carBrands = carBrands; // Static brand options
+  carModels = [] as { ModelName: string }[]; // Dynamic models based on selected brand
+  chassisTypes = chassisTypes; // Static chassis types
+  engineTypes = engineTypes; // Static engine types
+  transmissionTypes: { Type: string; Label: string }[] = []; // Include both Type and Label
 
-  selectedBrand: string = '';  // Selected brand value
+  private firestore = getFirestore(); // Firestore instance
 
-  private firestore = getFirestore();  // Initialize Firestore instance using the modular API
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    // Optionally filter models when a brand is selected
-    this.loadModel(this.selectedBrand);
+    this.loadModel(this.carData.Brand); // Load models dynamically if a brand is selected
+    this.loadTransmissionTypes(); // Fetch transmission types from Firestore
   }
 
-  // Method to load models based on selected brand
+  // Load models based on the selected brand
   loadModel(brandId: string) {
     if (brandId && carModels[brandId]) {
-      this.carModels = carModels[brandId];  // Filter models based on selected brand
+      this.carModels = carModels[brandId];
     } else {
-      this.carModels = [];  // If no brand or invalid brand, clear models
+      this.carModels = [];
+    }
+  }
+
+  // Fetch transmission types from Firestore
+  async loadTransmissionTypes() {
+    try {
+      const transmissionsRef = collection(this.firestore, 'Transmitions');
+      const snapshot = await getDocs(transmissionsRef);
+      this.transmissionTypes = snapshot.docs.map((doc) => ({
+        Type: doc.data()['Type'], // Transmission type
+        Label: doc.data()['Label'], // Transmission label
+      }));
+      console.log('Transmission types with labels loaded:', this.transmissionTypes);
+    } catch (error) {
+      console.error('Error fetching transmission types:', error);
     }
   }
 
@@ -45,18 +54,16 @@ export class CarAddPage implements OnInit {
   async addCar() {
     const userId = await this.getUserId();
     if (userId) {
-      this.carData.KM_added = this.carData.Current_KM;  
+      this.carData.KM_added = this.carData.Current_KM;
       if (this.carData.Year) {
         const date = new Date(this.carData.Year);
-        // Format the date as DD-MM-YYYY
-        this.carData.Year = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+        this.carData.Year = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, '0')}-${date.getFullYear()}`;
       }
-      const carId = await this.addCarToFirestore(userId);  // Add the car to Firestore and get CarID
-      await this.createUserCarEntry(userId, carId);  // Create a User_car document with CarID
-      await this.createMonthlySpendingEntry(carId); // Create monthly spending collection for the car
-      await this.createYearlySpendingEntry(carId); // Create yearly spending collection for the car
-      await this.createAllTimeSpendingEntry(carId); // Create all-time spending collection for the car
-      this.router.navigate(['/cars']);  // Navigate to the cars page
+      const carId = await this.addCarToFirestore(userId);
+      await this.createUserCarEntry(userId, carId);
+      this.router.navigate(['/cars']);
     } else {
       console.error('User ID is not available.');
     }
@@ -64,37 +71,31 @@ export class CarAddPage implements OnInit {
 
   // Fetch the user ID from the AuthService
   private async getUserId(): Promise<string | null> {
-    return this.authService.getUserId();  // Get the user ID
+    return this.authService.getUserId();
   }
 
   // Add the car to the "Cars" collection in Firestore and update with CarID
   private async addCarToFirestore(userId: string): Promise<string> {
     const carCollectionRef = collection(this.firestore, 'Cars');
-  
-    // Use Firestore-compatible timestamp or formatted string for Date_added
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
       .toString()
       .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-  
-    // Add the car to Firestore without CarID
+
     const carDocRef = await addDoc(carCollectionRef, {
       ...this.carData,
-      Date_added: formattedDate, // Use formatted date
+      Date_added: formattedDate,
       UserID: userId,
     });
-  
-    // Use the generated document ID as CarID
+
     const carId = carDocRef.id;
-  
-    // Update the car document with its CarID
     await updateDoc(doc(this.firestore, 'Cars', carId), {
       CarID: carId,
     });
-  
-    return carId; // Return the CarID for further use
+
+    return carId;
   }
-  
+
   // Create a document in the "User_car" table with UserID and CarID
   private async createUserCarEntry(userId: string, carId: string): Promise<void> {
     const userCarCollectionRef = collection(this.firestore, 'User_car');
@@ -109,17 +110,16 @@ export class CarAddPage implements OnInit {
     try {
       const monthlySpendingRef = collection(this.firestore, 'Monthly_Spending');
       const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
-      // Add a new document with the car's monthly spending data
       await addDoc(monthlySpendingRef, {
         carID: carId,
         startOfMonth: formattedDate,
-        numberOfMonths: 1, // Start with the first month
-        spentsThisMonth: 0, // Initialize spending to zero
-        lastSpent: null, // Initialize as null (no spending yet)
+        numberOfMonths: 1,
+        spentsThisMonth: 0,
+        lastSpent: null,
       });
 
       console.log('Monthly spending entry created for car:', carId);
@@ -134,16 +134,15 @@ export class CarAddPage implements OnInit {
       const yearlySpendingRef = collection(this.firestore, 'Yearly_Spending');
       const now = new Date();
       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        .toString()
+        .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
-      // Add a new document with the car's yearly spending data
       await addDoc(yearlySpendingRef, {
         carID: carId,
         startOfYear: formattedDate,
-        numberOfYears: 1, // Start with the first year
-        spentsThisYear: 0, // Initialize spending to zero
-        lastSpent: null, // Initialize as null (no spending yet)
+        numberOfYears: 1,
+        spentsThisYear: 0,
+        lastSpent: null,
       });
 
       console.log('Yearly spending entry created for car:', carId);
@@ -158,20 +157,19 @@ export class CarAddPage implements OnInit {
       const allTimeSpendingRef = collection(this.firestore, 'All_Time_Spending');
       const now = new Date();
       const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+        .toString()
+        .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
-      // Use the Date_added field from carData, which is already formatted
       await addDoc(allTimeSpendingRef, {
         carID: carId,
-        dateAdded: formattedDate, // Ensure this is properly set and formatted
-        moneySpent: this.carData.Price_of_buying || 0, // Start with the price of buying
-        lastSpent: null, // Initialize as null (no spending yet)
+        dateAdded: formattedDate,
+        moneySpent: this.carData.Price_of_buying || 0,
+        lastSpent: null,
       });
-  
+
       console.log('All-time spending entry created for car:', carId);
     } catch (error) {
       console.error('Error creating all-time spending entry:', error);
     }
-  }  
+  }
 }
