@@ -48,7 +48,7 @@
       <ion-label>Engine Type</ion-label>
       <ion-select [(ngModel)]="carData.Engine_type" name="Engine_type">
         <ion-select-option *ngFor="let type of engineTypes" [value]="type.Engine_type">
-          {{ type.Engine_type }}
+          {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>

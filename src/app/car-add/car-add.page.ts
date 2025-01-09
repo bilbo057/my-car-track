@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, addDoc, doc, updateDoc, getDocs } from 'firebase/firestore'; // Firestore functions
 import { AuthService } from '../services/auth.service';
-import { carBrands, carModels, chassisTypes, engineTypes } from '../../car-options'; // Static options
+import { carBrands, carModels, chassisTypes } from '../../car-options'; // Static options for brands, models, and chassis types
 
 @Component({
   selector: 'app-car-add',
@@ -14,7 +14,7 @@ export class CarAddPage implements OnInit {
   carBrands = carBrands; // Static brand options
   carModels = [] as { ModelName: string }[]; // Dynamic models based on selected brand
   chassisTypes = chassisTypes; // Static chassis types
-  engineTypes = engineTypes; // Static engine types
+  engineTypes: { Engine_type: string; Label: string }[] = []; // Include both Engine_type and Label
   transmissionTypes: { Type: string; Label: string }[] = []; // Include both Type and Label
 
   private firestore = getFirestore(); // Firestore instance
@@ -24,6 +24,7 @@ export class CarAddPage implements OnInit {
   ngOnInit() {
     this.loadModel(this.carData.Brand); // Load models dynamically if a brand is selected
     this.loadTransmissionTypes(); // Fetch transmission types from Firestore
+    this.loadEngineTypes(); // Fetch engine types from Firestore
   }
 
   // Load models based on the selected brand
@@ -50,6 +51,21 @@ export class CarAddPage implements OnInit {
     }
   }
 
+  // Fetch engine types from Firestore
+  async loadEngineTypes() {
+    try {
+      const enginesRef = collection(this.firestore, 'Engines');
+      const snapshot = await getDocs(enginesRef);
+      this.engineTypes = snapshot.docs.map((doc) => ({
+        Engine_type: doc.data()['Engine_type'], // Engine type
+        Label: doc.data()['Label'], // Engine label
+      }));
+      console.log('Engine types with labels loaded:', this.engineTypes);
+    } catch (error) {
+      console.error('Error fetching engine types:', error);
+    }
+  }
+
   // Main method to add car
   async addCar() {
     const userId = await this.getUserId();
@@ -63,6 +79,9 @@ export class CarAddPage implements OnInit {
       }
       const carId = await this.addCarToFirestore(userId);
       await this.createUserCarEntry(userId, carId);
+      await this.createMonthlySpendingEntry(carId);
+      await this.createYearlySpendingEntry(carId);
+      await this.createAllTimeSpendingEntry(carId);
       this.router.navigate(['/cars']);
     } else {
       console.error('User ID is not available.');
