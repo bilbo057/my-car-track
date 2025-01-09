@@ -12,9 +12,3 @@ export const carModels: Record<string, { ModelName: string }[]> = {
   '4': [{ ModelName: '3 Series' }, { ModelName: '5 Series' }, { ModelName: 'X5' },],
 };
 
-export const chassisTypes = [
-  { Chassis_type: 'Sedan' },
-  { Chassis_type: 'SUV' },
-  { Chassis_type: 'Hatchback' },
-  { Chassis_type: 'Truck' },
-];

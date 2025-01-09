@@ -25,7 +25,7 @@
       <ion-label>Chassis Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Chassis_type" name="Chassis_type">
         <ion-select-option *ngFor="let type of chassisTypes" [value]="type.Chassis_type">
-          {{ type.Chassis_type }}
+          {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>
@@ -45,7 +45,7 @@
       <ion-label>Transmission Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Transmission_type" name="Transmission_type">
         <ion-select-option *ngFor="let type of transmissionTypes" [value]="type.Type">
-          {{ type.Label }} ({{ type.Type }})
+          {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>

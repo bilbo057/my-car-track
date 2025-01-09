@@ -12,9 +12,9 @@ export class CarEditPage implements OnInit {
   carDetails: any = {};
   brandOptions: { BrandID: string; BrandName: string }[] = []; // Fetched dynamically
   filteredModels: { ModelName: string }[] = []; // Filtered models for the selected brand
-  chassisTypes: { Chassis_type: string }[] = []; // Fetched dynamically
-  engineTypes: { Engine_type: string; Label: string }[] = []; // Include both Engine_type and Label
-  transmissionTypes: { Type: string; Label: string }[] = []; // Include both Type and Label
+  chassisTypes: { Chassis_type: string; Label: string }[] = []; // Fetched dynamically
+  engineTypes: { Engine_type: string; Label: string }[] = []; // Fetched dynamically
+  transmissionTypes: { Type: string; Label: string }[] = []; // Fetched dynamically
 
   private firestore = getFirestore(); // Firestore instance
 
@@ -101,12 +101,13 @@ export class CarEditPage implements OnInit {
   // Load chassis types from Firestore
   async loadChassisTypes() {
     try {
-      const chassisRef = collection(this.firestore, 'ChassisTypes');
+      const chassisRef = collection(this.firestore, 'Chassies');
       const snapshot = await getDocs(chassisRef);
       this.chassisTypes = snapshot.docs.map((doc) => ({
-        Chassis_type: doc.data()['Chassis_type'],
+        Chassis_type: doc.data()['Chassis_type'], // Chassis type
+        Label: doc.data()['Label'], // Chassis label
       }));
-      console.log('Chassis types loaded:', this.chassisTypes);
+      console.log('Chassis types with labels loaded:', this.chassisTypes);
     } catch (error) {
       console.error('Error loading chassis types:', error);
     }
@@ -121,7 +122,7 @@ export class CarEditPage implements OnInit {
         Engine_type: doc.data()['Engine_type'],
         Label: doc.data()['Label'],
       }));
-      console.log('Engine types loaded:', this.engineTypes);
+      console.log('Engine types with labels loaded:', this.engineTypes);
     } catch (error) {
       console.error('Error loading engine types:', error);
     }
@@ -136,7 +137,7 @@ export class CarEditPage implements OnInit {
         Type: doc.data()['Type'],
         Label: doc.data()['Label'],
       }));
-      console.log('Transmission types loaded:', this.transmissionTypes);
+      console.log('Transmission types with labels loaded:', this.transmissionTypes);
     } catch (error) {
       console.error('Error loading transmission types:', error);
     }
