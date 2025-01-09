@@ -13,8 +13,8 @@ export class CarEditPage implements OnInit {
   brandOptions: { BrandID: string; BrandName: string }[] = []; // Fetched dynamically
   filteredModels: { ModelName: string }[] = []; // Filtered models for the selected brand
   chassisTypes: { Chassis_type: string }[] = []; // Fetched dynamically
-  engineTypes: { Engine_type: string }[] = []; // Fetched dynamically
-  transmissionTypes: { Type: string; Label: string }[] = []; // Fetched dynamically
+  engineTypes: { Engine_type: string; Label: string }[] = []; // Include both Engine_type and Label
+  transmissionTypes: { Type: string; Label: string }[] = []; // Include both Type and Label
 
   private firestore = getFirestore(); // Firestore instance
 
@@ -115,10 +115,11 @@ export class CarEditPage implements OnInit {
   // Load engine types from Firestore
   async loadEngineTypes() {
     try {
-      const engineRef = collection(this.firestore, 'EngineTypes');
+      const engineRef = collection(this.firestore, 'Engines');
       const snapshot = await getDocs(engineRef);
       this.engineTypes = snapshot.docs.map((doc) => ({
         Engine_type: doc.data()['Engine_type'],
+        Label: doc.data()['Label'],
       }));
       console.log('Engine types loaded:', this.engineTypes);
     } catch (error) {
