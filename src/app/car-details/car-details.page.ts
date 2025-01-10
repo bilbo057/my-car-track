@@ -1,9 +1,7 @@
-// car-details.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
-import { carBrands } from '../../car-options';
 
 interface User {
   UID: string;
@@ -33,34 +31,33 @@ export class CarDetailsPage implements OnInit {
         this.loadCarDetails();
       }
     });
-  }  
+  }
 
   async loadCarDetails() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-  
-        // Map the Brand ID to the Brand Name
-        if (this.carDetails && this.carDetails.Brand) {
-          const brand = carBrands.find((b) => b.BrandID === this.carDetails.Brand);
-          if (brand) {
-            this.carDetails.Brand = brand.BrandName;
-          }
-        }
-  
-        // Call helper methods to fetch spending data
-        await this.displayMonthSpents();
-        await this.displayAverageMonthSpents();
-        await this.displayYearlySpents();
-        await this.displayAverageYearlySpents();
-        await this.displayTotalSpent();
       }
+              // Call helper methods to fetch spending data
+              await this.displayMonthSpents();
+              await this.displayAverageMonthSpents();
+              await this.displayYearlySpents();
+              await this.displayAverageYearlySpents();
+              await this.displayTotalSpent();
     } catch (error) {
       console.error('Error loading car details:', error);
     }
   }
-  
+
+  editCar() {
+    if (this.carId) {
+      this.router.navigate(['/car-edit', this.carId]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to edit page.');
+    }
+  }
+
   // Helper method 1: Fetch monthly spending
   private async displayMonthSpents() {
     try {
@@ -156,102 +153,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Error fetching total spending:', error);
     }
   }    
-  
-  async deleteCar() {
-    if (this.carId) {
-      try {
-        await this.firestore.collection('Cars').doc(this.carId).delete();
-        console.log('Car deleted successfully');
-  
-        // Delete related documents
-        await this.deleteUserCarDocument();
-        await this.deleteMonthlySpending();
-        await this.deleteYearlySpending();
-        await this.deleteAllTimeSpending();
-  
-        this.router.navigate(['/cars']);
-      } catch (error) {
-        console.error('Error deleting car and related documents:', error);
-      }
-    }
-  }
-
-  private async deleteUserCarDocument() {
-    try {
-      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
-        ref.where('CarID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (userCarSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        userCarSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('User_car documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting User_car documents:', error);
-    }
-  }
-  
-  private async deleteMonthlySpending() {
-    try {
-      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (monthlySpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        monthlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Monthly_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting Monthly_Spending documents:', error);
-    }
-  }
-
-  private async deleteYearlySpending() {
-    try {
-      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (yearlySpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        yearlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Yearly_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting Yearly_Spending documents:', error);
-    }
-  }
-
-  private async deleteAllTimeSpending() {
-    try {
-      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (allTimeSpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        allTimeSpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('All_Time_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting All_Time_Spending documents:', error);
-    }
-  }
-  
-
-  editCar() {
-    if (this.carId) {
-      this.router.navigate(['/car-edit', this.carId]);
-    } else {
-      console.error('Car ID is missing. Unable to navigate to edit page.');
-    }
-  }
 
   async showAddUserPopup() {
     const alert = await this.alertController.create({
@@ -377,6 +278,96 @@ export class CarDetailsPage implements OnInit {
       }
     } catch (error) {
       console.error('Error transferring ownership:', error);
+    }
+  }
+
+  async deleteCar() {
+    if (this.carId) {
+      try {
+        await this.firestore.collection('Cars').doc(this.carId).delete();
+        console.log('Car deleted successfully');
+        await this.deleteRelatedDocuments();
+        this.router.navigate(['/cars']);
+      } catch (error) {
+        console.error('Error deleting car:', error);
+      }
+    }
+  }
+
+  private async deleteRelatedDocuments() {
+    await Promise.all([
+      this.deleteUserCarDocument(),
+      this.deleteMonthlySpending(),
+      this.deleteYearlySpending(),
+      this.deleteAllTimeSpending(),
+    ]);
+  }
+
+  private async deleteUserCarDocument() {
+    try {
+      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
+        ref.where('CarID', '==', this.carId)
+      ).get().toPromise();
+
+      if (userCarSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        userCarSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('User_car documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting User_car documents:', error);
+    }
+  }
+
+  private async deleteMonthlySpending() {
+    try {
+      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (monthlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        monthlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Monthly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Monthly_Spending documents:', error);
+    }
+  }
+
+  private async deleteYearlySpending() {
+    try {
+      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (yearlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        yearlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Yearly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Yearly_Spending documents:', error);
+    }
+  }
+
+  private async deleteAllTimeSpending() {
+    try {
+      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (allTimeSpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        allTimeSpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('All_Time_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting All_Time_Spending documents:', error);
     }
   }
 }
