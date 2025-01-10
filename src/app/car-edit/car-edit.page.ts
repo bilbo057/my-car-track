@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getFirestore, collection, setDoc, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
 
 @Component({
   selector: 'app-car-edit',
@@ -10,8 +10,8 @@ import { getFirestore, collection, setDoc, doc, getDoc, updateDoc, getDocs } fro
 export class CarEditPage implements OnInit {
   carId: string = '';
   carDetails: any = {};
-  brandOptions: { BrandID: string; BrandName: string }[] = []; // Fetched dynamically
-  filteredModels: { ModelName: string }[] = []; // Filtered models for the selected brand
+  brandOptions: { BrandID: string; BrandName: string; Models: string[] }[] = []; // Fetched dynamically
+  filteredModels: string[] = []; // Filtered models for the selected brand
   chassisTypes: { Chassis_type: string; Label: string }[] = []; // Fetched dynamically
   engineTypes: { Engine_type: string; Label: string }[] = []; // Fetched dynamically
   transmissionTypes: { Type: string; Label: string }[] = []; // Fetched dynamically
@@ -28,10 +28,10 @@ export class CarEditPage implements OnInit {
       }
     });
 
-    this.loadBrandOptions();
-    this.loadChassisTypes();
-    this.loadEngineTypes();
-    this.loadTransmissionTypes();
+    this.loadBrands(); // Fetch brands and models from Firestore
+    this.loadChassisTypes(); // Fetch chassis types from Firestore
+    this.loadEngineTypes(); // Fetch engine types from Firestore
+    this.loadTransmissionTypes(); // Fetch transmission types from Firestore
   }
 
   // Load car details by ID
@@ -61,85 +61,70 @@ export class CarEditPage implements OnInit {
     }
   }
 
-  // Load brand options from Firestore
-  async loadBrandOptions() {
+  // Fetch brands and their models from Firestore
+  async loadBrands() {
     try {
-      const brandRef = collection(this.firestore, 'Brands');
-      const snapshot = await getDocs(brandRef);
+      const brandsRef = collection(this.firestore, 'Brands');
+      const snapshot = await getDocs(brandsRef);
       this.brandOptions = snapshot.docs.map((doc) => ({
         BrandID: doc.id,
         BrandName: doc.data()['name'],
+        Models: doc.data()['models'],
       }));
-      console.log('Brand options loaded:', this.brandOptions);
+      console.log('Brands with models loaded:', this.brandOptions);
     } catch (error) {
-      console.error('Error loading brand options:', error);
+      console.error('Error fetching brands:', error);
     }
   }
 
   // Load models based on the selected brand
-  async loadModels(brandId: string) {
-    try {
-      const modelRef = collection(this.firestore, `Brands/${brandId}/Models`);
-      const snapshot = await getDocs(modelRef);
-      this.filteredModels = snapshot.docs.map((doc) => ({
-        ModelName: doc.data()['ModelName'],
-      }));
-      console.log('Models loaded for brand:', brandId, this.filteredModels);
-
-      // If the current model is not in the filtered list, reset it
-      if (
-        this.carDetails.Model &&
-        !this.filteredModels.some((model) => model.ModelName === this.carDetails.Model)
-      ) {
-        this.carDetails.Model = '';
-      }
-    } catch (error) {
-      console.error('Error loading models:', error);
-    }
+  loadModels(brandId: string) {
+    const selectedBrand = this.brandOptions.find((brand) => brand.BrandID === brandId);
+    this.filteredModels = selectedBrand ? selectedBrand.Models : [];
   }
 
-  // Load chassis types from Firestore
+  // Fetch chassis types from Firestore
   async loadChassisTypes() {
     try {
       const chassisRef = collection(this.firestore, 'Chassies');
       const snapshot = await getDocs(chassisRef);
       this.chassisTypes = snapshot.docs.map((doc) => ({
-        Chassis_type: doc.data()['Chassis_type'],
-        Label: doc.data()['Label'],
+        Chassis_type: doc.data()['Chassis_type'], // Chassis type
+        Label: doc.data()['Label'], // Chassis label
       }));
       console.log('Chassis types with labels loaded:', this.chassisTypes);
     } catch (error) {
-      console.error('Error loading chassis types:', error);
+      console.error('Error fetching chassis types:', error);
     }
   }
 
-  // Load engine types from Firestore
+  // Fetch engine types from Firestore
   async loadEngineTypes() {
     try {
-      const engineRef = collection(this.firestore, 'Engines');
-      const snapshot = await getDocs(engineRef);
+      const enginesRef = collection(this.firestore, 'Engines');
+      const snapshot = await getDocs(enginesRef);
       this.engineTypes = snapshot.docs.map((doc) => ({
-        Engine_type: doc.data()['Engine_type'],
-        Label: doc.data()['Label'],
+        Engine_type: doc.data()['Engine_type'], // Engine type
+        Label: doc.data()['Label'], // Engine label
       }));
       console.log('Engine types with labels loaded:', this.engineTypes);
     } catch (error) {
-      console.error('Error loading engine types:', error);
+      console.error('Error fetching engine types:', error);
     }
   }
 
-  // Load transmission types from Firestore
+  // Fetch transmission types from Firestore
   async loadTransmissionTypes() {
     try {
-      const transmissionRef = collection(this.firestore, 'Transmitions');
-      const snapshot = await getDocs(transmissionRef);
+      const transmissionsRef = collection(this.firestore, 'Transmitions');
+      const snapshot = await getDocs(transmissionsRef);
       this.transmissionTypes = snapshot.docs.map((doc) => ({
-        Type: doc.data()['Type'],
-        Label: doc.data()['Label'],
+        Type: doc.data()['Type'], // Transmission type
+        Label: doc.data()['Label'], // Transmission label
       }));
       console.log('Transmission types loaded:', this.transmissionTypes);
     } catch (error) {
-      console.error('Error loading transmission types:', error);
+      console.error('Error fetching transmission types:', error);
     }
   }
 
