@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getFirestore, collection, addDoc, doc, updateDoc, getDocs } from 'firebase/firestore'; // Firestore functions
+import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore'; // Firestore functions
 import { AuthService } from '../services/auth.service';
-import { carBrands, carModels } from '../../car-options'; // Static options for brands and models
 
 @Component({
   selector: 'app-car-add',
@@ -11,8 +10,8 @@ import { carBrands, carModels } from '../../car-options'; // Static options for 
 })
 export class CarAddPage implements OnInit {
   carData: any = {}; // Car data object
-  carBrands = carBrands; // Static brand options
-  carModels = [] as { ModelName: string }[]; // Dynamic models based on selected brand
+  carBrands: { BrandID: string; BrandName: string; Models: string[] }[] = []; // Dynamic brand options
+  carModels: string[] = []; // Models for selected brand
   chassisTypes: { Chassis_type: string; Label: string }[] = []; // Dynamic chassis types with labels
   engineTypes: { Engine_type: string; Label: string }[] = []; // Dynamic engine types with labels
   transmissionTypes: { Type: string; Label: string }[] = []; // Dynamic transmission types with labels
@@ -22,19 +21,32 @@ export class CarAddPage implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.loadModel(this.carData.Brand); // Load models dynamically if a brand is selected
+    this.loadBrands(); // Fetch brands and models from Firestore
     this.loadChassisTypes(); // Fetch chassis types from Firestore
     this.loadEngineTypes(); // Fetch engine types from Firestore
     this.loadTransmissionTypes(); // Fetch transmission types from Firestore
   }
 
+  // Fetch brands and their models from Firestore
+  async loadBrands() {
+    try {
+      const brandsRef = collection(this.firestore, 'Brands');
+      const snapshot = await getDocs(brandsRef);
+      this.carBrands = snapshot.docs.map((doc) => ({
+        BrandID: doc.id,
+        BrandName: doc.data()['name'],
+        Models: doc.data()['models'],
+      }));
+      console.log('Brands with models loaded:', this.carBrands);
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+    }
+  }
+
   // Load models based on the selected brand
   loadModel(brandId: string) {
-    if (brandId && carModels[brandId]) {
-      this.carModels = carModels[brandId];
-    } else {
-      this.carModels = [];
-    }
+    const selectedBrand = this.carBrands.find((brand) => brand.BrandID === brandId);
+    this.carModels = selectedBrand ? selectedBrand.Models : [];
   }
 
   // Fetch chassis types from Firestore
@@ -109,7 +121,7 @@ export class CarAddPage implements OnInit {
     return this.authService.getUserId();
   }
 
-  // Add the car to the "Cars" collection in Firestore and update with CarID
+  // Add the car to the "Cars" collection in Firestore
   private async addCarToFirestore(userId: string): Promise<string> {
     const carCollectionRef = collection(this.firestore, 'Cars');
     const now = new Date();
@@ -123,12 +135,7 @@ export class CarAddPage implements OnInit {
       UserID: userId,
     });
 
-    const carId = carDocRef.id;
-    await updateDoc(doc(this.firestore, 'Cars', carId), {
-      CarID: carId,
-    });
-
-    return carId;
+    return carDocRef.id;
   }
 
   // Create a document in the "User_car" table with UserID and CarID

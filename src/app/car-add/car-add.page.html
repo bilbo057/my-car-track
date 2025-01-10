@@ -25,8 +25,8 @@
         [(ngModel)]="carData.Model"
         name="Model"
       >
-        <ion-select-option *ngFor="let model of carModels" [value]="model.ModelName">
-          {{ model.ModelName }}
+        <ion-select-option *ngFor="let model of carModels" [value]="model">
+          {{ model }}
         </ion-select-option>
       </ion-select>
     </ion-item>

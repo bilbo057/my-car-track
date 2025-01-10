@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, setDoc, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
 
 @Component({
   selector: 'app-car-edit',
@@ -68,7 +68,7 @@ export class CarEditPage implements OnInit {
       const snapshot = await getDocs(brandRef);
       this.brandOptions = snapshot.docs.map((doc) => ({
         BrandID: doc.id,
-        BrandName: doc.data()['BrandName'],
+        BrandName: doc.data()['name'],
       }));
       console.log('Brand options loaded:', this.brandOptions);
     } catch (error) {
@@ -104,8 +104,8 @@ export class CarEditPage implements OnInit {
       const chassisRef = collection(this.firestore, 'Chassies');
       const snapshot = await getDocs(chassisRef);
       this.chassisTypes = snapshot.docs.map((doc) => ({
-        Chassis_type: doc.data()['Chassis_type'], // Chassis type
-        Label: doc.data()['Label'], // Chassis label
+        Chassis_type: doc.data()['Chassis_type'],
+        Label: doc.data()['Label'],
       }));
       console.log('Chassis types with labels loaded:', this.chassisTypes);
     } catch (error) {
@@ -137,7 +137,7 @@ export class CarEditPage implements OnInit {
         Type: doc.data()['Type'],
         Label: doc.data()['Label'],
       }));
-      console.log('Transmission types with labels loaded:', this.transmissionTypes);
+      console.log('Transmission types loaded:', this.transmissionTypes);
     } catch (error) {
       console.error('Error loading transmission types:', error);
     }
