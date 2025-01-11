@@ -107,6 +107,9 @@ export class CarAddPage implements OnInit {
       }
       const carId = await this.addCarToFirestore(userId);
       await this.createUserCarEntry(userId, carId);
+      await this.createMonthlySpendingEntry(carId);
+      await this.createYearlySpendingEntry(carId);
+      await this.createAllTimeSpendingEntry(carId);
       this.router.navigate(['/cars']);
     } else {
       console.error('User ID is not available.');
@@ -161,7 +164,7 @@ export class CarAddPage implements OnInit {
         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
       await addDoc(monthlySpendingRef, {
-        carID: carId,
+        CarID: carId,
         startOfMonth: formattedDate,
         numberOfMonths: 1,
         spentsThisMonth: 0,
@@ -184,7 +187,7 @@ export class CarAddPage implements OnInit {
         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
       await addDoc(yearlySpendingRef, {
-        carID: carId,
+        CarID: carId,
         startOfYear: formattedDate,
         numberOfYears: 1,
         spentsThisYear: 0,
@@ -207,7 +210,7 @@ export class CarAddPage implements OnInit {
         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
 
       await addDoc(allTimeSpendingRef, {
-        carID: carId,
+        CarID: carId,
         dateAdded: formattedDate,
         moneySpent: this.carData.Price_of_buying || 0,
         lastSpent: null,
