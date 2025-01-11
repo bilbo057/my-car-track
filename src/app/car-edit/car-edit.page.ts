@@ -48,7 +48,7 @@ export class CarEditPage implements OnInit {
           this.carDetails.Date = `${year}-${month}-${day}`;
         }
 
-        // Load models for the selected brand
+        // Ensure filteredModels is updated based on the loaded brand
         if (this.carDetails.Brand) {
           this.loadModels(this.carDetails.Brand);
         }
@@ -72,6 +72,11 @@ export class CarEditPage implements OnInit {
         Models: doc.data()['models'],
       }));
       console.log('Brands with models loaded:', this.brandOptions);
+
+      // Update filteredModels if the carDetails already have a Brand
+      if (this.carDetails.Brand) {
+        this.loadModels(this.carDetails.Brand);
+      }
     } catch (error) {
       console.error('Error fetching brands:', error);
     }
@@ -81,6 +86,7 @@ export class CarEditPage implements OnInit {
   loadModels(brandId: string) {
     const selectedBrand = this.brandOptions.find((brand) => brand.BrandID === brandId);
     this.filteredModels = selectedBrand ? selectedBrand.Models : [];
+    console.log('Filtered models for brand:', brandId, this.filteredModels);
   }
 
   // Fetch chassis types from Firestore

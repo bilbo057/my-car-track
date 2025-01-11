@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore'; // Firestore functions
+import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'; // Firestore functions
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -107,9 +107,6 @@ export class CarAddPage implements OnInit {
       }
       const carId = await this.addCarToFirestore(userId);
       await this.createUserCarEntry(userId, carId);
-      await this.createMonthlySpendingEntry(carId);
-      await this.createYearlySpendingEntry(carId);
-      await this.createAllTimeSpendingEntry(carId);
       this.router.navigate(['/cars']);
     } else {
       console.error('User ID is not available.');
@@ -135,7 +132,14 @@ export class CarAddPage implements OnInit {
       UserID: userId,
     });
 
-    return carDocRef.id;
+    const carId = carDocRef.id;
+
+    // Update the document to include CarID field
+    await updateDoc(doc(this.firestore, 'Cars', carId), {
+      CarID: carId,
+    });
+
+    return carId;
   }
 
   // Create a document in the "User_car" table with UserID and CarID
