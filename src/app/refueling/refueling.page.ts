@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { AuthService } from '../services/auth.service';
 
@@ -8,11 +8,22 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './refueling.page.html',
   styleUrls: ['./refueling.page.scss'],
 })
-export class RefuelingPage {
-  refuelingData: any = {}; // Stores form data
+export class RefuelingPage implements OnInit {
+  refuelingData: any = {}; // Refueling form data
+  carId: string = ''; // CarID from route parameters
   private firestore = getFirestore(); // Firestore instance
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router, private authService: AuthService) {}
+
+  ngOnInit() {
+    // Fetch the 'carId' from the route parameters
+    this.carId = this.route.snapshot.paramMap.get('carId') || '';
+    if (this.carId) {
+      this.refuelingData.carId = this.carId; // Attach the carId to refueling data
+    } else {
+      console.error('CarID is missing. Cannot add refueling for an unspecified car.');
+    }
+  }
 
   async addRefueling() {
     try {
@@ -22,10 +33,11 @@ export class RefuelingPage {
         return;
       }
 
-      // Add timestamp and user ID to the refueling data
+      // Add the refueling document with CarID and userId
       const refuelingCollection = collection(this.firestore, 'Refueling');
       await addDoc(refuelingCollection, {
         ...this.refuelingData,
+        carId: this.carId,
         userId,
         timestamp: new Date().toISOString(),
       });
