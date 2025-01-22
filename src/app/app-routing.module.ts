@@ -31,7 +31,11 @@ const routes: Routes = [
   {
     path: 'car-edit/:id',
     loadChildren: () => import('./car-edit/car-edit.module').then((m) => m.CarEditPageModule),
+  },  {
+    path: 'refueling',
+    loadChildren: () => import('./refueling/refueling.module').then( m => m.RefuelingPageModule)
   },
+
 ];
 
 @NgModule({

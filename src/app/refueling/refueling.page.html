@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Refueling</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form (ngSubmit)="addRefueling()">
+    <ion-item>
+      <ion-label>Date</ion-label>
+      <ion-datetime
+        [(ngModel)]="refuelingData.date"
+        name="date"
+        presentation="date"
+        display-format="DD-MM-YYYY"
+        picker-format="DD-MM-YYYY"
+      ></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Fuel Quantity (liters)</ion-label>
+      <ion-input
+        [(ngModel)]="refuelingData.fuelQuantity"
+        name="fuelQuantity"
+        type="number"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Cost</ion-label>
+      <ion-input
+        [(ngModel)]="refuelingData.cost"
+        name="cost"
+        type="number"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Odometer (KM)</ion-label>
+      <ion-input
+        [(ngModel)]="refuelingData.odometer"
+        name="odometer"
+        type="number"
+        required
+      ></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">Add Refueling</ion-button>
+  </form>
+</ion-content>
