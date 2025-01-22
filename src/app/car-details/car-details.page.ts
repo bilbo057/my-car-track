@@ -1,3 +1,4 @@
+// car-details.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
@@ -39,6 +40,11 @@ export class CarDetailsPage implements OnInit {
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
       }
+      if (this.carDetails.Date_added) {
+        const rawDate = this.carDetails.Date_added;
+        const formattedDate = this.formatDate(rawDate);
+        this.carDetails.Date_added = formattedDate;
+      }
     } catch (error) {
       console.error('Error loading car details:', error);
     }
@@ -51,6 +57,117 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to edit page.');
     }
   }
+
+  // Helper method 1: Fetch monthly spending
+  private async displayMonthSpents() {
+    try {
+      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
+        const monthlyData = monthlySpendingSnapshot.docs[0].data() as { spentsThisMonth: number };
+        this.carDetails.spentThisMonth = monthlyData.spentsThisMonth || 0;
+      } else {
+        this.carDetails.spentThisMonth = 0;
+      }
+    } catch (error) {
+      console.error('Error fetching monthly spending:', error);
+    }
+  }
+  
+  // Helper method 2: Fetch average monthly spending
+  private async displayAverageMonthSpents() {
+    try {
+      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
+        const monthlyData = monthlySpendingSnapshot.docs[0].data() as { spentsThisMonth: number; numberOfMonths: number };
+        const numberOfMonths = monthlyData.numberOfMonths || 1;
+        this.carDetails.averageSpentThisMonth = numberOfMonths > 1 
+          ? monthlyData.spentsThisMonth / (numberOfMonths - 1) 
+          : 0;
+      } else {
+        this.carDetails.averageSpentThisMonth = 0;
+      }
+    } catch (error) {
+      console.error('Error fetching average monthly spending:', error);
+    }
+  }
+  
+  // Helper method 3: Fetch yearly spending
+  private async displayYearlySpents() {
+    try {
+      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (yearlySpendingSnapshot && !yearlySpendingSnapshot.empty) {
+        const yearlyData = yearlySpendingSnapshot.docs[0].data() as { spentsThisYear: number };
+        this.carDetails.spentThisYear = yearlyData.spentsThisYear || 0;
+      } else {
+        this.carDetails.spentThisYear = 0;
+      }
+    } catch (error) {
+      console.error('Error fetching yearly spending:', error);
+    }
+  }
+  
+  // Helper method 4: Fetch average yearly spending
+  private async displayAverageYearlySpents() {
+    try {
+      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (yearlySpendingSnapshot && !yearlySpendingSnapshot.empty) {
+        const yearlyData = yearlySpendingSnapshot.docs[0].data() as { spentsThisYear: number; numberOfYears: number };
+        const numberOfYears = yearlyData.numberOfYears || 1;
+        this.carDetails.averageSpentThisYear = numberOfYears > 1 
+          ? yearlyData.spentsThisYear / (numberOfYears - 1) 
+          : 0;
+      } else {
+        this.carDetails.averageSpentThisYear = 0;
+      }
+    } catch (error) {
+      console.error('Error fetching average yearly spending:', error);
+    }
+  }
+  
+  // Helper method 5: Fetch total spending
+  private async displayTotalSpent() {
+    try {
+      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+  
+      if (allTimeSpendingSnapshot && !allTimeSpendingSnapshot.empty) {
+        const allTimeData = allTimeSpendingSnapshot.docs[0].data() as { moneySpent: number };
+        this.carDetails.totalSpent = allTimeData.moneySpent || 0;
+      } else {
+        this.carDetails.totalSpent = 0;
+      }
+    } catch (error) {
+      console.error('Error fetching total spending:', error);
+    }
+  }    
+
+  private formatDate(date: string | Date): string {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return 'Invalid Date'; // Handle invalid dates
+    }
+  
+    // Format the date as DD-MM-YYYY
+    const day = parsedDate.getDate().toString().padStart(2, '0');
+    const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const year = parsedDate.getFullYear();
+  
+    return `${day}-${month}-${year}`;
+  }
+  
 
   async showAddUserPopup() {
     const alert = await this.alertController.create({
@@ -184,12 +301,21 @@ export class CarDetailsPage implements OnInit {
       try {
         await this.firestore.collection('Cars').doc(this.carId).delete();
         console.log('Car deleted successfully');
-        await this.deleteUserCarDocument();
+        await this.deleteRelatedDocuments();
         this.router.navigate(['/cars']);
       } catch (error) {
         console.error('Error deleting car:', error);
       }
     }
+  }
+
+  private async deleteRelatedDocuments() {
+    await Promise.all([
+      this.deleteUserCarDocument(),
+      this.deleteMonthlySpending(),
+      this.deleteYearlySpending(),
+      this.deleteAllTimeSpending(),
+    ]);
   }
 
   private async deleteUserCarDocument() {
@@ -206,6 +332,57 @@ export class CarDetailsPage implements OnInit {
       }
     } catch (error) {
       console.error('Error deleting User_car documents:', error);
+    }
+  }
+
+  private async deleteMonthlySpending() {
+    try {
+      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (monthlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        monthlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Monthly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Monthly_Spending documents:', error);
+    }
+  }
+
+  private async deleteYearlySpending() {
+    try {
+      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (yearlySpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        yearlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Yearly_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting Yearly_Spending documents:', error);
+    }
+  }
+
+  private async deleteAllTimeSpending() {
+    try {
+      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
+        ref.where('carID', '==', this.carId)
+      ).get().toPromise();
+
+      if (allTimeSpendingSnapshot?.empty === false) {
+        const batch = this.firestore.firestore.batch();
+        allTimeSpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('All_Time_Spending documents deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting All_Time_Spending documents:', error);
     }
   }
 }

@@ -1,3 +1,4 @@
+<!-- car-edit.page.html -->>
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="saveCar()">
     <!-- Brand Dropdown -->
@@ -62,17 +63,18 @@
     </ion-item>
 
     <!-- Date Picker -->
-    <ion-item class="custom-date-picker">
-      <ion-label>Date</ion-label>
+    <ion-item>
+      <ion-label>Year</ion-label>
       <ion-datetime
-        [(ngModel)]="carDetails.Date"
-        name="Date"
+        [(ngModel)]="carDetails.Year"
+        name="Year"
         presentation="date"
         [preferWheel]="true"
-        display-format="YYYY-MM-DD"
-        picker-format="YYYY MM DD"
+        display-format="DD-MM-YYYY"
+        picker-format="DD-MM-YYYY"
       ></ion-datetime>
     </ion-item>
+    
 
     <!-- Current KM -->
     <ion-item>

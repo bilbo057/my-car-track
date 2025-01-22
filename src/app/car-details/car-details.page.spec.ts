@@ -1,4 +1,3 @@
-
 // car-details.page.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CarDetailsPage } from './car-details.page';

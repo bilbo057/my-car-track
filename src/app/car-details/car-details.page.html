@@ -15,6 +15,13 @@
       <p><strong>Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
     </ion-card-content> 
   </ion-card>
+  <ion-card-content>
+    <p><strong>Money Spent This Month:</strong> {{ carDetails.spentThisMonth | currency }}</p>
+    <p><strong>Average Spent Per Month:</strong> {{ carDetails.averageSpentThisMonth | currency }}</p>
+    <p><strong>Money Spent This Year:</strong> {{ carDetails.spentThisYear | currency }}</p>
+    <p><strong>Average Spent Per Year:</strong> {{ carDetails.averageSpentThisYear | currency }}</p>
+    <p><strong>Total Money Spent:</strong> {{ carDetails.totalSpent | currency }}</p>
+  </ion-card-content>
   <ion-content class="ion-padding">
     <ion-button color="primary" expand="full" (click)="editCar()">
       Edit Car

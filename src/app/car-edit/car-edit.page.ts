@@ -1,3 +1,4 @@
+// car-edit.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
@@ -138,22 +139,19 @@ export class CarEditPage implements OnInit {
   async saveCar() {
     try {
       const updatedCarDetails = { ...this.carDetails };
-
-      // Convert Date from ISO format to DD-MM-YYYY
-      if (updatedCarDetails.Date) {
-        const date = new Date(updatedCarDetails.Date);
-        updatedCarDetails.Date = `${('0' + date.getDate()).slice(-2)}-${(
-          '0' +
-          (date.getMonth() + 1)
-        ).slice(-2)}-${date.getFullYear()}`;
+  
+      // Convert the date from ISO format (used by ion-datetime) to DD-MM-YYYY and update 'Year'
+      if (updatedCarDetails.Year) {
+        const date = new Date(updatedCarDetails.Year);
+        updatedCarDetails.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
       }
-
+  
       const carDoc = doc(this.firestore, 'Cars', this.carId);
       await updateDoc(carDoc, updatedCarDetails);
-      console.log('Car updated successfully');
+      console.log('Year field updated successfully');
       this.router.navigate(['/cars']);
     } catch (error) {
       console.error('Error updating car:', error);
     }
-  }
+  }      
 }

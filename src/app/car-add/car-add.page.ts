@@ -1,3 +1,4 @@
+// car-add.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'; // Firestore functions
