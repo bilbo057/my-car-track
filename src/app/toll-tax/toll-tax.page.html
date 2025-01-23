@@ -1,0 +1,19 @@
+<ion-content [fullscreen]="true">
+  <!-- Check Toll Tax Status Button -->
+  <ion-button expand="full" color="primary" (click)="checkTollTaxStatus()">Check Toll Tax Status</ion-button>
+
+  <!-- Add Toll Tax Button -->
+  <ion-button expand="full" color="secondary" (click)="openAddTollTaxPopup()">Add Toll Tax</ion-button>
+
+  <!-- List of Toll Tax Documents -->
+  <ion-card *ngFor="let toll of tollTaxDocuments">
+    <ion-card-header>
+      <ion-card-title>Start Date: {{ toll.startDate }}</ion-card-title>
+      <ion-card-subtitle>End Date: {{ toll.endDate }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Amount: {{ toll.amount | currency }}</p>
+      <p>License Plate: {{ toll.licensePlate }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

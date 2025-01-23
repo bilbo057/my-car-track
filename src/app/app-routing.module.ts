@@ -35,6 +35,10 @@ const routes: Routes = [
     path: 'refueling',
     loadChildren: () => import('./refueling/refueling.module').then( m => m.RefuelingPageModule)
   },
+  {
+    path: 'toll-tax',
+    loadChildren: () => import('./toll-tax/toll-tax.module').then( m => m.TollTaxPageModule)
+  },
 
 ];
 

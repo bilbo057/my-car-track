@@ -65,6 +65,14 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
+
+  goToToll() {
+    if (this.carId) {
+      this.router.navigate([`/toll-tax`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
+    }
+  }
   
 
   // Helper method 1: Fetch monthly spending
