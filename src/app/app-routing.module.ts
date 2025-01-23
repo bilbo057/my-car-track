@@ -39,6 +39,10 @@ const routes: Routes = [
     path: 'toll-tax',
     loadChildren: () => import('./toll-tax/toll-tax.module').then( m => m.TollTaxPageModule)
   },
+  {
+    path: 'annual-tax',
+    loadChildren: () => import('./annual-tax/annual-tax.module').then( m => m.AnnualTaxPageModule)
+  },
 
 ];
 

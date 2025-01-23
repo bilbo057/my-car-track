@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Annual Tax</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Add Annual Tax Button -->
+  <ion-button expand="full" (click)="openAddAnnualTaxPopup()">Add Annual Tax</ion-button>
+
+  <!-- Select Payment Half -->
+  <ion-item>
+    <ion-label>Payment Half</ion-label>
+    <ion-radio-group [(ngModel)]="paymentHalf">
+      <ion-item>
+        <ion-label>First Half (Jan - Jun)</ion-label>
+        <ion-radio slot="start" value="Jan - Jun"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Second Half (Jul - Dec)</ion-label>
+        <ion-radio slot="start" value="Jul - Dec"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-item>
+
+  <!-- List of Annual Tax Records -->
+  <ion-card *ngFor="let tax of annualTaxDocuments">
+    <ion-card-header>
+      <ion-card-title>Tax Year: {{ tax.taxYear }}</ion-card-title>
+      <ion-card-subtitle>Payment for: {{ tax.paymentHalf }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Payment Date: {{ tax.paymentDate }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
