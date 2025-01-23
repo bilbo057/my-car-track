@@ -5,62 +5,33 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <form (ngSubmit)="addRefueling()">
-    <ion-item>
-      <ion-label>Date</ion-label>
-      <ion-datetime
-        [(ngModel)]="refuelingData.date"
-        name="date"
-        presentation="date"
-        [preferWheel]="true"
-        display-format="DD-MM-YYYY"
-        picker-format="DD-MM-YYYY"
-      ></ion-datetime>
-    </ion-item>
+  <!-- Add Refueling Button -->
+  <ion-button expand="full" (click)="openAddRefuelingPopup()">Add Refueling</ion-button>
 
-    <ion-item>
-      <ion-label>Fuel Type</ion-label>
-      <ion-select
-        [(ngModel)]="refuelingData.fuelType"
-        name="fuelType"
-        placeholder="Select Fuel Type"
-      >
-        <ion-select-option *ngFor="let type of engineTypes" [value]="type.Type">
-          {{ type.Label }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
+  <!-- Dropdown for Fuel Type -->
+  <ion-item>
+    <ion-label>Fuel Type</ion-label>
+    <ion-select
+      [(ngModel)]="refuelingData.fuelType"
+      placeholder="Select Fuel Type"
+      required
+    >
+      <ion-select-option *ngFor="let type of engineTypes" [value]="type.Type">
+        {{ type.Label }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
 
-    <ion-item>
-      <ion-label>Fuel Quantity (liters)</ion-label>
-      <ion-input
-        [(ngModel)]="refuelingData.fuelQuantity"
-        name="fuelQuantity"
-        type="number"
-        required
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Cost</ion-label>
-      <ion-input
-        [(ngModel)]="refuelingData.cost"
-        name="cost"
-        type="number"
-        required
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Odometer (KM)</ion-label>
-      <ion-input
-        [(ngModel)]="refuelingData.odometer"
-        name="odometer"
-        type="number"
-        required
-      ></ion-input>
-    </ion-item>
-
-    <ion-button expand="full" type="submit">Add Refueling</ion-button>
-  </form>
+  <!-- List of Refueling Documents -->
+  <ion-card *ngFor="let refuel of refuelingDocuments">
+    <ion-card-header>
+      <ion-card-title>Date: {{ refuel.date }}</ion-card-title>
+      <ion-card-subtitle>Fuel Type: {{ refuel.fuelType }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Fuel Quantity: {{ refuel.fuelQuantity }} liters</p>
+      <p>Cost: {{ refuel.cost | currency }}</p>
+      <p>Odometer: {{ refuel.odometer }} KM</p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

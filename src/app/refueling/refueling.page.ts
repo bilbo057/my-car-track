@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
-import { AuthService } from '../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-refueling',
@@ -9,22 +9,20 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./refueling.page.scss'],
 })
 export class RefuelingPage implements OnInit {
-  refuelingData: any = { date: '' }; // Initialize with an empty date
-  carId: string = ''; 
-  engineTypes: { Type: string; Label: string }[] = []; 
-  private firestore = getFirestore(); 
+  carId: string = '';
+  refuelingDocuments: any[] = []; // List of refueling documents
+  engineTypes: { Type: string; Label: string }[] = [];
+  refuelingData: any = {}; // Holds the form data
+  private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute, private router: Router, private authService: AuthService) {}
+  constructor(private route: ActivatedRoute, private alertController: AlertController) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
     if (this.carId) {
-      this.refuelingData.carId = this.carId; 
-      await this.loadEngineTypes(); 
+      await this.loadEngineTypes();
+      await this.loadRefuelingDocuments();
     }
-
-    // Auto-set the default date
-    this.setDefaultDate();
   }
 
   private async loadEngineTypes() {
@@ -40,44 +38,80 @@ export class RefuelingPage implements OnInit {
     }
   }
 
-  private setDefaultDate() {
-    const today = new Date();
-    this.refuelingData.date = today.toISOString(); // Set default date as ISO string
-  }
-
-  private formatDateToDDMMYYYY(date: string): string {
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-      console.error('Invalid date:', date);
-      return '';
-    }
-    const day = ('0' + parsedDate.getDate()).slice(-2);
-    const month = ('0' + (parsedDate.getMonth() + 1)).slice(-2);
-    const year = parsedDate.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-
-  async addRefueling() {
+  private async loadRefuelingDocuments() {
     try {
-      const userId = await this.authService.getUserId();
-      if (!userId) return;
+      const refuelingCollection = collection(this.firestore, 'Refueling');
+      const q = query(refuelingCollection, where('carId', '==', this.carId));
+      const querySnapshot = await getDocs(q);
+      this.refuelingDocuments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error('Error loading refueling documents:', error);
+    }
+  }
 
-      // Format date to DD-MM-YYYY
-      if (this.refuelingData.date) {
-        this.refuelingData.date = this.formatDateToDDMMYYYY(this.refuelingData.date);
-      } else {
-        console.error('Date is missing.');
-        return;
-      }
+  async openAddRefuelingPopup() {
+    const alert = await this.alertController.create({
+      header: 'Add Refueling',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Save',
+          handler: async () => {
+            if (this.refuelingData.date && this.refuelingData.fuelType && this.refuelingData.fuelQuantity && this.refuelingData.cost && this.refuelingData.odometer) {
+              await this.addRefuelingDocument();
+            } else {
+              console.error('All fields are required');
+            }
+          },
+        },
+      ],
+      inputs: [
+        {
+          name: 'date',
+          type: 'date',
+          placeholder: 'Select Date',
+          handler: (data) => (this.refuelingData.date = data),
+        },
+        {
+          name: 'fuelQuantity',
+          type: 'number',
+          placeholder: 'Fuel Quantity (liters)',
+          handler: (data) => (this.refuelingData.fuelQuantity = data),
+        },
+        {
+          name: 'cost',
+          type: 'number',
+          placeholder: 'Cost',
+          handler: (data) => (this.refuelingData.cost = data),
+        },
+        {
+          name: 'odometer',
+          type: 'number',
+          placeholder: 'Odometer (KM)',
+          handler: (data) => (this.refuelingData.odometer = data),
+        },
+      ],
+    });
 
+    await alert.present();
+  }
+
+  private async addRefuelingDocument() {
+    try {
       const refuelingCollection = collection(this.firestore, 'Refueling');
       await addDoc(refuelingCollection, {
+        carId: this.carId,
         ...this.refuelingData,
-        userId,
       });
-      this.router.navigate(['/cars']);
+      await this.loadRefuelingDocuments(); // Refresh the list
     } catch (error) {
-      console.error(error);
+      console.error('Error adding refueling document:', error);
     }
   }
 }
