@@ -43,6 +43,10 @@ const routes: Routes = [
     path: 'annual-tax',
     loadChildren: () => import('./annual-tax/annual-tax.module').then( m => m.AnnualTaxPageModule)
   },
+  {
+    path: 'maintaining',
+    loadChildren: () => import('./maintaining/maintaining.module').then( m => m.MaintainingPageModule)
+  },
 
 ];
 

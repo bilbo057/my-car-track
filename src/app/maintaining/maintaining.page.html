@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Maintaining</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Add Maintaining Button -->
+  <ion-button expand="full" (click)="openAddMaintainingPopup()">Add Maintaining</ion-button>
+
+  <!-- Dropdown for Maintaining Type -->
+  <ion-item>
+    <ion-label>Maintaining Type</ion-label>
+    <ion-select
+      placeholder="Select Maintaining Type"
+      [(ngModel)]="selectedMaintainingType"
+    >
+      <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
+        {{ option.label }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- List of Maintaining Documents -->
+  <ion-card *ngFor="let record of maintainingDocuments">
+    <ion-card-header>
+      <ion-card-title>Type: {{ record.type }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Date: {{ record.date }}</p>
+      <p>Cost: {{ record.cost | currency }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
