@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -10,8 +10,8 @@ import { AlertController } from '@ionic/angular';
 })
 export class RefuelingPage implements OnInit {
   carId: string = '';
+  carFuelType: string = ''; // Holds the fuel type of the car
   refuelingDocuments: any[] = []; // List of refueling documents
-  engineTypes: { Type: string; Label: string }[] = [];
   refuelingData: any = {}; // Holds the form data
   private firestore = getFirestore();
 
@@ -20,21 +20,24 @@ export class RefuelingPage implements OnInit {
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
     if (this.carId) {
-      await this.loadEngineTypes();
+      await this.getCarFuelType();
       await this.loadRefuelingDocuments();
     }
   }
 
-  private async loadEngineTypes() {
+  private async getCarFuelType() {
     try {
-      const engineTypesCollection = collection(this.firestore, 'Engines');
-      const engineTypesSnapshot = await getDocs(engineTypesCollection);
-      this.engineTypes = engineTypesSnapshot.docs.map((doc: any) => ({
-        Type: doc.data()['Engine_type'],
-        Label: doc.data()['Label'],
-      }));
+      const carDocRef = doc(this.firestore, 'Cars', this.carId);
+      const carDoc = await getDoc(carDocRef);
+
+      if (carDoc.exists()) {
+        const carData = carDoc.data();
+        this.carFuelType = carData['Engine_type']; // Get the engine type as the fuel type
+      } else {
+        console.error('Car document not found');
+      }
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching car fuel type:', error);
     }
   }
 
@@ -62,8 +65,12 @@ export class RefuelingPage implements OnInit {
         },
         {
           text: 'Save',
-          handler: async () => {
-            if (this.refuelingData.date && this.refuelingData.fuelType && this.refuelingData.fuelQuantity && this.refuelingData.cost && this.refuelingData.odometer) {
+          handler: async (data) => {
+            if (data.date && data.fuelQuantity && data.cost && data.odometer) {
+              this.refuelingData = {
+                ...data,
+                fuelType: this.carFuelType, // Automatically set the car's fuel type
+              };
               await this.addRefuelingDocument();
             } else {
               console.error('All fields are required');
@@ -76,25 +83,21 @@ export class RefuelingPage implements OnInit {
           name: 'date',
           type: 'date',
           placeholder: 'Select Date',
-          handler: (data) => (this.refuelingData.date = data),
         },
         {
           name: 'fuelQuantity',
           type: 'number',
           placeholder: 'Fuel Quantity (liters)',
-          handler: (data) => (this.refuelingData.fuelQuantity = data),
         },
         {
           name: 'cost',
           type: 'number',
           placeholder: 'Cost',
-          handler: (data) => (this.refuelingData.cost = data),
         },
         {
           name: 'odometer',
           type: 'number',
           placeholder: 'Odometer (KM)',
-          handler: (data) => (this.refuelingData.odometer = data),
         },
       ],
     });

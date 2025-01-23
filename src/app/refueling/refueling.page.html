@@ -1,26 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Refueling</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
   <!-- Add Refueling Button -->
   <ion-button expand="full" (click)="openAddRefuelingPopup()">Add Refueling</ion-button>
-
-  <!-- Dropdown for Fuel Type -->
-  <ion-item>
-    <ion-label>Fuel Type</ion-label>
-    <ion-select
-      [(ngModel)]="refuelingData.fuelType"
-      placeholder="Select Fuel Type"
-      required
-    >
-      <ion-select-option *ngFor="let type of engineTypes" [value]="type.Type">
-        {{ type.Label }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
 
   <!-- List of Refueling Documents -->
   <ion-card *ngFor="let refuel of refuelingDocuments">
