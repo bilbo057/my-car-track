@@ -55,6 +55,10 @@ const routes: Routes = [
     path: 'mechanical-bills',
     loadChildren: () => import('./mechanical-bills/mechanical-bills.module').then( m => m.MechanicalBillsPageModule)
   },
+  {
+    path: 'yearly-vehicle-check',
+    loadChildren: () => import('./yearly-vehicle-check/yearly-vehicle-check.module').then( m => m.YearlyVehicleCheckPageModule)
+  },
 
 ];
 

@@ -1,0 +1,46 @@
+<ion-content [fullscreen]="true">
+  <!-- Toggle Add Yearly Vehicle Check Form -->
+  <ion-button expand="full" (click)="toggleCheckForm()">
+    {{ showCheckForm ? 'Hide Form' : 'Add Yearly Vehicle Check' }}
+  </ion-button>
+
+  <!-- Yearly Vehicle Check Form -->
+  <div *ngIf="showCheckForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add Yearly Vehicle Check</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Start Date Picker -->
+        <ion-item>
+          <ion-label>Start Date</ion-label>
+          <ion-datetime [(ngModel)]="checkData.startDate" name="startDate"
+            presentation="date" [preferWheel]="true" displayFormat="YYYY-MM-DD"></ion-datetime>
+        </ion-item>
+
+        <!-- Cost Input -->
+        <ion-item>
+          <ion-label position="stacked">Cost</ion-label>
+          <ion-input type="number" [(ngModel)]="checkData.cost" placeholder="Enter Cost"></ion-input>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" (click)="addVehicleCheckRecord()">Save</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- List of Vehicle Check Records -->
+  <ion-card *ngFor="let check of vehicleCheckRecords">
+    <ion-card-header>
+      <ion-card-title>Start Date: {{ check.startDate }}</ion-card-title>
+      <ion-card-subtitle>End Date: {{ check.endDate }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Cost:</strong> {{ check.cost | currency }}</p>
+      <ion-button color="danger" expand="full" (click)="deleteVehicleCheck(check.id)">
+        Delete
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
