@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
-import { AlertController } from '@ionic/angular';
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -13,14 +12,11 @@ export class TollTaxPage implements OnInit {
   carId: string = '';
   licensePlate: string = ''; // Holds the car's license plate
   tollTaxDocuments: any[] = []; // List of toll tax records
-  tollTaxData: any = {}; // Holds the form data
+  tollTaxData: any = { startDate: '', amount: null }; // Holds the form data
+  showForm: boolean = false; // Toggle form visibility
   private firestore = getFirestore();
 
-  constructor(
-    private route: ActivatedRoute,
-    private alertController: AlertController,
-    private http: HttpClient
-  ) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -60,109 +56,68 @@ export class TollTaxPage implements OnInit {
     }
   }
 
-  async openAddTollTaxPopup() {
-    const alert = await this.alertController.create({
-      header: 'Add Toll Tax',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Save',
-          handler: async (data) => {
-            if (data.startDate && data.amount) {
-              const startDate = new Date(data.startDate);
-              const endDate = this.calculateEndDate(startDate);
-  
-              this.tollTaxData = {
-                startDate: this.formatDate(startDate),
-                endDate: this.formatDate(endDate),
-                amount: data.amount,
-              };
-              await this.addTollTaxDocument();
-            } else {
-              console.error('All fields are required');
-            }
-          },
-        },
-      ],
-      inputs: [
-        {
-          name: 'startDate',
-          type: 'date',
-          placeholder: 'Select Start Date',
-        },
-        {
-          name: 'amount',
-          type: 'number',
-          placeholder: 'Amount Paid',
-        },
-      ],
-    });
-  
-    await alert.present();
+  async addTollTaxRecord() {
+    if (this.tollTaxData.startDate && this.tollTaxData.amount) {
+      try {
+        const formattedStartDate = this.formatDate(this.tollTaxData.startDate);
+        const formattedEndDate = this.calculateEndDate(new Date(formattedStartDate));
+
+        const tollTaxCollection = collection(this.firestore, 'TollTax');
+        await addDoc(tollTaxCollection, {
+          carId: this.carId,
+          licensePlate: this.licensePlate,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          amount: this.tollTaxData.amount,
+        });
+
+        // Reset form and refresh list
+        this.tollTaxData = { startDate: '', amount: null };
+        this.showForm = false;
+        await this.loadTollTaxDocuments();
+      } catch (error) {
+        console.error('Error adding toll tax record:', error);
+      }
+    } else {
+      console.error('All fields are required.');
+    }
   }
-  
-  // Calculate the end date based on the start date
-  private calculateEndDate(startDate: Date): Date {
+
+  async deleteTollTaxRecord(recordId: string) {
+    try {
+      const tollDoc = doc(this.firestore, 'TollTax', recordId);
+      await deleteDoc(tollDoc);
+      this.tollTaxDocuments = this.tollTaxDocuments.filter((record) => record.id !== recordId);
+      console.log('Toll tax record deleted:', recordId);
+    } catch (error) {
+      console.error('Error deleting toll tax record:', error);
+    }
+  }
+
+  private calculateEndDate(startDate: Date): string {
     const endDate = new Date(startDate);
     endDate.setFullYear(endDate.getFullYear() + 1); // Add one year
     endDate.setDate(endDate.getDate() - 1); // Subtract one day
-    return endDate;
-  }
-  
-  // Format date as DD-MM-YYYY
-  private formatDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
-  
-  private async addTollTaxDocument() {
-    try {
-      const tollTaxCollection = collection(this.firestore, 'TollTax');
-      await addDoc(tollTaxCollection, {
-        carId: this.carId,
-        licensePlate: this.licensePlate,
-        ...this.tollTaxData,
-      });
-      await this.loadTollTaxDocuments(); // Refresh the list
-    } catch (error) {
-      console.error('Error adding toll tax document:', error);
-    }
+    return this.formatDate(endDate);
   }
 
-  async checkTollTaxStatus() {
-    try {
-      const url = `https://web.bgtoll.bg/TollProduct?LicensePlateNumber=${this.licensePlate}`;
-      const response = await this.http.get(url).toPromise();
-      console.log('Toll Tax Status:', response);
-      this.showTollTaxStatus(response);
-    } catch (error) {
-      console.error('Error checking toll tax status:', error);
-      this.showErrorAlert();
-    }
+  private formatDate(date: string | Date): string {
+    const parsedDate = new Date(date);
+    return `${parsedDate.getFullYear()}-${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}-${parsedDate
+      .getDate()
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   private async showTollTaxStatus(status: any) {
-    const alert = await this.alertController.create({
-      header: 'Toll Tax Status',
-      message: JSON.stringify(status, null, 2), // Format the response for better readability
-      buttons: ['OK'],
-    });
-
-    await alert.present();
+    alert(`Toll Tax Status:\n${JSON.stringify(status, null, 2)}`);
   }
 
   private async showErrorAlert() {
-    const alert = await this.alertController.create({
-      header: 'Error',
-      message: 'Unable to fetch toll tax status. Please try again later.',
-      buttons: ['OK'],
-    });
+    alert('Unable to fetch toll tax status. Please try again later.');
+  }
 
-    await alert.present();
+  toggleForm() {
+    this.showForm = !this.showForm;
   }
 }

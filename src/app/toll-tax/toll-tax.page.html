@@ -1,19 +1,46 @@
 <ion-content [fullscreen]="true">
-  <!-- Check Toll Tax Status Button -->
-  <ion-button expand="full" color="primary" (click)="checkTollTaxStatus()">Check Toll Tax Status</ion-button>
+  <!-- Toggle Add Toll Tax Form -->
+  <ion-button expand="full" (click)="toggleForm()">
+    {{ showForm ? 'Hide Form' : 'Add Toll Tax' }}
+  </ion-button>
 
-  <!-- Add Toll Tax Button -->
-  <ion-button expand="full" color="secondary" (click)="openAddTollTaxPopup()">Add Toll Tax</ion-button>
+  <!-- Toll Tax Form -->
+  <div *ngIf="showForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add Toll Tax Record</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Start Date Picker -->
+        <ion-item>
+          <ion-label>Start Date</ion-label>
+          <ion-datetime [(ngModel)]="tollTaxData.startDate" name="startDate" presentation="date" [preferWheel]="true"></ion-datetime>
+        </ion-item>
 
-  <!-- List of Toll Tax Documents -->
+        <!-- Amount -->
+        <ion-item>
+          <ion-label position="stacked">Amount Paid</ion-label>
+          <ion-input type="number" [(ngModel)]="tollTaxData.amount" placeholder="Enter Amount"></ion-input>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" (click)="addTollTaxRecord()">Save</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- List of Toll Tax Records -->
   <ion-card *ngFor="let toll of tollTaxDocuments">
     <ion-card-header>
       <ion-card-title>Start Date: {{ toll.startDate }}</ion-card-title>
       <ion-card-subtitle>End Date: {{ toll.endDate }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <p>Amount: {{ toll.amount | currency }}</p>
-      <p>License Plate: {{ toll.licensePlate }}</p>
+      <p><strong>Amount:</strong> {{ toll.amount | currency }}</p>
+      <p><strong>License Plate:</strong> {{ toll.licensePlate }}</p>
+      <ion-button color="danger" expand="full" (click)="deleteTollTaxRecord(toll.id)">
+        Delete
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>
