@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
-import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-maintaining',
@@ -13,10 +12,12 @@ export class MaintainingPage implements OnInit {
   maintainingDocuments: any[] = []; // List of maintenance documents
   maintainingOptions: any[] = []; // List of maintenance options
   selectedMaintainingType: string = ''; // Selected maintaining type
-  maintainingData: any = {}; // Form data for adding maintenance
+  maintainingData: any = { type: '', cost: '', date: '' }; // Form data for adding maintenance
+  showMaintainingForm: boolean = false; // Toggle form visibility
+
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute, private alertController: AlertController) {}
+  constructor(private route: ActivatedRoute) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -53,55 +54,30 @@ export class MaintainingPage implements OnInit {
     }
   }
 
-  async openAddMaintainingPopup() {
-    const alert = await this.alertController.create({
-      header: 'Add Maintaining',
-      inputs: [
-        {
-          name: 'cost',
-          type: 'number',
-          placeholder: 'Enter Cost',
-        },
-        {
-          name: 'date',
-          type: 'date',
-          placeholder: 'Select Date',
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Save',
-          handler: async (data) => {
-            if (this.selectedMaintainingType && data.cost && data.date) {
-              this.maintainingData = {
-                carId: this.carId,
-                type: this.selectedMaintainingType,
-                cost: data.cost,
-                date: data.date,
-              };
-              await this.addMaintainingDocument(this.maintainingData);
-            } else {
-              console.error('All fields are required');
-            }
-          },
-        },
-      ],
-    });
+  async addMaintainingRecord() {
+    if (this.maintainingData.type && this.maintainingData.cost && this.maintainingData.date) {
+      try {
+        const maintainingCollection = collection(this.firestore, 'Maintaining');
+        await addDoc(maintainingCollection, {
+          carId: this.carId,
+          type: this.maintainingData.type,
+          cost: this.maintainingData.cost,
+          date: this.maintainingData.date,
+        });
 
-    await alert.present();
+        // Reset the form and refresh the list
+        this.maintainingData = { type: '', cost: '', date: '' };
+        this.showMaintainingForm = false;
+        await this.loadMaintainingDocuments();
+      } catch (error) {
+        console.error('Error adding maintaining document:', error);
+      }
+    } else {
+      console.error('All fields are required.');
+    }
   }
 
-  private async addMaintainingDocument(maintainingData: any) {
-    try {
-      const maintainingCollection = collection(this.firestore, 'Maintaining');
-      await addDoc(maintainingCollection, maintainingData);
-      await this.loadMaintainingDocuments(); // Refresh the list
-    } catch (error) {
-      console.error('Error adding maintaining document:', error);
-    }
+  toggleMaintainingForm() {
+    this.showMaintainingForm = !this.showMaintainingForm;
   }
 }

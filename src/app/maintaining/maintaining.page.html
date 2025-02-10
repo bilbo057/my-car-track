@@ -1,27 +1,45 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Maintaining</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <!-- Add Maintaining Button -->
-  <ion-button expand="full" (click)="openAddMaintainingPopup()">Add Maintaining</ion-button>
+  <!-- Toggle Add Maintaining Section -->
+  <ion-button expand="full" (click)="toggleMaintainingForm()">
+    {{ showMaintainingForm ? 'Hide Form' : 'Add Maintaining' }}
+  </ion-button>
 
-  <!-- Dropdown for Maintaining Type -->
-  <ion-item>
-    <ion-label>Maintaining Type</ion-label>
-    <ion-select
-      placeholder="Select Maintaining Type"
-      [(ngModel)]="selectedMaintainingType"
-    >
-      <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
-        {{ option.label }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+  <!-- Maintaining Form (Hidden by Default) -->
+  <div *ngIf="showMaintainingForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add Maintaining Record</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Dropdown for Maintaining Type -->
+        <ion-item>
+          <ion-label>Maintaining Type</ion-label>
+          <ion-select [(ngModel)]="maintainingData.type" placeholder="Select Type">
+            <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
+              {{ option.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
 
-  <!-- List of Maintaining Documents -->
+        <!-- Cost Input -->
+        <ion-item>
+          <ion-label>Cost</ion-label>
+          <ion-input type="number" [(ngModel)]="maintainingData.cost" placeholder="Enter Cost"></ion-input>
+        </ion-item>
+
+        <!-- Date Picker -->
+        <ion-item>
+          <ion-label>Date</ion-label>
+          <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="maintainingData.date"></ion-datetime>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" (click)="addMaintainingRecord()">Save</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- List of Maintaining Records -->
   <ion-card *ngFor="let record of maintainingDocuments">
     <ion-card-header>
       <ion-card-title>Type: {{ record.type }}</ion-card-title>
