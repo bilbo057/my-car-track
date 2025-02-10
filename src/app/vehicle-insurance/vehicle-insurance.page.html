@@ -1,0 +1,46 @@
+<ion-content [fullscreen]="true">
+  <!-- Toggle Add Insurance Form -->
+  <ion-button expand="full" (click)="toggleInsuranceForm()">
+    {{ showInsuranceForm ? 'Hide Form' : 'Add Insurance' }}
+  </ion-button>
+
+  <!-- Insurance Form -->
+  <div *ngIf="showInsuranceForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add Vehicle Insurance</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Start Date Picker -->
+        <ion-item>
+          <ion-label>Start Date</ion-label>
+          <ion-datetime [(ngModel)]="insuranceData.startDate" name="startDate"
+            presentation="date" [preferWheel]="true"></ion-datetime>
+        </ion-item>
+
+        <!-- Cost Input -->
+        <ion-item>
+          <ion-label position="stacked">Cost</ion-label>
+          <ion-input type="number" [(ngModel)]="insuranceData.cost" placeholder="Enter Cost"></ion-input>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" (click)="addInsuranceRecord()">Save</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- List of Insurance Records -->
+  <ion-card *ngFor="let insurance of insuranceDocuments">
+    <ion-card-header>
+      <ion-card-title>Start Date: {{ insurance.startDate }}</ion-card-title>
+      <ion-card-subtitle>End Date: {{ insurance.endDate }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Cost:</strong> {{ insurance.cost | currency }}</p>
+      <ion-button color="danger" expand="full" (click)="deleteInsuranceRecord(insurance.id)">
+        Delete
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

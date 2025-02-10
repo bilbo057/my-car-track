@@ -90,6 +90,14 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
+  goToInsurance() {
+    if (this.carId) {
+      this.router.navigate([`/vehicle-insurance`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
+    }
+  }
+
   // Helper method 1: Fetch monthly spending
   private async displayMonthSpents() {
     try {

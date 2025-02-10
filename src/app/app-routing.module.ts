@@ -47,6 +47,10 @@ const routes: Routes = [
     path: 'maintaining',
     loadChildren: () => import('./maintaining/maintaining.module').then( m => m.MaintainingPageModule)
   },
+  {
+    path: 'vehicle-insurance',
+    loadChildren: () => import('./vehicle-insurance/vehicle-insurance.module').then( m => m.VehicleInsurancePageModule)
+  },
 
 ];
 
