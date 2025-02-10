@@ -1,0 +1,63 @@
+<ion-content [fullscreen]="true">
+  <!-- Toggle Add Mechanical Bill Form -->
+  <ion-button expand="full" (click)="toggleBillForm()">
+    {{ showBillForm ? 'Hide Form' : 'Add Mechanical Bill' }}
+  </ion-button>
+
+  <!-- Mechanical Bill Form -->
+  <div *ngIf="showBillForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add Mechanical Bill</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Type Selection -->
+        <ion-item>
+          <ion-label>Bill Type</ion-label>
+          <ion-select [(ngModel)]="billData.type" placeholder="Select Type">
+            <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
+              {{ option.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Cost Input -->
+        <ion-item>
+          <ion-label position="stacked">Cost</ion-label>
+          <ion-input type="number" [(ngModel)]="billData.cost" placeholder="Enter Cost"></ion-input>
+        </ion-item>
+
+        <!-- Date Picker -->
+        <ion-item>
+          <ion-label>Date</ion-label>
+          <ion-datetime [(ngModel)]="billData.date" name="billDate"
+            presentation="date" [preferWheel]="true"></ion-datetime>
+        </ion-item>
+
+        <!-- Bonus Description Input -->
+        <ion-item>
+          <ion-label position="stacked">Bonus Description</ion-label>
+          <ion-textarea [(ngModel)]="billData.description" placeholder="Enter Description"></ion-textarea>
+        </ion-item>
+
+        <!-- Save Button -->
+        <ion-button expand="full" (click)="addMechanicalBill()">Save</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- List of Mechanical Bills -->
+  <ion-card *ngFor="let bill of mechanicalBills">
+    <ion-card-header>
+      <ion-card-title>Type: {{ bill.type }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Date:</strong> {{ bill.date }}</p>
+      <p><strong>Cost:</strong> {{ bill.cost | currency }}</p>
+      <p *ngIf="bill.description"><strong>Description:</strong> {{ bill.description }}</p>
+      <ion-button color="danger" expand="full" (click)="deleteMechanicalBill(bill.id)">
+        Delete
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

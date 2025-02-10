@@ -51,6 +51,10 @@ const routes: Routes = [
     path: 'vehicle-insurance',
     loadChildren: () => import('./vehicle-insurance/vehicle-insurance.module').then( m => m.VehicleInsurancePageModule)
   },
+  {
+    path: 'mechanical-bills',
+    loadChildren: () => import('./mechanical-bills/mechanical-bills.module').then( m => m.MechanicalBillsPageModule)
+  },
 
 ];
 

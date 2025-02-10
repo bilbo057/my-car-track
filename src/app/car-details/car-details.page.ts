@@ -98,6 +98,14 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
+  goToMechanicalbills() {
+    if (this.carId) {
+      this.router.navigate([`/mechanical-bills`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
+    }
+  }
+
   // Helper method 1: Fetch monthly spending
   private async displayMonthSpents() {
     try {
