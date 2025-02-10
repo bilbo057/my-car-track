@@ -10,33 +10,29 @@ import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebas
 export class MaintainingPage implements OnInit {
   carId: string = '';
   maintainingDocuments: any[] = []; // List of maintenance documents
-  maintainingOptions: any[] = []; // List of maintenance options
-  selectedMaintainingType: string = ''; // Selected maintaining type
-  maintainingData: any = { type: '', cost: '', date: '' }; // Form data for adding maintenance
-  showMaintainingForm: boolean = false; // Toggle form visibility
+  maintainingData: any = { type: '', cost: '', date: '', bonusDescription: '' }; // Form data with bonus description
+  showForm: boolean = false; // Toggle form visibility
 
   private firestore = getFirestore();
+
+  // Hardcoded maintaining options
+  maintainingOptions = [
+    { label: 'Двигател редовна', value: 'oil_change' },
+    { label: 'Гуми', value: 'tires' },
+    { label: 'Спирачки', value: 'brake' },
+    { label: 'Акумолатор', value: 'battery' },
+    { label: 'Окачване', value: 'suspension' },
+    { label: 'Кутия', value: 'transmission' },
+    { label: 'Климатик', value: 'AC' },
+    { label: 'Двигател разширена', value: 'general_service' }
+  ];
 
   constructor(private route: ActivatedRoute) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
     if (this.carId) {
-      await this.loadMaintainingOptions();
       await this.loadMaintainingDocuments();
-    }
-  }
-
-  private async loadMaintainingOptions() {
-    try {
-      const maintainingOptionsCollection = collection(this.firestore, 'Maintaining_options');
-      const querySnapshot = await getDocs(maintainingOptionsCollection);
-      this.maintainingOptions = querySnapshot.docs.map((doc) => ({
-        label: doc.data()['label'],
-        value: doc.data()['type'],
-      }));
-    } catch (error) {
-      console.error('Error loading maintaining options:', error);
     }
   }
 
@@ -63,21 +59,22 @@ export class MaintainingPage implements OnInit {
           type: this.maintainingData.type,
           cost: this.maintainingData.cost,
           date: this.maintainingData.date,
+          bonusDescription: this.maintainingData.bonusDescription || '' // Store optional description
         });
 
         // Reset the form and refresh the list
-        this.maintainingData = { type: '', cost: '', date: '' };
-        this.showMaintainingForm = false;
+        this.maintainingData = { type: '', cost: '', date: '', bonusDescription: '' };
+        this.showForm = false;
         await this.loadMaintainingDocuments();
       } catch (error) {
         console.error('Error adding maintaining document:', error);
       }
     } else {
-      console.error('All fields are required.');
+      console.error('All required fields must be filled.');
     }
   }
 
-  toggleMaintainingForm() {
-    this.showMaintainingForm = !this.showMaintainingForm;
+  toggleForm() {
+    this.showForm = !this.showForm;
   }
 }

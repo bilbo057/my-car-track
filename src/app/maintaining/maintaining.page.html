@@ -1,11 +1,11 @@
 <ion-content [fullscreen]="true">
   <!-- Toggle Add Maintaining Section -->
-  <ion-button expand="full" (click)="toggleMaintainingForm()">
-    {{ showMaintainingForm ? 'Hide Form' : 'Add Maintaining' }}
+  <ion-button expand="full" (click)="toggleForm()">
+    {{ showForm ? 'Hide Form' : 'Add Maintaining' }}
   </ion-button>
 
   <!-- Maintaining Form (Hidden by Default) -->
-  <div *ngIf="showMaintainingForm">
+  <div *ngIf="showForm">
     <ion-card>
       <ion-card-header>
         <ion-card-title>Add Maintaining Record</ion-card-title>
@@ -13,7 +13,7 @@
       <ion-card-content>
         <!-- Dropdown for Maintaining Type -->
         <ion-item>
-          <ion-label>Maintaining Type</ion-label>
+          <ion-label position="stacked">Maintaining Type</ion-label>
           <ion-select [(ngModel)]="maintainingData.type" placeholder="Select Type">
             <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
               {{ option.label }}
@@ -23,14 +23,20 @@
 
         <!-- Cost Input -->
         <ion-item>
-          <ion-label>Cost</ion-label>
+          <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="maintainingData.cost" placeholder="Enter Cost"></ion-input>
         </ion-item>
 
         <!-- Date Picker -->
         <ion-item>
-          <ion-label>Date</ion-label>
+          <ion-label position="stacked">Date</ion-label>
           <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="maintainingData.date"></ion-datetime>
+        </ion-item>
+
+        <!-- Bonus Description -->
+        <ion-item>
+          <ion-label position="stacked">Bonus Description</ion-label>
+          <ion-textarea [(ngModel)]="maintainingData.bonusDescription" placeholder="Enter additional details"></ion-textarea>
         </ion-item>
 
         <!-- Save Button -->
@@ -45,8 +51,9 @@
       <ion-card-title>Type: {{ record.type }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>Date: {{ record.date }}</p>
-      <p>Cost: {{ record.cost | currency }}</p>
+      <p><strong>Date:</strong> {{ record.date }}</p>
+      <p><strong>Cost:</strong> {{ record.cost | currency }}</p>
+      <p *ngIf="record.bonusDescription"><strong>Bonus Description:</strong> {{ record.bonusDescription }}</p>
     </ion-card-content>
   </ion-card>
 </ion-content>
