@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
-import { AlertController } from '@ionic/angular';
+import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-annual-tax',
@@ -13,11 +12,14 @@ export class AnnualTaxPage implements OnInit {
   licensePlate: string = ''; // Car's license plate
   annualTaxDocuments: any[] = []; // List of annual tax records
   taxYear: number | null = null;
-  paymentHalf: string = ''; // Selected half: "First Half" or "Second Half"
-  paymentDate: string = ''; // Payment date in DD-MM-YYYY format
+  paymentHalf: string = ''; // Selected half: "First Half", "Second Half", or "Full Year"
+  paymentDate: string = ''; // Payment date in YYYY-MM-DD format
+  cost: number | null = null; // Cost of the tax payment
+  showForm: boolean = false; // Toggle form visibility
+
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute, private alertController: AlertController) {}
+  constructor(private route: ActivatedRoute) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -50,66 +52,56 @@ export class AnnualTaxPage implements OnInit {
     }
   }
 
-  async openAddAnnualTaxPopup() {
-    const alert = await this.alertController.create({
-      header: 'Add Annual Tax',
-      inputs: [
-        {
-          name: 'taxYear',
-          type: 'number',
-          placeholder: 'Tax Year (e.g., 2024)',
-        },
-        {
-          name: 'paymentDate',
-          type: 'date',
-          placeholder: 'Payment Date',
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Save',
-          handler: async (data) => {
-            if (data.taxYear && this.paymentHalf && data.paymentDate) {
-              await this.addAnnualTaxDocument(
-                Number(data.taxYear),
-                this.paymentHalf,
-                this.formatDate(new Date(data.paymentDate))
-              );
-            } else {
-              console.error('All fields are required.');
-            }
-          },
-        },
-      ],
-    });
+  async addAnnualTaxRecord() {
+    if (this.taxYear && this.paymentHalf && this.paymentDate && this.cost !== null) {
+      try {
+        const formattedDate = this.formatDate(this.paymentDate); // Ensure YYYY-MM-DD format
 
-    await alert.present();
-  }
+        const taxCollection = collection(this.firestore, 'AnnualTax');
+        await addDoc(taxCollection, {
+          carId: this.carId,
+          licensePlate: this.licensePlate,
+          taxYear: this.taxYear,
+          paymentHalf: this.paymentHalf,
+          paymentDate: formattedDate,
+          cost: this.cost,
+        });
 
-  private async addAnnualTaxDocument(taxYear: number, paymentHalf: string, paymentDate: string) {
-    try {
-      const taxCollection = collection(this.firestore, 'AnnualTax');
-      await addDoc(taxCollection, {
-        carId: this.carId,
-        licensePlate: this.licensePlate,
-        taxYear,
-        paymentHalf,
-        paymentDate,
-      });
-      await this.loadAnnualTaxDocuments(); // Refresh the list
-    } catch (error) {
-      console.error('Error adding annual tax document:', error);
+        // Reset the form and refresh the list
+        this.taxYear = null;
+        this.paymentHalf = '';
+        this.paymentDate = '';
+        this.cost = null;
+        this.showForm = false;
+        await this.loadAnnualTaxDocuments();
+      } catch (error) {
+        console.error('Error adding annual tax document:', error);
+      }
+    } else {
+      console.error('All fields are required.');
     }
   }
 
-  private formatDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+  async deleteAnnualTaxRecord(recordId: string) {
+    try {
+      const taxDoc = doc(this.firestore, 'AnnualTax', recordId);
+      await deleteDoc(taxDoc);
+      this.annualTaxDocuments = this.annualTaxDocuments.filter((record) => record.id !== recordId);
+      console.log('Annual tax record deleted:', recordId);
+    } catch (error) {
+      console.error('Error deleting annual tax record:', error);
+    }
+  }
+
+  private formatDate(date: string): string {
+    const parsedDate = new Date(date);
+    return `${parsedDate.getFullYear()}-${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}-${parsedDate
+      .getDate()
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
   }
 }
