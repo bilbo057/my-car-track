@@ -59,6 +59,10 @@ const routes: Routes = [
     path: 'yearly-vehicle-check',
     loadChildren: () => import('./yearly-vehicle-check/yearly-vehicle-check.module').then( m => m.YearlyVehicleCheckPageModule)
   },
+  {
+    path: 'another-expenses',
+    loadChildren: () => import('./another-expenses/another-expenses.module').then( m => m.AnotherExpensesPageModule)
+  },
 
 ];
 

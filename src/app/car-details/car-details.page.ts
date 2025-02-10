@@ -112,6 +112,13 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
+  goToAnotherExpenses() {
+    if (this.carId) {
+      this.router.navigate([`/another-expenses`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
+    }
+  }
 
   // Helper method 1: Fetch monthly spending
   private async displayMonthSpents() {
