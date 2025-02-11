@@ -377,8 +377,128 @@ export class CarDetailsPage implements OnInit {
       this.deleteMonthlySpending(),
       this.deleteYearlySpending(),
       this.deleteAllTimeSpending(),
+      this.deleteAnnualTaxRecords(), 
+      this.deleteAnotherExpensesRecords(),
+      this.deleteMaintainingRecords(),
+      this.deleteMechanicalBills(),
+      this.deleteRefuelingRecords(),
+      this.deleteTollTaxRecords(),
+      this.deleteVehicleInsuranceRecords(),
+      this.deleteYearlyVehicleCheckRecords(),
     ]);
   }
+
+  private async deleteYearlyVehicleCheckRecords() {
+    try {
+      const checksCollection = this.firestore.collection('YearlyVehicleCheck');
+      const checksQuerySnapshot = await checksCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!checksQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        checksQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Yearly vehicle check records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting yearly vehicle check records:', error);
+    }
+  }  
+
+  private async deleteVehicleInsuranceRecords() {
+    try {
+      const insuranceCollection = this.firestore.collection('VehicleInsurance');
+      const insuranceQuerySnapshot = await insuranceCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!insuranceQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        insuranceQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Vehicle insurance records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle insurance records:', error);
+    }
+  }
+
+  private async deleteTollTaxRecords() {
+    try {
+      const tollTaxCollection = this.firestore.collection('TollTax');
+      const tollTaxQuerySnapshot = await tollTaxCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!tollTaxQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        tollTaxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Toll tax records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting toll tax records:', error);
+    }
+  }  
+
+  private async deleteAnotherExpensesRecords() {
+    try {
+      const expensesCollection = this.firestore.collection('AnotherExpenses');
+      const expensesQuerySnapshot = await expensesCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!expensesQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        expensesQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Another Expenses records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting Another Expenses records:', error);
+    }
+  }
+
+  private async deleteRefuelingRecords() {
+    try {
+      const refuelingCollection = this.firestore.collection('Refueling');
+      const refuelingQuerySnapshot = await refuelingCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!refuelingQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        refuelingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Refueling records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting Refueling records:', error);
+    }
+  }  
+
+  private async deleteMechanicalBills() {
+    try {
+      const mechanicalBillsCollection = this.firestore.collection('MechanicalBills');
+      const mechanicalBillsQuerySnapshot = await mechanicalBillsCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!mechanicalBillsQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        mechanicalBillsQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Mechanical bills deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting Mechanical Bills:', error);
+    }
+  }  
+  
+  private async deleteMaintainingRecords() {
+    try {
+      const maintainingCollection = this.firestore.collection('Maintaining');
+      const maintainingQuerySnapshot = await maintainingCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!maintainingQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        maintainingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Maintaining records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting Maintaining records:', error);
+    }
+  }  
 
   private async deleteUserCarDocument() {
     try {
@@ -445,6 +565,22 @@ export class CarDetailsPage implements OnInit {
       }
     } catch (error) {
       console.error('Error deleting All_Time_Spending documents:', error);
+    }
+  }
+
+  private async deleteAnnualTaxRecords() {
+    try {
+      const taxCollection = this.firestore.collection('AnnualTax');
+      const taxQuerySnapshot = await taxCollection.ref.where('carId', '==', this.carId).get();
+  
+      if (!taxQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        taxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Annual tax records deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting annual tax records:', error);
     }
   }
 }
