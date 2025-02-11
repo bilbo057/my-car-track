@@ -388,6 +388,54 @@ export class CarDetailsPage implements OnInit {
     ]);
   }
 
+  private async deleteMonthlySpending() {
+    try {
+        const monthlySpendingCollection = this.firestore.collection('Monthly_Spending');
+        const querySnapshot = await monthlySpendingCollection.ref.where('carID', '==', this.carId).get();
+
+        if (!querySnapshot.empty) {
+            const batch = this.firestore.firestore.batch();
+            querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+            console.log('Monthly spending records deleted successfully.');
+        }
+    } catch (error) {
+        console.error('Error deleting Monthly_Spending records:', error);
+    }
+  }
+
+  private async deleteYearlySpending() {
+      try {
+          const yearlySpendingCollection = this.firestore.collection('Yearly_Spending');
+          const querySnapshot = await yearlySpendingCollection.ref.where('carID', '==', this.carId).get();
+
+          if (!querySnapshot.empty) {
+              const batch = this.firestore.firestore.batch();
+              querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+              await batch.commit();
+              console.log('Yearly spending records deleted successfully.');
+          }
+      } catch (error) {
+          console.error('Error deleting Yearly_Spending records:', error);
+      }
+  }
+
+  private async deleteAllTimeSpending() {
+      try {
+          const allTimeSpendingCollection = this.firestore.collection('All_Time_Spending');
+          const querySnapshot = await allTimeSpendingCollection.ref.where('carID', '==', this.carId).get();
+
+          if (!querySnapshot.empty) {
+              const batch = this.firestore.firestore.batch();
+              querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+              await batch.commit();
+              console.log('All-time spending records deleted successfully.');
+          }
+      } catch (error) {
+          console.error('Error deleting All_Time_Spending records:', error);
+      }
+  }
+
   private async deleteYearlyVehicleCheckRecords() {
     try {
       const checksCollection = this.firestore.collection('YearlyVehicleCheck');
@@ -514,57 +562,6 @@ export class CarDetailsPage implements OnInit {
       }
     } catch (error) {
       console.error('Error deleting User_car documents:', error);
-    }
-  }
-
-  private async deleteMonthlySpending() {
-    try {
-      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-
-      if (monthlySpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        monthlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Monthly_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting Monthly_Spending documents:', error);
-    }
-  }
-
-  private async deleteYearlySpending() {
-    try {
-      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-
-      if (yearlySpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        yearlySpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Yearly_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting Yearly_Spending documents:', error);
-    }
-  }
-
-  private async deleteAllTimeSpending() {
-    try {
-      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-
-      if (allTimeSpendingSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        allTimeSpendingSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('All_Time_Spending documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting All_Time_Spending documents:', error);
     }
   }
 

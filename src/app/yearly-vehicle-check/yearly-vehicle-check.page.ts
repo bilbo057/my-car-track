@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { SpendingService } from '../services/spending.service';
 
 @Component({
   selector: 'app-yearly-vehicle-check',
@@ -9,13 +10,13 @@ import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc
 })
 export class YearlyVehicleCheckPage implements OnInit {
   carId: string = '';
-  vehicleCheckRecords: any[] = []; // List of vehicle check records
-  checkData: any = { startDate: '', endDate: '', cost: '' }; // Form data
-  showCheckForm: boolean = false; // Toggle form visibility
+  vehicleCheckRecords: any[] = [];
+  checkData: any = { startDate: '', endDate: '', cost: null };
+  showCheckForm: boolean = false;
 
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -40,36 +41,48 @@ export class YearlyVehicleCheckPage implements OnInit {
 
   async deleteVehicleCheck(recordId: string) {
     try {
-      const checkDoc = doc(this.firestore, 'YearlyVehicleCheck', recordId);
-      await deleteDoc(checkDoc);
-      this.vehicleCheckRecords = this.vehicleCheckRecords.filter((record) => record.id !== recordId);
-      console.log('Vehicle check record deleted:', recordId);
+      const checkDocRef = doc(this.firestore, 'YearlyVehicleCheck', recordId);
+      const checkDocSnap = await getDoc(checkDocRef);
+
+      if (checkDocSnap.exists()) {
+        const checkData = checkDocSnap.data() as { cost?: number };
+        const cost = checkData.cost || 0;
+
+        await deleteDoc(checkDocRef);
+        this.vehicleCheckRecords = this.vehicleCheckRecords.filter((record) => record.id !== recordId);
+
+        // Subtract the cost from spendings
+        await this.spendingService.subtractExpense(this.carId, cost);
+
+        console.log(`Vehicle check record deleted: ${recordId}, cost subtracted: ${cost}`);
+      } else {
+        console.error('Vehicle check record not found.');
+      }
     } catch (error) {
       console.error('Error deleting vehicle check record:', error);
     }
   }
 
-  // Method to calculate the end date (1 year minus 1 day after the start date)
   private calculateEndDate(startDate: string): string {
     const start = new Date(startDate);
     start.setFullYear(start.getFullYear() + 1);
-    start.setDate(start.getDate() - 1); // One day before the same date next year
+    start.setDate(start.getDate() - 1);
     return this.formatDate(start);
   }
 
-  private formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; // Ensures YYYY-MM-DD format
+  private formatDate(date: Date | string): string {
+    const parsedDate = new Date(date);
+    return `${parsedDate.getFullYear()}-${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}-${parsedDate
+      .getDate()
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   async addVehicleCheckRecord() {
-    if (this.checkData.startDate && this.checkData.cost) {
-      // Ensure only YYYY-MM-DD is saved
-      const formattedStartDate = this.formatDate(new Date(this.checkData.startDate));
-      this.checkData.startDate = formattedStartDate;
-      this.checkData.endDate = this.calculateEndDate(formattedStartDate);
+    if (this.checkData.startDate && this.checkData.cost !== null) {
+      this.checkData.startDate = this.formatDate(new Date(this.checkData.startDate));
+      this.checkData.endDate = this.calculateEndDate(this.checkData.startDate);
+      const cost = this.checkData.cost;
 
       try {
         const checksCollection = collection(this.firestore, 'YearlyVehicleCheck');
@@ -78,8 +91,9 @@ export class YearlyVehicleCheckPage implements OnInit {
           ...this.checkData,
         });
 
-        // Reset form and refresh records
-        this.checkData = { startDate: '', endDate: '', cost: '' };
+        await this.spendingService.addExpense(this.carId, cost);
+
+        this.checkData = { startDate: '', endDate: '', cost: null };
         this.showCheckForm = false;
         await this.loadVehicleCheckRecords();
       } catch (error) {
