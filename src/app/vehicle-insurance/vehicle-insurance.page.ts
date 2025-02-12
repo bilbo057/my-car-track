@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { SpendingService } from '../services/spending.service'; // Make sure the spending service is imported
 
 @Component({
   selector: 'app-vehicle-insurance',
@@ -9,13 +10,13 @@ import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, d
 })
 export class VehicleInsurancePage implements OnInit {
   carId: string = '';
-  insuranceDocuments: any[] = []; // List of insurance records
-  insuranceData: any = { startDate: '', endDate: '', cost: '' }; // Insurance form data
-  showInsuranceForm: boolean = false; // Toggle form visibility
+  insuranceDocuments: any[] = [];
+  insuranceData: any = { startDate: '', endDate: '', cost: null };
+  showInsuranceForm: boolean = false;
 
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -41,29 +42,22 @@ export class VehicleInsurancePage implements OnInit {
   async deleteInsuranceRecord(recordId: string) {
     try {
       const insuranceDoc = doc(this.firestore, 'VehicleInsurance', recordId);
-      await deleteDoc(insuranceDoc);
-      this.insuranceDocuments = this.insuranceDocuments.filter((record) => record.id !== recordId);
-      console.log('Insurance record deleted:', recordId);
+      const docSnap = await getDoc(insuranceDoc);
+  
+      if (docSnap.exists()) {
+        const data = docSnap.data();  // Capture the document data once
+        await deleteDoc(insuranceDoc);
+        this.insuranceDocuments = this.insuranceDocuments.filter((record) => record.id !== recordId);
+        
+        // Subtract the cost from spending after deletion
+        // Ensure to access 'cost' using bracket notation
+        await this.spendingService.subtractExpense(this.carId, data['cost']);
+      }
     } catch (error) {
       console.error('Error deleting insurance record:', error);
     }
   }
-
-  // Method to calculate the end date (1 year minus 1 day after the start date)
-  private calculateEndDate(startDate: string): string {
-    const start = new Date(startDate);
-    start.setFullYear(start.getFullYear() + 1);
-    start.setDate(start.getDate() - 1); // One day before the same date next year
-    return this.formatDate(start);
-  }
-
-  // Format date to DD-MM-YYYY
-  private formatDate(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
+  
 
   async addInsuranceRecord() {
     if (this.insuranceData.startDate && this.insuranceData.cost) {
@@ -77,8 +71,10 @@ export class VehicleInsurancePage implements OnInit {
           ...this.insuranceData,
         });
 
-        // Reset form and refresh records
-        this.insuranceData = { startDate: '', endDate: '', cost: '' };
+        // Add the cost to spending after addition
+        await this.spendingService.addExpense(this.carId, this.insuranceData.cost);
+
+        this.insuranceData = { startDate: '', endDate: '', cost: null };
         this.showInsuranceForm = false;
         await this.loadInsuranceDocuments();
       } catch (error) {
@@ -87,6 +83,20 @@ export class VehicleInsurancePage implements OnInit {
     } else {
       console.error('Start date and cost are required.');
     }
+  }
+
+  private formatDate(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
+
+  private calculateEndDate(startDate: string): string {
+    const start = new Date(startDate);
+    start.setFullYear(start.getFullYear() + 1);
+    start.setDate(start.getDate() - 1);
+    return this.formatDate(start);
   }
 
   toggleInsuranceForm() {

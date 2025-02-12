@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-another-expenses',
@@ -38,27 +38,9 @@ export class AnotherExpensesPage implements OnInit {
     }
   }
 
-  async deleteExpenseRecord(recordId: string) {
-    try {
-      const expenseDoc = doc(this.firestore, 'AnotherExpenses', recordId);
-      await deleteDoc(expenseDoc);
-      this.expensesRecords = this.expensesRecords.filter((record) => record.id !== recordId);
-      console.log('Expense record deleted:', recordId);
-    } catch (error) {
-      console.error('Error deleting expense record:', error);
-    }
-  }
-
-  private formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; // ✅ Ensures YYYY-MM-DD format
-  }
-
   async addExpenseRecord() {
     if (this.expenseData.date && this.expenseData.cost && this.expenseData.description) {
-      // ✅ Ensure only YYYY-MM-DD is saved
+      // Ensure only YYYY-MM-DD is saved
       this.expenseData.date = this.formatDate(new Date(this.expenseData.date));
 
       try {
@@ -67,6 +49,9 @@ export class AnotherExpensesPage implements OnInit {
           carId: this.carId,
           ...this.expenseData,
         });
+
+        // Update spending records
+        await this.updateSpending(this.expenseData.cost);
 
         // Reset form and refresh records
         this.expenseData = { date: '', cost: '', description: '' };
@@ -80,7 +65,70 @@ export class AnotherExpensesPage implements OnInit {
     }
   }
 
+  async deleteExpenseRecord(recordId: string) {
+    try {
+      const record = this.expensesRecords.find((r) => r.id === recordId);
+      if (record) {
+        await this.updateSpending(-record.cost);
+      }
+
+      const expenseDoc = doc(this.firestore, 'AnotherExpenses', recordId);
+      await deleteDoc(expenseDoc);
+      this.expensesRecords = this.expensesRecords.filter((record) => record.id !== recordId);
+      console.log('Expense record deleted:', recordId);
+    } catch (error) {
+      console.error('Error deleting expense record:', error);
+    }
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; // Ensures YYYY-MM-DD format
+  }
+
   toggleExpenseForm() {
     this.showExpenseForm = !this.showExpenseForm;
+  }
+
+  private async updateSpending(amount: number) {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+
+      const monthlyDocRef = doc(this.firestore, 'Monthly_Spending', `${this.carId}_${year}-${month}`);
+      const yearlyDocRef = doc(this.firestore, 'Yearly_Spending', `${this.carId}`);
+      const allTimeDocRef = doc(this.firestore, 'All_Time_Spending', `${this.carId}`);
+
+      await this.modifySpending(monthlyDocRef, amount);
+      await this.modifySpending(yearlyDocRef, amount);
+      await this.modifySpending(allTimeDocRef, amount);
+    } catch (error) {
+      console.error('Error updating spending:', error);
+    }
+  }
+
+  private async modifySpending(docRef: any, amount: number) {
+    try {
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; // FIXED: Explicit Type Casting
+        await updateDoc(docRef, {
+          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
+          lastSpent: new Date().toISOString(),
+        });
+      } else {
+        await addDoc(collection(this.firestore, docRef.path), {
+          carID: this.carId,
+          spentsThisPeriod: amount,
+          lastSpent: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Error modifying spending:', error);
+    }
   }
 }

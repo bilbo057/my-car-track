@@ -120,102 +120,6 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
-  // Helper method 1: Fetch monthly spending
-  private async displayMonthSpents() {
-    try {
-      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
-        const monthlyData = monthlySpendingSnapshot.docs[0].data() as { spentsThisMonth: number };
-        this.carDetails.spentThisMonth = monthlyData.spentsThisMonth || 0;
-      } else {
-        this.carDetails.spentThisMonth = 0;
-      }
-    } catch (error) {
-      console.error('Error fetching monthly spending:', error);
-    }
-  }
-  
-  // Helper method 2: Fetch average monthly spending
-  private async displayAverageMonthSpents() {
-    try {
-      const monthlySpendingSnapshot = await this.firestore.collection('Monthly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
-        const monthlyData = monthlySpendingSnapshot.docs[0].data() as { spentsThisMonth: number; numberOfMonths: number };
-        const numberOfMonths = monthlyData.numberOfMonths || 1;
-        this.carDetails.averageSpentThisMonth = numberOfMonths > 1 
-          ? monthlyData.spentsThisMonth / (numberOfMonths - 1) 
-          : 0;
-      } else {
-        this.carDetails.averageSpentThisMonth = 0;
-      }
-    } catch (error) {
-      console.error('Error fetching average monthly spending:', error);
-    }
-  }
-  
-  // Helper method 3: Fetch yearly spending
-  private async displayYearlySpents() {
-    try {
-      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (yearlySpendingSnapshot && !yearlySpendingSnapshot.empty) {
-        const yearlyData = yearlySpendingSnapshot.docs[0].data() as { spentsThisYear: number };
-        this.carDetails.spentThisYear = yearlyData.spentsThisYear || 0;
-      } else {
-        this.carDetails.spentThisYear = 0;
-      }
-    } catch (error) {
-      console.error('Error fetching yearly spending:', error);
-    }
-  }
-  
-  // Helper method 4: Fetch average yearly spending
-  private async displayAverageYearlySpents() {
-    try {
-      const yearlySpendingSnapshot = await this.firestore.collection('Yearly_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (yearlySpendingSnapshot && !yearlySpendingSnapshot.empty) {
-        const yearlyData = yearlySpendingSnapshot.docs[0].data() as { spentsThisYear: number; numberOfYears: number };
-        const numberOfYears = yearlyData.numberOfYears || 1;
-        this.carDetails.averageSpentThisYear = numberOfYears > 1 
-          ? yearlyData.spentsThisYear / (numberOfYears - 1) 
-          : 0;
-      } else {
-        this.carDetails.averageSpentThisYear = 0;
-      }
-    } catch (error) {
-      console.error('Error fetching average yearly spending:', error);
-    }
-  }
-  
-  // Helper method 5: Fetch total spending
-  private async displayTotalSpent() {
-    try {
-      const allTimeSpendingSnapshot = await this.firestore.collection('All_Time_Spending', (ref) =>
-        ref.where('carID', '==', this.carId)
-      ).get().toPromise();
-  
-      if (allTimeSpendingSnapshot && !allTimeSpendingSnapshot.empty) {
-        const allTimeData = allTimeSpendingSnapshot.docs[0].data() as { moneySpent: number };
-        this.carDetails.totalSpent = allTimeData.moneySpent || 0;
-      } else {
-        this.carDetails.totalSpent = 0;
-      }
-    } catch (error) {
-      console.error('Error fetching total spending:', error);
-    }
-  }    
-
   private formatDate(date: string | Date): string {
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
@@ -229,7 +133,6 @@ export class CarDetailsPage implements OnInit {
   
     return `${day}-${month}-${year}`;
   }
-  
 
   async showAddUserPopup() {
     const alert = await this.alertController.create({

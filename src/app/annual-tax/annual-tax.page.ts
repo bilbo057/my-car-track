@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-annual-tax',
@@ -67,6 +67,9 @@ export class AnnualTaxPage implements OnInit {
           cost: this.cost,
         });
 
+        // Update spending records
+        await this.updateSpending(this.cost);
+
         // Reset the form and refresh the list
         this.taxYear = null;
         this.paymentHalf = '';
@@ -84,6 +87,11 @@ export class AnnualTaxPage implements OnInit {
 
   async deleteAnnualTaxRecord(recordId: string) {
     try {
+      const record = this.annualTaxDocuments.find((r) => r.id === recordId);
+      if (record) {
+        await this.updateSpending(-record.cost);
+      }
+
       const taxDoc = doc(this.firestore, 'AnnualTax', recordId);
       await deleteDoc(taxDoc);
       this.annualTaxDocuments = this.annualTaxDocuments.filter((record) => record.id !== recordId);
@@ -103,5 +111,45 @@ export class AnnualTaxPage implements OnInit {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  private async updateSpending(amount: number) {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+
+      const monthlyDocRef = doc(this.firestore, 'Monthly_Spending', `${this.carId}_${year}-${month}`);
+      const yearlyDocRef = doc(this.firestore, 'Yearly_Spending', `${this.carId}`);
+      const allTimeDocRef = doc(this.firestore, 'All_Time_Spending', `${this.carId}`);
+
+      await this.modifySpending(monthlyDocRef, amount);
+      await this.modifySpending(yearlyDocRef, amount);
+      await this.modifySpending(allTimeDocRef, amount);
+    } catch (error) {
+      console.error('Error updating spending:', error);
+    }
+  }
+
+  private async modifySpending(docRef: any, amount: number) {
+    try {
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; // FIXED: Explicit Type Casting
+        await updateDoc(docRef, {
+          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
+          lastSpent: new Date().toISOString(),
+        });
+      } else {
+        await addDoc(collection(this.firestore, docRef.path), {
+          carID: this.carId,
+          spentsThisPeriod: amount,
+          lastSpent: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Error modifying spending:', error);
+    }
   }
 }

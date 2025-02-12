@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-maintaining',
@@ -9,13 +9,12 @@ import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebas
 })
 export class MaintainingPage implements OnInit {
   carId: string = '';
-  maintainingDocuments: any[] = []; // List of maintenance documents
-  maintainingData: any = { type: '', cost: '', date: '', bonusDescription: '' }; // Form data with bonus description
-  showForm: boolean = false; // Toggle form visibility
+  maintainingDocuments: any[] = [];
+  maintainingData: any = { type: '', cost: '', date: '', description: '' };
+  showForm: boolean = false;
 
   private firestore = getFirestore();
 
-  // Hardcoded maintaining options
   maintainingOptions = [
     { label: 'Двигател редовна', value: 'oil_change' },
     { label: 'Гуми', value: 'tires' },
@@ -32,11 +31,11 @@ export class MaintainingPage implements OnInit {
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
     if (this.carId) {
-      await this.loadMaintainingDocuments();
+      await this.loadMaintainingRecords();
     }
   }
 
-  private async loadMaintainingDocuments() {
+  private async loadMaintainingRecords() {
     try {
       const maintainingCollection = collection(this.firestore, 'Maintaining');
       const q = query(maintainingCollection, where('carId', '==', this.carId));
@@ -46,35 +45,104 @@ export class MaintainingPage implements OnInit {
         ...doc.data(),
       }));
     } catch (error) {
-      console.error('Error loading maintaining documents:', error);
+      console.error('Error loading maintaining records:', error);
     }
   }
 
   async addMaintainingRecord() {
     if (this.maintainingData.type && this.maintainingData.cost && this.maintainingData.date) {
       try {
+        const formattedDate = this.formatDate(this.maintainingData.date);
+
         const maintainingCollection = collection(this.firestore, 'Maintaining');
         await addDoc(maintainingCollection, {
           carId: this.carId,
           type: this.maintainingData.type,
           cost: this.maintainingData.cost,
-          date: this.maintainingData.date,
-          bonusDescription: this.maintainingData.bonusDescription || '' // Store optional description
+          date: formattedDate,
+          description: this.maintainingData.description || ''
         });
 
-        // Reset the form and refresh the list
-        this.maintainingData = { type: '', cost: '', date: '', bonusDescription: '' };
+        // Update spending records
+        await this.updateSpending(this.maintainingData.cost);
+
+        // Reset form and refresh records
+        this.maintainingData = { type: '', cost: '', date: '', description: '' };
         this.showForm = false;
-        await this.loadMaintainingDocuments();
+        await this.loadMaintainingRecords();
       } catch (error) {
-        console.error('Error adding maintaining document:', error);
+        console.error('Error adding maintaining record:', error);
       }
     } else {
       console.error('All required fields must be filled.');
     }
   }
 
+  async deleteMaintainingRecord(recordId: string) {
+    try {
+      const record = this.maintainingDocuments.find((r) => r.id === recordId);
+      if (record) {
+        await this.updateSpending(-record.cost);
+      }
+
+      const maintainingDoc = doc(this.firestore, 'Maintaining', recordId);
+      await deleteDoc(maintainingDoc);
+      this.maintainingDocuments = this.maintainingDocuments.filter((record) => record.id !== recordId);
+      console.log('Maintaining record deleted:', recordId);
+    } catch (error) {
+      console.error('Error deleting maintaining record:', error);
+    }
+  }
+
+  private formatDate(date: string): string {
+    const parsedDate = new Date(date);
+    return `${parsedDate.getFullYear()}-${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}-${parsedDate
+      .getDate()
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  private async updateSpending(amount: number) {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+
+      const monthlyDocRef = doc(this.firestore, 'Monthly_Spending', `${this.carId}_${year}-${month}`);
+      const yearlyDocRef = doc(this.firestore, 'Yearly_Spending', `${this.carId}_${year}`);
+      const allTimeDocRef = doc(this.firestore, 'All_Time_Spending', `${this.carId}`);
+
+      await this.modifySpending(monthlyDocRef, amount);
+      await this.modifySpending(yearlyDocRef, amount);
+      await this.modifySpending(allTimeDocRef, amount);
+    } catch (error) {
+      console.error('Error updating spending:', error);
+    }
+  }
+
+  private async modifySpending(docRef: any, amount: number) {
+    try {
+      const docSnapshot = await getDoc(docRef);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number };
+        await updateDoc(docRef, {
+          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount, // FIXED
+          lastSpent: new Date().toISOString(),
+        });
+      } else {
+        await addDoc(collection(this.firestore, docRef.path), {
+          carID: this.carId,
+          spentsThisPeriod: amount,
+          lastSpent: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Error modifying spending:', error);
+    }
   }
 }

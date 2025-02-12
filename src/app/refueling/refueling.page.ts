@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { SpendingService } from '../services/spending.service'; // Ensure this path is correct
 
 @Component({
   selector: 'app-refueling',
@@ -15,7 +16,7 @@ export class RefuelingPage implements OnInit {
   showForm: boolean = false; // Toggle form visibility
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -70,6 +71,9 @@ export class RefuelingPage implements OnInit {
           odometer: this.refuelingData.odometer,
         });
 
+        // Add to spending after adding the record
+        await this.spendingService.addExpense(this.carId, this.refuelingData.cost);
+
         // Reset form and refresh list
         this.refuelingData = { date: '', fuelQuantity: null, cost: null, odometer: null };
         this.showForm = false;
@@ -85,9 +89,16 @@ export class RefuelingPage implements OnInit {
   async deleteRefuelingRecord(recordId: string) {
     try {
       const refuelDoc = doc(this.firestore, 'Refueling', recordId);
-      await deleteDoc(refuelDoc);
-      this.refuelingDocuments = this.refuelingDocuments.filter((record) => record.id !== recordId);
-      console.log('Refueling record deleted:', recordId);
+      const docSnap = await getDoc(refuelDoc);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        await deleteDoc(refuelDoc);
+        this.refuelingDocuments = this.refuelingDocuments.filter((record) => record.id !== recordId);
+        
+        // Subtract the cost from spending after deletion
+        await this.spendingService.subtractExpense(this.carId, data['cost']);
+      }
     } catch (error) {
       console.error('Error deleting refueling record:', error);
     }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc } from 'firebase/firestore';
-import { HttpClient } from '@angular/common/http';
+import { SpendingService } from '../services/spending.service'; // Make sure this path is correct
 
 @Component({
   selector: 'app-toll-tax',
@@ -16,7 +16,7 @@ export class TollTaxPage implements OnInit {
   showForm: boolean = false; // Toggle form visibility
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
@@ -71,6 +71,9 @@ export class TollTaxPage implements OnInit {
           amount: this.tollTaxData.amount,
         });
 
+        // Add to spending after adding the record
+        await this.spendingService.addExpense(this.carId, this.tollTaxData.amount);
+
         // Reset form and refresh list
         this.tollTaxData = { startDate: '', amount: null };
         this.showForm = false;
@@ -86,9 +89,16 @@ export class TollTaxPage implements OnInit {
   async deleteTollTaxRecord(recordId: string) {
     try {
       const tollDoc = doc(this.firestore, 'TollTax', recordId);
-      await deleteDoc(tollDoc);
-      this.tollTaxDocuments = this.tollTaxDocuments.filter((record) => record.id !== recordId);
-      console.log('Toll tax record deleted:', recordId);
+      const docSnap = await getDoc(tollDoc);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        await deleteDoc(tollDoc);
+        this.tollTaxDocuments = this.tollTaxDocuments.filter((record) => record.id !== recordId);
+        
+        // Subtract the cost from spending after deletion
+        await this.spendingService.subtractExpense(this.carId, data['amount']);
+      }
     } catch (error) {
       console.error('Error deleting toll tax record:', error);
     }
@@ -107,14 +117,6 @@ export class TollTaxPage implements OnInit {
       .getDate()
       .toString()
       .padStart(2, '0')}`;
-  }
-
-  private async showTollTaxStatus(status: any) {
-    alert(`Toll Tax Status:\n${JSON.stringify(status, null, 2)}`);
-  }
-
-  private async showErrorAlert() {
-    alert('Unable to fetch toll tax status. Please try again later.');
   }
 
   toggleForm() {
