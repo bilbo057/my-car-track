@@ -84,15 +84,18 @@ export class MaintainingPage implements OnInit {
       if (record) {
         await this.updateSpending(-record.cost);
       }
-
+  
       const maintainingDoc = doc(this.firestore, 'Maintaining', recordId);
       await deleteDoc(maintainingDoc);
+  
+      // Remove from the local list
       this.maintainingDocuments = this.maintainingDocuments.filter((record) => record.id !== recordId);
       console.log('Maintaining record deleted:', recordId);
     } catch (error) {
       console.error('Error deleting maintaining record:', error);
     }
   }
+  
 
   private formatDate(date: string): string {
     const parsedDate = new Date(date);
