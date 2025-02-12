@@ -9,6 +9,10 @@ interface User {
   username: string;
 }
 
+interface SpendingData {
+  spentsThisPeriod?: number;
+}
+
 @Component({
   selector: 'app-car-details',
   templateUrl: './car-details.page.html',
@@ -17,6 +21,10 @@ interface User {
 export class CarDetailsPage implements OnInit {
   carId: string = '';
   carDetails: any;
+  spentThisMonth: number = 0;
+  spentThisYear: number = 0;
+  totalSpent: number = 0;
+  averageSpentPerMonth: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,11 +33,12 @@ export class CarDetailsPage implements OnInit {
     private alertController: AlertController
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       this.carId = params.get('id') || '';
       if (this.carId) {
         this.loadCarDetails();
+        this.loadSpendingData();
       }
     });
   }
@@ -37,19 +46,108 @@ export class CarDetailsPage implements OnInit {
   async loadCarDetails() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-      if (carDoc && carDoc.exists) {
+      if (carDoc?.exists) {
         this.carDetails = carDoc.data();
       }
-      if (this.carDetails.Date_added) {
-        const rawDate = this.carDetails.Date_added;
-        const formattedDate = this.formatDate(rawDate);
-        this.carDetails.Date_added = formattedDate;
+      if (this.carDetails?.Date_added) {
+        this.carDetails.Date_added = this.formatDate(this.carDetails.Date_added);
       }
     } catch (error) {
       console.error('Error loading car details:', error);
     }
   }
 
+  async loadSpendingData() {
+    try {
+      await this.loadMonthlySpending();
+      await this.loadYearlySpending();
+      await this.loadAllTimeSpending();
+  
+      this.carDetails.spentThisMonth = this.spentThisMonth;
+      this.carDetails.averageSpentThisMonth = this.averageSpentPerMonth;
+      this.carDetails.spentThisYear = this.spentThisYear;
+      this.carDetails.totalSpent = this.totalSpent;
+    } catch (error) {
+      console.error('Error loading spending data:', error);
+    }
+  }
+  
+  private async loadMonthlySpending() {
+    try {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  
+      const monthlySpendingSnapshot = await this.firestore
+        .collection('Monthly_Spending', (ref) => ref.where('carID', '==', this.carId))
+        .get()
+        .toPromise();
+  
+      if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
+        let monthlySpendingValues: number[] = [];
+  
+        monthlySpendingSnapshot.docs.forEach((doc) => {
+          const data = doc.data() as SpendingData;
+          if (data?.spentsThisPeriod !== undefined) {
+            monthlySpendingValues.push(data.spentsThisPeriod);
+          }
+        });
+  
+        this.averageSpentPerMonth =
+          monthlySpendingValues.length > 0
+            ? monthlySpendingValues.reduce((sum, value) => sum + value, 0) / monthlySpendingValues.length
+            : 0;
+  
+        const currentMonthDoc = monthlySpendingSnapshot.docs.find((doc) =>
+          doc.id.includes(`${currentYear}-${currentMonth}`)
+        );
+  
+        this.spentThisMonth = currentMonthDoc
+          ? (currentMonthDoc.data() as SpendingData)?.spentsThisPeriod ?? 0
+          : 0;
+      } else {
+        this.spentThisMonth = 0;
+        this.averageSpentPerMonth = 0;
+      }
+    } catch (error) {
+      console.error('Error loading monthly spending:', error);
+    }
+  }
+  
+  private async loadYearlySpending() {
+    try {
+      const currentYear = new Date().getFullYear();
+  
+      const yearlyDocSnap = await this.firestore
+        .collection('Yearly_Spending')
+        .doc(`${this.carId}_${currentYear}`)
+        .get()
+        .toPromise();
+  
+      this.spentThisYear = yearlyDocSnap?.exists
+        ? (yearlyDocSnap.data() as SpendingData)?.spentsThisPeriod ?? 0
+        : 0;
+    } catch (error) {
+      console.error('Error loading yearly spending:', error);
+    }
+  }
+  
+  private async loadAllTimeSpending() {
+    try {
+      const allTimeDocSnap = await this.firestore
+        .collection('All_Time_Spending')
+        .doc(this.carId)
+        .get()
+        .toPromise();
+  
+      this.totalSpent = allTimeDocSnap?.exists
+        ? (allTimeDocSnap.data() as SpendingData)?.spentsThisPeriod ?? 0
+        : 0;
+    } catch (error) {
+      console.error('Error loading all-time spending:', error);
+    }
+  }
+  
   editCar() {
     if (this.carId) {
       this.router.navigate(['/car-edit', this.carId]);
