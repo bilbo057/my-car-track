@@ -58,6 +58,10 @@
     <ion-button color="secondary" expand="full" (click)="goToAnotherExpenses()">
       Another Expenses
     </ion-button>
+    <ion-button color="secondary" expand="full" [routerLink]="['/monthly-expenses', { carId: carId }]">
+      View Monthly Expenses
+    </ion-button>
+    
   </ion-content>
 </ion-content>
 

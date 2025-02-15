@@ -31,7 +31,8 @@ const routes: Routes = [
   {
     path: 'car-edit/:id',
     loadChildren: () => import('./car-edit/car-edit.module').then((m) => m.CarEditPageModule),
-  },  {
+  },
+  {
     path: 'refueling',
     loadChildren: () => import('./refueling/refueling.module').then( m => m.RefuelingPageModule)
   },
@@ -62,7 +63,15 @@ const routes: Routes = [
   {
     path: 'another-expenses',
     loadChildren: () => import('./another-expenses/another-expenses.module').then( m => m.AnotherExpensesPageModule)
+  },  {
+    path: 'monthly-expenses',
+    loadChildren: () => import('./monthly-expenses/monthly-expenses.module').then( m => m.MonthlyExpensesPageModule)
   },
+
+  // {
+  //   path: 'car-price-estimation',
+  //   loadChildren: () => import('./car-price-estimation/car-price-estimation.module').then( m => m.CarPriceEstimationPageModule)
+  // },
 
 ];
 

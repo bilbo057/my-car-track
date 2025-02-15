@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Monthly Expenses</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngFor="let expense of monthlyExpenses">
+    <ion-card-header>
+      <ion-card-title>Month: {{ expense.id.split('_')[1] }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Amount Spent:</strong> {{ expense.spentsThisPeriod | currency }}</p>
+      <p><strong>Last Updated:</strong> {{ expense.lastSpent }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
