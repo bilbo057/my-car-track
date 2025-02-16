@@ -91,27 +91,25 @@ export class CarAddPage implements OnInit {
 
   async addCar() {
     const userId = await this.getUserId();
-    if (!userId) {
-      console.error('User ID is not available.');
-      return;
+    if (userId) {
+        this.carData.KM_added = this.carData.Current_KM;
+
+        if (this.carData.Year) {
+            const date = new Date(this.carData.Year);
+            this.carData.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+        }
+
+        const carId = await this.addCarToFirestore(userId);
+        await this.createUserCarEntry(userId, carId);
+
+        if (this.selectedFiles.length > 0) {
+            await this.uploadImages(carId);
+        }
+
+        this.router.navigate(['/cars']);
+    } else {
+        console.error('User ID is not available.');
     }
-
-    this.carData.KM_added = this.carData.Current_KM;
-
-    if (this.carData.Year) {
-      const date = new Date(this.carData.Year);
-      this.carData.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-    }
-
-    const carId = await this.addCarToFirestore(userId);
-    await this.createUserCarEntry(userId, carId);
-
-    if (this.selectedFiles.length > 0) {
-      const imageNames = await this.uploadCarImages(carId, this.selectedFiles);
-      await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames: imageNames });
-    }
-
-    this.router.navigate(['/cars']);
   }
 
   private async getUserId(): Promise<string | null> {
@@ -147,39 +145,43 @@ export class CarAddPage implements OnInit {
     });
   }
 
-  onFileSelected(event: any) {
-    if (event.target.files.length > 0) {
-      this.selectedFiles = Array.from(event.target.files);
-      this.imagePreviews = [];
+  onFilesSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
 
-      this.selectedFiles.forEach((file) => {
+    this.selectedFiles = files;
+    this.imagePreviews = [];
+
+    files.forEach(file => {
         const reader = new FileReader();
         reader.onload = () => {
-          this.imagePreviews.push(reader.result as string);
+            this.imagePreviews.push(reader.result as string);
         };
         reader.readAsDataURL(file);
-      });
-    } else {
-      this.selectedFiles = [];
-      this.imagePreviews = [];
-    }
+    });
+}
+
+private async uploadImages(carId: string) {
+  if (this.selectedFiles.length === 0) {
+      return;
   }
 
-  private async uploadCarImages(carId: string, files: File[]): Promise<string[]> {
-    const uploadedFileNames: string[] = [];
+  const storage = getStorage();
+  const photoNames: string[] = [];
 
-    for (const file of files) {
-      const fileName = `${carId}_${file.name}`;
-      const fileRef = ref(this.storage, `car_images/${fileName}`);
+  for (const file of this.selectedFiles) {
+      const fileName = `${carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
+      const imageRef = ref(storage, `car_images/${fileName}`);
 
       try {
-        await uploadBytes(fileRef, file);
-        uploadedFileNames.push(fileName);
+          await uploadBytes(imageRef, file);
+          photoNames.push(fileName);
       } catch (error) {
-        console.error('Error uploading image:', error);
+          console.error('Error uploading image:', error);
       }
-    }
+  }
 
-    return uploadedFileNames;
+    if (photoNames.length > 0) {
+        await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames });
+    }
   }
 }

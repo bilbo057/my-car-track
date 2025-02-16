@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 @Component({
   selector: 'app-car-edit',
@@ -11,13 +12,18 @@ import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'fireb
 export class CarEditPage implements OnInit {
   carId: string = '';
   carDetails: any = {};
-  brandOptions: { BrandID: string; BrandName: string; Models: string[] }[] = []; // Fetched dynamically
-  filteredModels: string[] = []; // Filtered models for the selected brand
-  chassisTypes: { Chassis_type: string; Label: string }[] = []; // Fetched dynamically
-  engineTypes: { Engine_type: string; Label: string }[] = []; // Fetched dynamically
-  transmissionTypes: { Type: string; Label: string }[] = []; // Fetched dynamically
+  brandOptions: { BrandID: string; BrandName: string; Models: string[] }[] = [];
+  filteredModels: string[] = [];
+  chassisTypes: { Chassis_type: string; Label: string }[] = [];
+  engineTypes: { Engine_type: string; Label: string }[] = [];
+  transmissionTypes: { Type: string; Label: string }[] = [];
+  
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+  existingImages: string[] = [];
 
-  private firestore = getFirestore(); // Firestore instance
+  private firestore = getFirestore();
+  private storage = getStorage();
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -29,40 +35,42 @@ export class CarEditPage implements OnInit {
       }
     });
 
-    this.loadBrands(); // Fetch brands and models from Firestore
-    this.loadChassisTypes(); // Fetch chassis types from Firestore
-    this.loadEngineTypes(); // Fetch engine types from Firestore
-    this.loadTransmissionTypes(); // Fetch transmission types from Firestore
+    this.loadBrands();
+    this.loadChassisTypes();
+    this.loadEngineTypes();
+    this.loadTransmissionTypes();
   }
 
-  // Load car details by ID
   async loadCarDetails() {
     try {
-      const carDoc = doc(this.firestore, 'Cars', this.carId);
-      const carSnapshot = await getDoc(carDoc);
-      if (carSnapshot.exists()) {
+        console.log('Loading car details...');
+
+        const carDoc = doc(this.firestore, 'Cars', this.carId);
+        const carSnapshot = await getDoc(carDoc);
+
+        if (!carSnapshot.exists()) {
+            console.error('Car not found');
+            this.router.navigate(['/cars']);
+            return;
+        }
+
         this.carDetails = carSnapshot.data();
+        console.log('Car details loaded:', this.carDetails);
 
-        // Convert Date from DD-MM-YYYY to ISO format for ion-datetime
-        if (this.carDetails.Date) {
-          const [day, month, year] = this.carDetails.Date.split('-');
-          this.carDetails.Date = `${year}-${month}-${day}`;
+        // Ensure photoUrls is properly updated
+        this.carDetails.photoUrls = [];
+        if (this.carDetails.photoNames) {
+            for (const photoName of this.carDetails.photoNames) {
+                const photoUrl = await getDownloadURL(ref(this.storage, `car_images/${photoName}`));
+                this.carDetails.photoUrls.push(photoUrl);
+            }
+            this.existingImages = this.carDetails.photoNames;
         }
-
-        // Ensure filteredModels is updated based on the loaded brand
-        if (this.carDetails.Brand) {
-          this.loadModels(this.carDetails.Brand);
-        }
-      } else {
-        console.error('Car not found');
-        this.router.navigate(['/cars']);
-      }
     } catch (error) {
-      console.error('Error loading car details:', error);
+        console.error('Error loading car details:', error);
     }
   }
 
-  // Fetch brands and their models from Firestore
   async loadBrands() {
     try {
       const brandsRef = collection(this.firestore, 'Brands');
@@ -72,86 +80,124 @@ export class CarEditPage implements OnInit {
         BrandName: doc.data()['name'],
         Models: doc.data()['models'],
       }));
-      console.log('Brands with models loaded:', this.brandOptions);
-
-      // Update filteredModels if the carDetails already have a Brand
-      if (this.carDetails.Brand) {
-        this.loadModels(this.carDetails.Brand);
-      }
     } catch (error) {
       console.error('Error fetching brands:', error);
     }
   }
 
-  // Load models based on the selected brand
   loadModels(brandId: string) {
     const selectedBrand = this.brandOptions.find((brand) => brand.BrandID === brandId);
     this.filteredModels = selectedBrand ? selectedBrand.Models : [];
-    console.log('Filtered models for brand:', brandId, this.filteredModels);
   }
 
-  // Fetch chassis types from Firestore
   async loadChassisTypes() {
     try {
       const chassisRef = collection(this.firestore, 'Chassies');
       const snapshot = await getDocs(chassisRef);
       this.chassisTypes = snapshot.docs.map((doc) => ({
-        Chassis_type: doc.data()['Chassis_type'], // Chassis type
-        Label: doc.data()['Label'], // Chassis label
+        Chassis_type: doc.data()['Chassis_type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Chassis types with labels loaded:', this.chassisTypes);
     } catch (error) {
       console.error('Error fetching chassis types:', error);
     }
   }
 
-  // Fetch engine types from Firestore
   async loadEngineTypes() {
     try {
       const enginesRef = collection(this.firestore, 'Engines');
       const snapshot = await getDocs(enginesRef);
       this.engineTypes = snapshot.docs.map((doc) => ({
-        Engine_type: doc.data()['Engine_type'], // Engine type
-        Label: doc.data()['Label'], // Engine label
+        Engine_type: doc.data()['Engine_type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Engine types with labels loaded:', this.engineTypes);
     } catch (error) {
       console.error('Error fetching engine types:', error);
     }
   }
 
-  // Fetch transmission types from Firestore
   async loadTransmissionTypes() {
     try {
       const transmissionsRef = collection(this.firestore, 'Transmitions');
       const snapshot = await getDocs(transmissionsRef);
       this.transmissionTypes = snapshot.docs.map((doc) => ({
-        Type: doc.data()['Type'], // Transmission type
-        Label: doc.data()['Label'], // Transmission label
+        Type: doc.data()['Type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Transmission types loaded:', this.transmissionTypes);
     } catch (error) {
       console.error('Error fetching transmission types:', error);
     }
   }
 
-  // Save updated car details to Firestore
+  onFilesSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    this.selectedFiles = files;
+    this.imagePreviews = [];
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreviews.push(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   async saveCar() {
     try {
       const updatedCarDetails = { ...this.carDetails };
-  
-      // Convert the date from ISO format (used by ion-datetime) to DD-MM-YYYY and update 'Year'
+
       if (updatedCarDetails.Year) {
         const date = new Date(updatedCarDetails.Year);
         updatedCarDetails.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
       }
-  
+
+      if (this.selectedFiles.length > 0) {
+        await this.uploadImages();
+      }
+
       const carDoc = doc(this.firestore, 'Cars', this.carId);
       await updateDoc(carDoc, updatedCarDetails);
-      console.log('Year field updated successfully');
+      console.log('Car details updated successfully');
       this.router.navigate(['/cars']);
     } catch (error) {
       console.error('Error updating car:', error);
     }
-  }      
+  }
+
+  private async uploadImages() {
+    if (this.selectedFiles.length === 0) return;
+
+    const photoNames: string[] = this.existingImages || [];
+    
+    for (const file of this.selectedFiles) {
+      const fileName = `${this.carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
+      const imageRef = ref(this.storage, `car_images/${fileName}`);
+
+      try {
+        await uploadBytes(imageRef, file);
+        photoNames.push(fileName);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+
+    if (photoNames.length > 0) {
+      await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames });
+    }
+  }
+
+  async deletePhoto(fileName: string) {
+    try {
+      const imageRef = ref(this.storage, `car_images/${fileName}`);
+      await deleteObject(imageRef);
+
+      this.existingImages = this.existingImages.filter(name => name !== fileName);
+      await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames: this.existingImages });
+
+      console.log('Photo deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+    }
+  }
 }
