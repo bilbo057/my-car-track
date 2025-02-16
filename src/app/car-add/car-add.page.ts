@@ -1,7 +1,7 @@
-// car-add.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore'; // Firestore functions
+import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -10,25 +10,27 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./car-add.page.scss'],
 })
 export class CarAddPage implements OnInit {
-  carData: any = {}; // Car data object
-  carBrands: { BrandID: string; BrandName: string; Models: string[] }[] = []; // Dynamic brand options
-  carModels: string[] = []; // Models for selected brand
-  chassisTypes: { Chassis_type: string; Label: string }[] = []; // Dynamic chassis types with labels
-  engineTypes: { Engine_type: string; Label: string }[] = []; // Dynamic engine types with labels
-  transmissionTypes: { Type: string; Label: string }[] = []; // Dynamic transmission types with labels
+  carData: any = {};
+  carBrands: { BrandID: string; BrandName: string; Models: string[] }[] = [];
+  carModels: string[] = [];
+  chassisTypes: { Chassis_type: string; Label: string }[] = [];
+  engineTypes: { Engine_type: string; Label: string }[] = [];
+  transmissionTypes: { Type: string; Label: string }[] = [];
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
 
-  private firestore = getFirestore(); // Firestore instance
+  private firestore = getFirestore();
+  private storage = getStorage();
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.loadBrands(); // Fetch brands and models from Firestore
-    this.loadChassisTypes(); // Fetch chassis types from Firestore
-    this.loadEngineTypes(); // Fetch engine types from Firestore
-    this.loadTransmissionTypes(); // Fetch transmission types from Firestore
+    this.loadBrands();
+    this.loadChassisTypes();
+    this.loadEngineTypes();
+    this.loadTransmissionTypes();
   }
 
-  // Fetch brands and their models from Firestore
   async loadBrands() {
     try {
       const brandsRef = collection(this.firestore, 'Brands');
@@ -38,104 +40,98 @@ export class CarAddPage implements OnInit {
         BrandName: doc.data()['name'],
         Models: doc.data()['models'],
       }));
-      console.log('Brands with models loaded:', this.carBrands);
     } catch (error) {
       console.error('Error fetching brands:', error);
     }
   }
 
-  // Load models based on the selected brand
   loadModel(brandId: string) {
     const selectedBrand = this.carBrands.find((brand) => brand.BrandID === brandId);
     this.carModels = selectedBrand ? selectedBrand.Models : [];
   }
 
-  // Fetch chassis types from Firestore
   async loadChassisTypes() {
     try {
       const chassisRef = collection(this.firestore, 'Chassies');
       const snapshot = await getDocs(chassisRef);
       this.chassisTypes = snapshot.docs.map((doc) => ({
-        Chassis_type: doc.data()['Chassis_type'], // Chassis type
-        Label: doc.data()['Label'], // Chassis label
+        Chassis_type: doc.data()['Chassis_type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Chassis types with labels loaded:', this.chassisTypes);
     } catch (error) {
       console.error('Error fetching chassis types:', error);
     }
   }
 
-  // Fetch engine types from Firestore
   async loadEngineTypes() {
     try {
       const enginesRef = collection(this.firestore, 'Engines');
       const snapshot = await getDocs(enginesRef);
       this.engineTypes = snapshot.docs.map((doc) => ({
-        Engine_type: doc.data()['Engine_type'], // Engine type
-        Label: doc.data()['Label'], // Engine label
+        Engine_type: doc.data()['Engine_type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Engine types with labels loaded:', this.engineTypes);
     } catch (error) {
       console.error('Error fetching engine types:', error);
     }
   }
 
-  // Fetch transmission types from Firestore
   async loadTransmissionTypes() {
     try {
       const transmissionsRef = collection(this.firestore, 'Transmitions');
       const snapshot = await getDocs(transmissionsRef);
       this.transmissionTypes = snapshot.docs.map((doc) => ({
-        Type: doc.data()['Type'], // Transmission type
-        Label: doc.data()['Label'], // Transmission label
+        Type: doc.data()['Type'],
+        Label: doc.data()['Label'],
       }));
-      console.log('Transmission types with labels loaded:', this.transmissionTypes);
     } catch (error) {
       console.error('Error fetching transmission types:', error);
     }
   }
 
-  // Main method to add car
   async addCar() {
     const userId = await this.getUserId();
-    if (userId) {
-      this.carData.KM_added = this.carData.Current_KM;
-      if (this.carData.Year) {
-        const date = new Date(this.carData.Year);
-        this.carData.Year = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}-${date.getFullYear()}`;
-      }
-      const carId = await this.addCarToFirestore(userId);
-      await this.createUserCarEntry(userId, carId);
-      this.router.navigate(['/cars']);
-    } else {
+    if (!userId) {
       console.error('User ID is not available.');
+      return;
     }
+
+    this.carData.KM_added = this.carData.Current_KM;
+
+    if (this.carData.Year) {
+      const date = new Date(this.carData.Year);
+      this.carData.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+    }
+
+    const carId = await this.addCarToFirestore(userId);
+    await this.createUserCarEntry(userId, carId);
+
+    if (this.selectedFiles.length > 0) {
+      const imageNames = await this.uploadCarImages(carId, this.selectedFiles);
+      await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames: imageNames });
+    }
+
+    this.router.navigate(['/cars']);
   }
 
-  // Fetch the user ID from the AuthService
   private async getUserId(): Promise<string | null> {
     return this.authService.getUserId();
   }
 
-  // Add the car to the "Cars" collection in Firestore
   private async addCarToFirestore(userId: string): Promise<string> {
     const carCollectionRef = collection(this.firestore, 'Cars');
     const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    const formattedDate = `${('0' + now.getDate()).slice(-2)}-${('0' + (now.getMonth() + 1)).slice(-2)}-${now.getFullYear()}`;
 
     const carDocRef = await addDoc(carCollectionRef, {
       ...this.carData,
       Date_added: formattedDate,
       UserID: userId,
+      photoNames: [],
     });
 
     const carId = carDocRef.id;
 
-    // Update the document to include CarID field
     await updateDoc(doc(this.firestore, 'Cars', carId), {
       CarID: carId,
     });
@@ -143,12 +139,47 @@ export class CarAddPage implements OnInit {
     return carId;
   }
 
-  // Create a document in the "User_car" table with UserID and CarID
   private async createUserCarEntry(userId: string, carId: string): Promise<void> {
     const userCarCollectionRef = collection(this.firestore, 'User_car');
     await addDoc(userCarCollectionRef, {
       UserID: userId,
       CarID: carId,
     });
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.selectedFiles = Array.from(event.target.files);
+      this.imagePreviews = [];
+
+      this.selectedFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreviews.push(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      this.selectedFiles = [];
+      this.imagePreviews = [];
+    }
+  }
+
+  private async uploadCarImages(carId: string, files: File[]): Promise<string[]> {
+    const uploadedFileNames: string[] = [];
+
+    for (const file of files) {
+      const fileName = `${carId}_${file.name}`;
+      const fileRef = ref(this.storage, `car_images/${fileName}`);
+
+      try {
+        await uploadBytes(fileRef, file);
+        uploadedFileNames.push(fileName);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+
+    return uploadedFileNames;
   }
 }

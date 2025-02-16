@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 interface User {
   UID: string;
@@ -25,6 +26,7 @@ export class CarDetailsPage implements OnInit {
   spentThisYear: number = 0;
   totalSpent: number = 0;
   averageSpentPerMonth: number = 0;
+  carImages: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -46,17 +48,38 @@ export class CarDetailsPage implements OnInit {
   async loadCarDetails() {
     try {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
-      if (carDoc?.exists) {
+      if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-      }
-      if (this.carDetails?.Date_added) {
-        this.carDetails.Date_added = this.formatDate(this.carDetails.Date_added);
+        
+        // Extract first image from photoNames array
+        if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
+          const firstPhotoName = this.carDetails.photoNames[0];
+          this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
+        } else {
+          this.carDetails.photoUrl = 'assets/img/default-car.png'; // Default image
+        }
+
+        if (this.carDetails.Date_added) {
+          const rawDate = this.carDetails.Date_added;
+          const formattedDate = this.formatDate(rawDate);
+          this.carDetails.Date_added = formattedDate;
+        }
       }
     } catch (error) {
       console.error('Error loading car details:', error);
     }
   }
-
+  async getImageUrl(fileName: string): Promise<string> {
+    try {
+      const storage = getStorage();
+      const imageRef = ref(storage, `car_images/${fileName}`);
+      return await getDownloadURL(imageRef);
+    } catch (error) {
+      console.error('Error fetching image URL:', error);
+      return 'assets/img/default-car.png'; // Default image if fetch fails
+    }
+  }
+ 
   async loadSpendingData() {
     try {
       await this.loadMonthlySpending();

@@ -1,6 +1,19 @@
-<!-- car-add.page.html -->>
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="addCar()">
+    
+    <!-- Image Upload -->
+    <ion-item>
+      <ion-label>Car Images</ion-label>
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple>
+    </ion-item>
+
+    <!-- Image Previews -->
+    <ion-item *ngIf="imagePreviews.length > 0">
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <img *ngFor="let preview of imagePreviews" [src]="preview" alt="Car Image Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+      </div>
+    </ion-item>
+
     <!-- Brand Dropdown -->
     <ion-item>
       <ion-label>Brand</ion-label>
