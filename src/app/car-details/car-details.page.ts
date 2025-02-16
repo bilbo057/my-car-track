@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL, deleteObject  } from 'firebase/storage';
 
 interface User {
   UID: string;
@@ -384,16 +384,17 @@ export class CarDetailsPage implements OnInit {
 
   async deleteCar() {
     if (this.carId) {
-      try {
-        await this.firestore.collection('Cars').doc(this.carId).delete();
-        console.log('Car deleted successfully');
-        await this.deleteRelatedDocuments();
-        this.router.navigate(['/cars']);
-      } catch (error) {
-        console.error('Error deleting car:', error);
-      }
+        try {
+            await this.deleteCarPhotos(); // Delete all photos first
+            await this.firestore.collection('Cars').doc(this.carId).delete();
+            console.log('Car deleted successfully');
+            await this.deleteRelatedDocuments();
+            this.router.navigate(['/cars']);
+        } catch (error) {
+            console.error('Error deleting car:', error);
+        }
     }
-  }
+}
 
   private async deleteRelatedDocuments() {
     await Promise.all([
@@ -410,6 +411,25 @@ export class CarDetailsPage implements OnInit {
       this.deleteVehicleInsuranceRecords(),
       this.deleteYearlyVehicleCheckRecords(),
     ]);
+  }
+
+  private async deleteCarPhotos() {
+    try {
+        if (!this.carDetails.photoNames || this.carDetails.photoNames.length === 0) {
+            return;
+        }
+
+        const storage = getStorage();
+        const deletePromises = this.carDetails.photoNames.map(async (fileName: string) => {
+            const imageRef = ref(storage, `car_images/${fileName}`);
+            await deleteObject(imageRef);
+        });
+
+        await Promise.all(deletePromises);
+        console.log('All car images deleted successfully.');
+    } catch (error) {
+        console.error('Error deleting car images:', error);
+    }
   }
 
   private async deleteMonthlySpending() {
