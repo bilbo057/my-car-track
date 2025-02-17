@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Car Market</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let car of cars" (click)="viewCarDetails(car.id ?? '')">
+      <ion-thumbnail slot="start">
+        <img *ngIf="car.photoUrl" [src]="car.photoUrl" alt="Car Image">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ car.Brand }} {{ car.Model }}</h2>
+        <p>Price: {{ car.Price_of_selling | currency }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Pagination -->
+  <ion-button *ngIf="currentPage > 0" (click)="prevPage()">Previous</ion-button>
+  <ion-button *ngIf="hasMoreCars" (click)="nextPage()">Next</ion-button>
+</ion-content>

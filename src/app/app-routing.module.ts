@@ -71,7 +71,11 @@ const routes: Routes = [
   {
     path: 'car-listing',
     loadChildren: () => import('./car-listing/car-listing.module').then( m => m.CarListingPageModule)
+  },  {
+    path: 'car-market',
+    loadChildren: () => import('./car-market/car-market.module').then( m => m.CarMarketPageModule)
   },
+
 
   // {
   //   path: 'car-price-estimation',
