@@ -71,12 +71,13 @@ const routes: Routes = [
   {
     path: 'car-listing',
     loadChildren: () => import('./car-listing/car-listing.module').then( m => m.CarListingPageModule)
-  },  {
-    path: 'car-market',
-    loadChildren: () => import('./car-market/car-market.module').then( m => m.CarMarketPageModule)
   },
-
-
+  { 
+    path: 'car-market', loadChildren: () => import('./car-market/car-market.module').then(m => m.CarMarketPageModule) 
+  },
+  { 
+    path: 'car-offer-details/:id', loadChildren: () => import('./car-offer-details/car-offer-details.module').then(m => m.CarOfferDetailsPageModule) 
+  },
   // {
   //   path: 'car-price-estimation',
   //   loadChildren: () => import('./car-price-estimation/car-price-estimation.module').then( m => m.CarPriceEstimationPageModule)

@@ -1,22 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-
-interface Car {
-  id?: string;
-  Brand: string;
-  Model: string;
-  License_plate: string;
-  Chassis_type: string;
-  Engine_type: string;
-  Year: string;
-  Current_KM: number;
-  Oil_change: string;
-  Price_of_selling: number;
-  photoNames?: string[];
-  photoUrl?: string;
-}
 
 @Component({
   selector: 'app-car-market',
@@ -24,67 +9,42 @@ interface Car {
   styleUrls: ['./car-market.page.scss'],
 })
 export class CarMarketPage implements OnInit {
-  cars: Car[] = [];
-  pageSize = 20;
-  currentPage = 0;
-  lastVisible: any = null;
-  hasMoreCars = true;
+  offers: any[] = [];
 
-  constructor(private firestore: AngularFirestore, private router: Router) {}
+  private firestore = getFirestore();
+  private storage = getStorage();
+
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    this.loadCars();
+    this.loadOffers();
   }
 
-  async loadCars(reset: boolean = false) {
-    if (reset) {
-      this.cars = [];
-      this.currentPage = 0;
-      this.lastVisible = null;
-      this.hasMoreCars = true;
-    }
-
-    let query = this.firestore.collection('Offers', ref =>
-      ref.orderBy('Date_added', 'desc').limit(this.pageSize)
-    );
-
-    if (this.lastVisible) {
-      query = this.firestore.collection('Offers', ref =>
-        ref.orderBy('Date_added', 'desc').startAfter(this.lastVisible).limit(this.pageSize)
-      );
-    }
-
+  async loadOffers() {
     try {
-      const snapshot = await query.get().toPromise();
-      if (snapshot && !snapshot.empty) {
-        const newCars: Car[] = [];
+      const offersCollection = collection(this.firestore, 'Offers');
+      const snapshot = await getDocs(offersCollection);
 
-        for (const doc of snapshot.docs) {
-          const carData = doc.data() as Car;
-          carData.id = doc.id;
+      this.offers = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const offer = doc.data();
+          offer['offerId'] = doc.id; // Store the document ID
           
-          if (carData.photoNames && carData.photoNames.length > 0) {
-            carData.photoUrl = await this.getImageUrl(carData.photoNames[0]);
+          if (offer['photoNames'] && offer['photoNames'].length > 0) {
+            offer['photoUrl'] = await this.getImageUrl(offer['photoNames'][0]);
           }
 
-          newCars.push(carData);
-        }
-
-        this.cars.push(...newCars);
-        this.lastVisible = snapshot.docs[snapshot.docs.length - 1];
-        this.hasMoreCars = newCars.length === this.pageSize;
-      } else {
-        this.hasMoreCars = false;
-      }
+          return offer;
+        })
+      );
     } catch (error) {
-      console.error('Error loading cars for sale:', error);
+      console.error('Error loading offers:', error);
     }
   }
 
   async getImageUrl(fileName: string): Promise<string> {
     try {
-      const storage = getStorage();
-      const imageRef = ref(storage, `car_images/${fileName}`);
+      const imageRef = ref(this.storage, `car_images/${fileName}`);
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error('Error fetching image URL:', error);
@@ -92,26 +52,7 @@ export class CarMarketPage implements OnInit {
     }
   }
 
-  nextPage() {
-    if (this.hasMoreCars) {
-      this.currentPage++;
-      this.loadCars();
-    }
+  viewOfferDetails(offerId: string) {
+    this.router.navigate(['/car-offer-details', offerId]);
   }
-
-  prevPage() {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      this.loadCars(true);
-    }
-  }
-
-  viewCarDetails(carId: string) {
-    if (!carId) {
-      console.error("Car ID is undefined. Cannot navigate.");
-      return;
-    }
-    this.router.navigate([`/car-listing`, { carId }]);
-  }
-  
 }
