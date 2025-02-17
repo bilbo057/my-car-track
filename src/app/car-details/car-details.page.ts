@@ -69,6 +69,7 @@ export class CarDetailsPage implements OnInit {
       console.error('Error loading car details:', error);
     }
   }
+  
   async getImageUrl(fileName: string): Promise<string> {
     try {
       const storage = getStorage();
@@ -78,6 +79,20 @@ export class CarDetailsPage implements OnInit {
       console.error('Error fetching image URL:', error);
       return 'assets/img/default-car.png'; // Default image if fetch fails
     }
+  }
+
+  private formatDate(date: string | Date): string {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return 'Invalid Date'; // Handle invalid dates
+    }
+  
+    // Format the date as DD-MM-YYYY
+    const day = parsedDate.getDate().toString().padStart(2, '0');
+    const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const year = parsedDate.getFullYear();
+  
+    return `${day}-${month}-${year}`;
   }
  
   async loadSpendingData() {
@@ -246,20 +261,12 @@ export class CarDetailsPage implements OnInit {
     } else {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
-  }
-
-  private formatDate(date: string | Date): string {
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-      return 'Invalid Date'; // Handle invalid dates
+  }goToCarListing() {
+    if (this.carId) {
+      this.router.navigate([`/car-listing`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
-  
-    // Format the date as DD-MM-YYYY
-    const day = parsedDate.getDate().toString().padStart(2, '0');
-    const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
-    const year = parsedDate.getFullYear();
-  
-    return `${day}-${month}-${year}`;
   }
 
   async showAddUserPopup() {

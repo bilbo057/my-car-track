@@ -63,9 +63,14 @@ const routes: Routes = [
   {
     path: 'another-expenses',
     loadChildren: () => import('./another-expenses/another-expenses.module').then( m => m.AnotherExpensesPageModule)
-  },  {
+  },
+  {
     path: 'monthly-expenses',
     loadChildren: () => import('./monthly-expenses/monthly-expenses.module').then( m => m.MonthlyExpensesPageModule)
+  },
+  {
+    path: 'car-listing',
+    loadChildren: () => import('./car-listing/car-listing.module').then( m => m.CarListingPageModule)
   },
 
   // {
