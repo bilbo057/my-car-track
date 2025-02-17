@@ -240,6 +240,13 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
+  goToMonthlyExpenses() {
+    if (this.carId) {
+      this.router.navigate([`/monthly-expenses`, { carId: this.carId }]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate to the refueling page.');
+    }
+  }
 
   private formatDate(date: string | Date): string {
     const parsedDate = new Date(date);
