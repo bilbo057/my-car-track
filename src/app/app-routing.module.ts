@@ -34,55 +34,60 @@ const routes: Routes = [
   },
   {
     path: 'refueling',
-    loadChildren: () => import('./refueling/refueling.module').then( m => m.RefuelingPageModule)
+    loadChildren: () => import('./refueling/refueling.module').then((m) => m.RefuelingPageModule),
   },
   {
     path: 'toll-tax',
-    loadChildren: () => import('./toll-tax/toll-tax.module').then( m => m.TollTaxPageModule)
+    loadChildren: () => import('./toll-tax/toll-tax.module').then((m) => m.TollTaxPageModule),
   },
   {
     path: 'annual-tax',
-    loadChildren: () => import('./annual-tax/annual-tax.module').then( m => m.AnnualTaxPageModule)
+    loadChildren: () => import('./annual-tax/annual-tax.module').then((m) => m.AnnualTaxPageModule),
   },
   {
     path: 'maintaining',
-    loadChildren: () => import('./maintaining/maintaining.module').then( m => m.MaintainingPageModule)
+    loadChildren: () => import('./maintaining/maintaining.module').then((m) => m.MaintainingPageModule),
   },
   {
     path: 'vehicle-insurance',
-    loadChildren: () => import('./vehicle-insurance/vehicle-insurance.module').then( m => m.VehicleInsurancePageModule)
+    loadChildren: () => import('./vehicle-insurance/vehicle-insurance.module').then((m) => m.VehicleInsurancePageModule),
   },
   {
     path: 'mechanical-bills',
-    loadChildren: () => import('./mechanical-bills/mechanical-bills.module').then( m => m.MechanicalBillsPageModule)
+    loadChildren: () => import('./mechanical-bills/mechanical-bills.module').then((m) => m.MechanicalBillsPageModule),
   },
   {
     path: 'yearly-vehicle-check',
-    loadChildren: () => import('./yearly-vehicle-check/yearly-vehicle-check.module').then( m => m.YearlyVehicleCheckPageModule)
+    loadChildren: () => import('./yearly-vehicle-check/yearly-vehicle-check.module').then((m) => m.YearlyVehicleCheckPageModule),
   },
   {
     path: 'another-expenses',
-    loadChildren: () => import('./another-expenses/another-expenses.module').then( m => m.AnotherExpensesPageModule)
+    loadChildren: () => import('./another-expenses/another-expenses.module').then((m) => m.AnotherExpensesPageModule),
   },
   {
     path: 'monthly-expenses',
-    loadChildren: () => import('./monthly-expenses/monthly-expenses.module').then( m => m.MonthlyExpensesPageModule)
+    loadChildren: () => import('./monthly-expenses/monthly-expenses.module').then((m) => m.MonthlyExpensesPageModule),
   },
   {
     path: 'car-listing',
-    loadChildren: () => import('./car-listing/car-listing.module').then( m => m.CarListingPageModule)
+    loadChildren: () => import('./car-listing/car-listing.module').then((m) => m.CarListingPageModule),
   },
   { 
-    path: 'car-market', loadChildren: () => import('./car-market/car-market.module').then(m => m.CarMarketPageModule) 
+    path: 'car-market',
+    loadChildren: () => import('./car-market/car-market.module').then((m) => m.CarMarketPageModule),
   },
   { 
-    path: 'car-offer-details/:id', loadChildren: () => import('./car-offer-details/car-offer-details.module').then(m => m.CarOfferDetailsPageModule) 
+    path: 'car-offer-details/:id',
+    loadChildren: () => import('./car-offer-details/car-offer-details.module').then((m) => m.CarOfferDetailsPageModule),
   },
-  // {
-  //   path: 'car-price-estimation',
-  //   loadChildren: () => import('./car-price-estimation/car-price-estimation.module').then( m => m.CarPriceEstimationPageModule)
-  // },
-
+  { 
+    path: 'chat/:id',
+    loadChildren: () => import('./chat/chat.module').then((m) => m.ChatPageModule), // FIXED: Ensure consistency in parameter name
+  },
+  { 
+    path: 'chat-list',
+    loadChildren: () => import('./chat-list/chat-list.module').then((m) => m.ChatListPageModule),
+  },
 ];
 
 @NgModule({

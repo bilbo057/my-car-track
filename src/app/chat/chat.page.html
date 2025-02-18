@@ -1,0 +1,20 @@
+<ion-card>
+  <ion-card-content>
+    <h3>Chat ID: {{ chatId }}</h3> <!-- Debugging: Display chat ID -->
+  </ion-card-content>
+</ion-card>
+
+<ion-list>
+  <ion-item *ngFor="let message of messages">
+    <ion-label>
+      <p><strong>{{ message.senderId }}</strong>: {{ message.text }}</p>
+    </ion-label>
+  </ion-item>
+</ion-list>
+
+<ion-footer>
+  <ion-item>
+    <ion-input [(ngModel)]="messageInput" placeholder="Type a message..."></ion-input>
+    <ion-button (click)="sendMessage()">Send</ion-button>
+  </ion-item>
+</ion-footer>
