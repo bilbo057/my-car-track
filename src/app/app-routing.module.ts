@@ -88,6 +88,18 @@ const routes: Routes = [
     path: 'chat-list',
     loadChildren: () => import('./chat-list/chat-list.module').then((m) => m.ChatListPageModule),
   },
+  {
+    path: 'blog-list',
+    loadChildren: () => import('./blog-list/blog-list.module').then(m => m.BlogListPageModule),
+  },
+  {
+    path: 'blog-details/:id',
+    loadChildren: () => import('./blog-details/blog-details.module').then(m => m.BlogDetailsPageModule),
+  },
+  {
+    path: 'blog-add',
+    loadChildren: () => import('./blog-add/blog-add.module').then(m => m.BlogAddPageModule),
+  },
 ];
 
 @NgModule({

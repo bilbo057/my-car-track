@@ -1,12 +1,14 @@
-// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private firestore = getFirestore(); // Firestore instance
+
   constructor(private afAuth: AngularFireAuth) {}
 
   async register(email: string, password: string) {
@@ -27,6 +29,8 @@ export class AuthService {
         (user) => {
           if (user) {
             resolve(user.uid); // Return the user ID
+          } else {
+            reject('User not authenticated');
           }
         },
         (error) => {
@@ -37,4 +41,23 @@ export class AuthService {
     });
   }
 
+  async getUsername(): Promise<string | null> {
+    const userId = await this.getUserId();
+    if (!userId) return null;
+
+    try {
+      const userDocRef = doc(this.firestore, 'Users', userId);
+      const userSnap = await getDoc(userDocRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        return userData?.['username'] || null; // FIX: Properly accessing `username`
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      return null;
+    }
+  }
 }

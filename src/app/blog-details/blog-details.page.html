@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ blog.title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ blog.title }}</ion-card-title>
+      <ion-card-subtitle>by {{ blog.authorName }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ blog.content }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list>
+    <ion-item *ngFor="let comment of blog.comments">
+      <ion-label>
+        <p><strong>{{ comment.username }}:</strong> {{ comment.text }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-input [(ngModel)]="commentText" placeholder="Write a comment..."></ion-input>
+    <ion-button (click)="addComment()">Send</ion-button>
+  </ion-item>
+</ion-content>
