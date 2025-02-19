@@ -1,30 +1,60 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ blog.title }}</ion-title>
+    <ion-title>{{ blog?.title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="blog">
   <ion-card>
     <ion-card-header>
       <ion-card-title>{{ blog.title }}</ion-card-title>
-      <ion-card-subtitle>by {{ blog.authorName }}</ion-card-subtitle>
+      <ion-card-subtitle>By {{ blog.authorName }} - {{ blog.timestamp | date }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
       <p>{{ blog.content }}</p>
     </ion-card-content>
   </ion-card>
 
-  <ion-list>
-    <ion-item *ngFor="let comment of blog.comments">
-      <ion-label>
-        <p><strong>{{ comment.username }}:</strong> {{ comment.text }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <!-- Comments Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Comments</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item *ngFor="let comment of blog.comments; let i = index">
+        <ion-label>
+          <p><strong>{{ comment.username }}</strong>: {{ comment.text }}</p>
+          <p><small>{{ comment.timestamp | date:'short' }}</small></p>
+          
+          <!-- Replies -->
+          <div *ngIf="comment.replies">
+            <ion-item *ngFor="let reply of comment.replies">
+              <ion-label>
+                <p><strong>{{ reply.username }}</strong>: {{ reply.text }}</p>
+                <p><small>{{ reply.timestamp | date:'short' }}</small></p>
+              </ion-label>
+            </ion-item>
+          </div>
 
+          <!-- Reply Input -->
+          <ion-item>
+            <ion-input [(ngModel)]="replyInputs[i]" placeholder="Write a reply..."></ion-input>
+            <ion-button (click)="addReply(i)">Reply</ion-button>
+          </ion-item>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Add Comment Section -->
   <ion-item>
-    <ion-input [(ngModel)]="commentText" placeholder="Write a comment..."></ion-input>
-    <ion-button (click)="addComment()">Send</ion-button>
+    <ion-input [(ngModel)]="newComment" placeholder="Write a comment..."></ion-input>
+    <ion-button (click)="addComment()">Post</ion-button>
   </ion-item>
+</ion-content>
+
+<ion-content *ngIf="!blog">
+  <ion-text color="danger">
+    <h2>Blog not found.</h2>
+  </ion-text>
 </ion-content>

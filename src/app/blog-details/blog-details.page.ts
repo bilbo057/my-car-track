@@ -9,21 +9,38 @@ import { BlogService } from '../services/blog.service';
 })
 export class BlogDetailsPage implements OnInit {
   blogId: string = '';
-  blog: any = {};
-  commentText: string = '';
+  blog: any;
+  newComment: string = '';
+  replyInputs: { [key: number]: string } = {}; // Track reply inputs for each comment
 
   constructor(private route: ActivatedRoute, private blogService: BlogService) {}
 
   async ngOnInit() {
-    this.blogId = this.route.snapshot.paramMap.get('id') || '';
+    this.route.paramMap.subscribe(async (params) => {
+      this.blogId = params.get('id') || '';
+      if (this.blogId) {
+        await this.loadBlog();
+      }
+    });
+  }
+
+  async loadBlog() {
     this.blog = await this.blogService.getBlogById(this.blogId);
   }
 
   async addComment() {
-    if (this.commentText.trim()) {
-      await this.blogService.addComment(this.blogId, this.commentText);
-      this.commentText = '';
-      this.ngOnInit();
-    }
+    if (!this.newComment.trim()) return;
+
+    await this.blogService.addComment(this.blogId, this.newComment);
+    this.newComment = ''; // Clear input
+    await this.loadBlog(); // Reload blog to reflect new comment
+  }
+
+  async addReply(commentIndex: number) {
+    if (!this.replyInputs[commentIndex] || !this.replyInputs[commentIndex].trim()) return;
+
+    await this.blogService.addReply(this.blogId, commentIndex, this.replyInputs[commentIndex]);
+    this.replyInputs[commentIndex] = ''; // Clear reply input
+    await this.loadBlog(); // Reload blog to reflect new reply
   }
 }

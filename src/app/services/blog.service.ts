@@ -24,7 +24,7 @@ export class BlogService {
 
   async addBlog(title: string, content: string) {
     const userId = await this.authService.getUserId();
-    const username = await this.authService.getUsername(); // Fetch username once
+    const username = await this.authService.getUsername();
 
     if (!userId || !username) return;
 
@@ -41,31 +41,51 @@ export class BlogService {
   async addComment(blogId: string, text: string) {
     const userId = await this.authService.getUserId();
     const username = await this.authService.getUsername();
-  
     if (!userId || !username) return;
-  
+
     const blogRef = doc(this.firestore, 'Blogs', blogId);
     const blogDoc = await getDoc(blogRef);
-  
+
     if (blogDoc.exists()) {
       const blogData = blogDoc.data();
-      
-      // Ensure 'comments' exists and is an array
       const updatedComments: any[] = blogData?.['comments'] ? [...blogData['comments']] : [];
-  
-      // First, get a manual timestamp
-      const timestamp = new Date().toISOString(); 
-  
-      // Push the new comment with manually created timestamp
+
+      const timestamp = new Date().toISOString(); // Manually create a timestamp
+
       updatedComments.push({
         userId,
         username,
         text,
-        timestamp, // Store as a string instead of serverTimestamp()
+        timestamp,
+        replies: [] // Ensure replies array exists
       });
-  
-      // Update Firestore document
+
       await updateDoc(blogRef, { comments: updatedComments });
+    }
+  }
+
+  async addReply(blogId: string, commentIndex: number, replyText: string) {
+    const userId = await this.authService.getUserId();
+    const username = await this.authService.getUsername();
+    if (!userId || !username) return;
+
+    const blogRef = doc(this.firestore, 'Blogs', blogId);
+    const blogDoc = await getDoc(blogRef);
+
+    if (blogDoc.exists()) {
+      const blogData = blogDoc.data();
+      const updatedComments: any[] = blogData?.['comments'] ? [...blogData['comments']] : [];
+
+      if (updatedComments[commentIndex]) {
+        updatedComments[commentIndex]['replies'].push({
+          userId,
+          username,
+          text: replyText,
+          timestamp: new Date().toISOString() // Use ISO timestamp
+        });
+
+        await updateDoc(blogRef, { comments: updatedComments });
+      }
     }
   }
 }
