@@ -1,9 +1,8 @@
-//app.component.ts
 import { Component } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -30,8 +29,10 @@ export class AppComponent {
     private router: Router
   ) {
     this.loadUsername();
+    this.setupRouteWatcher();
+  }
 
-    // Check current route and toggle header/menu visibility
+  private setupRouteWatcher() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
       const menuExcludedRoutes = ['/login', '/register', '/car-details', '/car-add', '/car-edit']; // Menu hidden for these pages
       const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for login/register
@@ -41,12 +42,10 @@ export class AppComponent {
     });
   }
 
-  // Toggles the menu
   toggleMenu() {
     this.menuCtrl.toggle('main-menu');
   }
 
-  // Logs the user out
   async logout() {
     try {
       await this.authService.logout();
@@ -56,7 +55,6 @@ export class AppComponent {
     }
   }
 
-  // Loads the username of the logged-in user
   async loadUsername() {
     try {
       const userId = await this.authService.getUserId(); // Fetch the current user's ID
