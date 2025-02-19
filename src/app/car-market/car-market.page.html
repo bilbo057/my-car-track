@@ -1,12 +1,66 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Car Market</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
+  <!-- Filters Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Filters</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Brand Filter -->
+      <ion-item>
+        <ion-label>Brand</ion-label>
+        <ion-select [(ngModel)]="selectedBrand" (ionChange)="updateModels()">
+          <ion-select-option *ngFor="let brand of brands" [value]="brand">{{ brand }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Model Filter -->
+      <ion-item>
+        <ion-label>Model</ion-label>
+        <ion-select [(ngModel)]="selectedModel">
+          <ion-select-option *ngFor="let model of models" [value]="model">{{ model }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Year Range Filter -->
+      <ion-item>
+        <ion-label>Min Year</ion-label>
+        <ion-input type="number" [(ngModel)]="minYear"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Max Year</ion-label>
+        <ion-input type="number" [(ngModel)]="maxYear"></ion-input>
+      </ion-item>
+
+      <!-- Price Range Filter -->
+      <ion-item>
+        <ion-label>Min Price</ion-label>
+        <ion-input type="number" [(ngModel)]="minPrice"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Max Price</ion-label>
+        <ion-input type="number" [(ngModel)]="maxPrice"></ion-input>
+      </ion-item>
+
+      <!-- Min KM Filter -->
+      <ion-item>
+        <ion-label>Min KM</ion-label>
+        <ion-input type="number" [(ngModel)]="minKM"></ion-input>
+      </ion-item>
+
+      <!-- Max KM Filter -->
+      <ion-item>
+        <ion-label>Max KM</ion-label>
+        <ion-input type="number" [(ngModel)]="maxKM"></ion-input>
+      </ion-item>
+
+      <!-- Search Button -->
+      <ion-button expand="full" (click)="applyFilters()">Search</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Car Offers -->
   <ion-list>
-    <ion-card *ngFor="let offer of offers" (click)="viewOfferDetails(offer.offerId)">
+    <ion-card *ngFor="let offer of filteredOffers" (click)="viewOfferDetails(offer.offerId)">
       <img *ngIf="offer.photoUrl" [src]="offer.photoUrl" alt="Car Image" />
 
       <ion-card-header>
