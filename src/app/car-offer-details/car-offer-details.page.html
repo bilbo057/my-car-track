@@ -1,9 +1,3 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Car Offer Details</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content *ngIf="carDetails">
   <ion-card>
     <img *ngIf="carDetails.photoUrl" [src]="carDetails.photoUrl" alt="Car Image" />
@@ -11,6 +5,9 @@
     <ion-card-header>
       <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
       <ion-card-subtitle>{{ carDetails.License_plate }}</ion-card-subtitle>
+      <ion-card-subtitle>
+        Seller: <a (click)="startChat()">{{ carDetails.SellerUsername }}</a>
+      </ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
@@ -18,15 +15,8 @@
       <p><strong>Engine Type:</strong> {{ carDetails.Engine_type }}</p>
       <p><strong>Year:</strong> {{ carDetails.Year }}</p>
       <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
-      <p><strong>Oil Change:</strong> {{ carDetails.Oil_change }}</p>
-      <p><strong>Original Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
       <p><strong>Selling Price:</strong> {{ carDetails.Price_of_selling | currency }}</p>
+      <p><strong>Description:</strong> {{ carDetails.Description }}</p>
     </ion-card-content>
   </ion-card>
-</ion-content>
-
-<ion-content *ngIf="!carDetails">
-  <ion-text color="danger">
-    <h2>Offer details not found.</h2>
-  </ion-text>
 </ion-content>

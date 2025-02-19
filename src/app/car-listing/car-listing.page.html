@@ -13,13 +13,17 @@
       <p><strong>Year:</strong> {{ carDetails.Year }}</p>
       <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
       <p><strong>Oil Change:</strong> {{ carDetails.Oil_change }}</p>
-      <p><strong>Original Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
     </ion-card-content>
   </ion-card>
 
   <ion-card-content>
     <p><strong>Set Selling Price</strong></p>
     <ion-input type="number" [(ngModel)]="sellingPrice" placeholder="Enter selling price"></ion-input>
+  </ion-card-content>
+
+  <ion-card-content>
+    <p><strong>Add Description</strong></p>
+    <ion-textarea [(ngModel)]="description" placeholder="Write details about the car..."></ion-textarea>
   </ion-card-content>
 
   <ion-button expand="full" color="primary" (click)="confirmListing()">

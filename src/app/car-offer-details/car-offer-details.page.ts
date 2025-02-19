@@ -42,6 +42,14 @@ export class CarOfferDetailsPage implements OnInit {
         if (this.carDetails.Date_added) {
           this.carDetails.Date_added = this.formatDate(this.carDetails.Date_added);
         }
+
+        // Fetch the username using UserID (not SellerId)
+        if (this.carDetails.UserID) {
+          this.carDetails.SellerUsername = await this.getSellerUsername(this.carDetails.UserID);
+        } else {
+          this.carDetails.SellerUsername = 'Unknown';
+        }
+
       } else {
         console.error('Offer details not found');
       }
@@ -58,6 +66,30 @@ export class CarOfferDetailsPage implements OnInit {
       console.error('Error fetching image URL:', error);
       return '';
     }
+  }
+
+  async getSellerUsername(userId: string): Promise<string> {
+    try {
+      const userDocRef = doc(this.firestore, 'Users', userId);
+      const userSnap = await getDoc(userDocRef);
+
+      if (userSnap.exists()) {
+        return userSnap.data()['username'] || 'Unknown';
+      } else {
+        return 'Unknown';
+      }
+    } catch (error) {
+      console.error('Error fetching seller username:', error);
+      return 'Unknown';
+    }
+  }
+
+  startChat() {
+    if (!this.carDetails.UserID) { // Updated to use UserID
+      console.error('Seller ID is missing.');
+      return;
+    }
+    this.router.navigate(['/chat', this.carDetails.UserID]); // Updated to use UserID
   }
 
   private formatDate(date: string | Date): string {

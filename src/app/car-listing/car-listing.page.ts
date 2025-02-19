@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AuthService } from '../services/auth.service'; // Import AuthService
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 @Component({
@@ -12,20 +13,25 @@ export class CarListingPage implements OnInit {
   carId: string = '';
   carDetails: any = null;
   sellingPrice: number = 0;
+  sellerId: string = ''; // Store the seller's ID
+  description: string = ''; // Description field
 
   constructor(
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
+    private authService: AuthService, // Inject AuthService
     private router: Router
   ) {}
 
   async ngOnInit() {
     this.route.paramMap.subscribe((params) => {
-      this.carId = params.get('carId') || '';  // Ensure correct parameter retrieval
+      this.carId = params.get('carId') || '';  
       if (this.carId) {
         this.loadCarDetails();
       }
     });
+
+    this.sellerId = await this.authService.getUserId(); // Get current user ID
   }
 
   async loadCarDetails() {
@@ -33,7 +39,7 @@ export class CarListingPage implements OnInit {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-        
+
         if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
           const firstPhotoName = this.carDetails.photoNames[0];
           this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
@@ -68,11 +74,11 @@ export class CarListingPage implements OnInit {
     if (isNaN(parsedDate.getTime())) {
       return 'Invalid Date';
     }
-  
+
     const day = parsedDate.getDate().toString().padStart(2, '0');
     const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0');
     const year = parsedDate.getFullYear();
-  
+
     return `${day}-${month}-${year}`;
   }
 
@@ -82,10 +88,17 @@ export class CarListingPage implements OnInit {
       return;
     }
 
+    if (!this.sellerId) {
+      console.error('Seller ID is missing!');
+      return;
+    }
+
     try {
       const offerData = {
         ...this.carDetails,
         Price_of_selling: this.sellingPrice,
+        SellerId: this.sellerId, // Store seller ID
+        Description: this.description, // Store description
       };
 
       delete offerData.Price_of_buying;
