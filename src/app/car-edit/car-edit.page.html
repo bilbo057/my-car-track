@@ -89,6 +89,43 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    
+    <ion-item>
+      <ion-label>Color</ion-label>
+      <ion-select [(ngModel)]="carDetails.Color" name="Color">
+        <ion-select-option *ngFor="let color of colorOptions" [value]="color">
+          {{ color }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Drive</ion-label>
+      <ion-select [(ngModel)]="carDetails.Drive" name="Drive">
+        <ion-select-option *ngFor="let drive of driveOptions" [value]="drive">
+          {{ drive }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Volume (cc)</ion-label>
+      <ion-input [(ngModel)]="carDetails.Volume" name="Volume" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Euro Standard</ion-label>
+      <ion-select [(ngModel)]="carDetails.Euro" name="Euro">
+        <ion-select-option *ngFor="let euro of euroOptions" [value]="euro">
+          {{ euro }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Power (HP)</ion-label>
+      <ion-input [(ngModel)]="carDetails.Power" name="Power" type="number"></ion-input>
+    </ion-item>
 
     <!-- Date Picker -->
     <ion-item>

@@ -105,7 +105,10 @@ export class CarListingPage implements OnInit {
 
       await this.firestore.collection('Offers').doc(this.carId).set(offerData);
       console.log('Car listed for sale successfully');
-      this.router.navigate(['/cars']);
+
+      // Redirect back to Car Details Page
+      this.router.navigate(['/car-details', this.carId]);
+
     } catch (error) {
       console.error('Error listing car for sale:', error);
     }

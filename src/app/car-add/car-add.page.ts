@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -18,6 +18,11 @@ export class CarAddPage implements OnInit {
   transmissionTypes: { Type: string; Label: string }[] = [];
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
+
+  // New properties
+  colors: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver'];
+  driveTypes: string[] = ['Front', 'Rear', 'AWD'];
+  euroStandards: number[] = [1, 2, 3, 4, 5, 6];
 
   private firestore = getFirestore();
   private storage = getStorage();
@@ -158,27 +163,27 @@ export class CarAddPage implements OnInit {
         };
         reader.readAsDataURL(file);
     });
-}
-
-private async uploadImages(carId: string) {
-  if (this.selectedFiles.length === 0) {
-      return;
   }
 
-  const storage = getStorage();
-  const photoNames: string[] = [];
+  private async uploadImages(carId: string) {
+    if (this.selectedFiles.length === 0) {
+        return;
+    }
 
-  for (const file of this.selectedFiles) {
-      const fileName = `${carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
-      const imageRef = ref(storage, `car_images/${fileName}`);
+    const storage = getStorage();
+    const photoNames: string[] = [];
 
-      try {
-          await uploadBytes(imageRef, file);
-          photoNames.push(fileName);
-      } catch (error) {
-          console.error('Error uploading image:', error);
-      }
-  }
+    for (const file of this.selectedFiles) {
+        const fileName = `${carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
+        const imageRef = ref(storage, `car_images/${fileName}`);
+
+        try {
+            await uploadBytes(imageRef, file);
+            photoNames.push(fileName);
+        } catch (error) {
+            console.error('Error uploading image:', error);
+        }
+    }
 
     if (photoNames.length > 0) {
         await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames });

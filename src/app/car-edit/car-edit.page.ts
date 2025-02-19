@@ -17,6 +17,9 @@ export class CarEditPage implements OnInit {
   chassisTypes: { Chassis_type: string; Label: string }[] = [];
   engineTypes: { Engine_type: string; Label: string }[] = [];
   transmissionTypes: { Type: string; Label: string }[] = [];
+  colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver', 'Gray', 'Green', 'Yellow'];
+  driveOptions: string[] = ['Rear', 'Front', 'AWD'];
+  euroOptions: number[] = [1, 2, 3, 4, 5, 6];
   
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
