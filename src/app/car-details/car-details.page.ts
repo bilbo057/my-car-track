@@ -413,6 +413,7 @@ export class CarDetailsPage implements OnInit {
   private async deleteRelatedDocuments() {
     await Promise.all([
       this.deleteUserCarDocument(),
+      this.deleteCarOffers(),
       this.deleteMonthlySpending(),
       this.deleteYearlySpending(),
       this.deleteAllTimeSpending(),
@@ -426,6 +427,22 @@ export class CarDetailsPage implements OnInit {
       this.deleteYearlyVehicleCheckRecords(),
     ]);
   }
+
+  private async deleteCarOffers() {
+    try {
+      const offersCollection = this.firestore.collection('Offers');
+      const offersQuerySnapshot = await offersCollection.ref.where('CarID', '==', this.carId).get();
+  
+      if (!offersQuerySnapshot.empty) {
+        const batch = this.firestore.firestore.batch();
+        offersQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('Offers associated with the car deleted successfully.');
+      }
+    } catch (error) {
+      console.error('Error deleting offers:', error);
+    }
+  }  
 
   private async deleteCarPhotos() {
     try {
