@@ -13,14 +13,26 @@ export class CarMarketPage implements OnInit {
   filteredOffers: any[] = [];
   brands: string[] = [];
   models: string[] = [];
+  colors: string[] = [];
+  euroStandards: number[] = [1, 2, 3, 4, 5, 6];
+  driveTypes: string[] = ['Front', 'Rear', 'AWD'];
+
   selectedBrand: string = '';
   selectedModel: string = '';
+  selectedColor: string = '';
+  selectedEuro: number | null = null;
+  selectedDrive: string = '';
+
   minPrice: number | null = null;
   maxPrice: number | null = null;
   minYear: number | null = null;
   maxYear: number | null = null;
   minKM: number | null = null;
   maxKM: number | null = null;
+  minVolume: number | null = null;
+  maxVolume: number | null = null;
+  minPower: number | null = null;
+  maxPower: number | null = null;
 
   private firestore = getFirestore();
   private storage = getStorage();
@@ -39,8 +51,8 @@ export class CarMarketPage implements OnInit {
       this.offers = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const offer = doc.data();
-          offer['offerId'] = doc.id; // Store the document ID
-          
+          offer['offerId'] = doc.id; 
+
           if (offer['photoNames'] && offer['photoNames'].length > 0) {
             offer['photoUrl'] = await this.getImageUrl(offer['photoNames'][0]);
           }
@@ -49,8 +61,8 @@ export class CarMarketPage implements OnInit {
         })
       );
 
-      this.populateBrands();
-      this.filteredOffers = [...this.offers]; // Initially display all offers
+      this.populateFilters();
+      this.filteredOffers = [...this.offers];
     } catch (error) {
       console.error('Error loading offers:', error);
     }
@@ -70,8 +82,9 @@ export class CarMarketPage implements OnInit {
     this.router.navigate(['/car-offer-details', offerId]);
   }
 
-  populateBrands() {
-    this.brands = [...new Set(this.offers.map(offer => offer.Brand))]; // Get unique brands
+  populateFilters() {
+    this.brands = [...new Set(this.offers.map(offer => offer.Brand))];
+    this.colors = [...new Set(this.offers.map(offer => offer.Color))];
   }
 
   updateModels() {
@@ -82,29 +95,39 @@ export class CarMarketPage implements OnInit {
     } else {
       this.models = [];
     }
-    this.selectedModel = ''; // Reset model selection when brand changes
+    this.selectedModel = '';
   }
 
   applyFilters() {
     this.filteredOffers = this.offers.filter(offer => {
-      const offerYear = this.extractYear(offer.Year); // Extract year from DD-MM-YYYY
+      const offerYear = this.extractYear(offer.Year);
   
       return (
         (!this.selectedBrand || offer.Brand === this.selectedBrand) &&
         (!this.selectedModel || offer.Model === this.selectedModel) &&
+        (!this.selectedColor || offer.Color === this.selectedColor) &&
+        (!this.selectedEuro || offer.Euro === this.selectedEuro) &&
+        (!this.selectedDrive || offer.Drive === this.selectedDrive) &&
         (this.minYear === null || offerYear >= this.minYear) &&
         (this.maxYear === null || offerYear <= this.maxYear) &&
-        (this.minPrice === null || offer.Price_of_selling >= this.minPrice) &&
-        (this.maxPrice === null || offer.Price_of_selling <= this.maxPrice) &&
-        (this.minKM === null || offer.Current_KM >= this.minKM) &&
-        (this.maxKM === null || offer.Current_KM <= this.maxKM)
+        (this.minPrice === null || offer.Price_of_selling !== undefined && offer.Price_of_selling >= this.minPrice) &&
+        (this.maxPrice === null || offer.Price_of_selling !== undefined && offer.Price_of_selling <= this.maxPrice) &&
+        (this.minKM === null || offer.Current_KM !== undefined && offer.Current_KM >= this.minKM) &&
+        (this.maxKM === null || offer.Current_KM !== undefined && offer.Current_KM <= this.maxKM) &&
+        (this.minVolume === null || offer.Volume !== undefined && offer.Volume >= this.minVolume) &&
+        (this.maxVolume === null || offer.Volume !== undefined && offer.Volume <= this.maxVolume) &&
+        (this.minPower === null || offer.Power !== undefined && offer.Power >= this.minPower) &&
+        (this.maxPower === null || offer.Power !== undefined && offer.Power <= this.maxPower)
       );
     });
   }  
-  
-  // Function to extract only the year from "DD-MM-YYYY"
-  extractYear(dateString: string): number {
+
+  extractYear(dateString: string | undefined): number {
+    if (!dateString || typeof dateString !== 'string' || !dateString.includes('-')) {
+      return 0; // Return 0 if the date is missing or incorrectly formatted
+    }
     const parts = dateString.split('-'); // Split "DD-MM-YYYY"
-    return parseInt(parts[2], 10); // Extract and return the year
+    return parseInt(parts[2], 10) || 0; // Extract and return the year, default to 0 if NaN
   }
+  
 }

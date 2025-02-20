@@ -5,6 +5,7 @@
       <ion-card-title>Filters</ion-card-title>
     </ion-card-header>
     <ion-card-content>
+
       <!-- Brand Filter -->
       <ion-item>
         <ion-label>Brand</ion-label>
@@ -41,19 +42,60 @@
         <ion-input type="number" [(ngModel)]="maxPrice"></ion-input>
       </ion-item>
 
-      <!-- Min KM Filter -->
+      <!-- KM Range Filter -->
       <ion-item>
         <ion-label>Min KM</ion-label>
         <ion-input type="number" [(ngModel)]="minKM"></ion-input>
       </ion-item>
-
-      <!-- Max KM Filter -->
       <ion-item>
         <ion-label>Max KM</ion-label>
         <ion-input type="number" [(ngModel)]="maxKM"></ion-input>
       </ion-item>
 
-      <!-- Search Button -->
+      <!-- Engine Volume Range -->
+      <ion-item>
+        <ion-label>Min Engine Volume (cc)</ion-label>
+        <ion-input type="number" [(ngModel)]="minVolume"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Max Engine Volume (cc)</ion-label>
+        <ion-input type="number" [(ngModel)]="maxVolume"></ion-input>
+      </ion-item>
+
+      <!-- Power Range -->
+      <ion-item>
+        <ion-label>Min Power (HP)</ion-label>
+        <ion-input type="number" [(ngModel)]="minPower"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Max Power (HP)</ion-label>
+        <ion-input type="number" [(ngModel)]="maxPower"></ion-input>
+      </ion-item>
+
+      <!-- Color Filter -->
+      <ion-item>
+        <ion-label>Color</ion-label>
+        <ion-select [(ngModel)]="selectedColor">
+          <ion-select-option *ngFor="let color of colors" [value]="color">{{ color }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Euro Standard Filter -->
+      <ion-item>
+        <ion-label>Euro Standard</ion-label>
+        <ion-select [(ngModel)]="selectedEuro">
+          <ion-select-option *ngFor="let euro of euroStandards" [value]="euro">{{ euro }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Drive Type Filter -->
+      <ion-item>
+        <ion-label>Drive Type</ion-label>
+        <ion-select [(ngModel)]="selectedDrive">
+          <ion-select-option *ngFor="let drive of driveTypes" [value]="drive">{{ drive }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
       <ion-button expand="full" (click)="applyFilters()">Search</ion-button>
     </ion-card-content>
   </ion-card>
