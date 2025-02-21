@@ -1,11 +1,9 @@
+// mechanical-bills.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
 import { MechanicalBillsPageRoutingModule } from './mechanical-bills-routing.module';
-
 import { MechanicalBillsPage } from './mechanical-bills.page';
 
 @NgModule({

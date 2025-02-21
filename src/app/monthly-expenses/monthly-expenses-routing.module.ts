@@ -1,3 +1,4 @@
+// monthly-expenses-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MonthlyExpensesPage } from './monthly-expenses.page';

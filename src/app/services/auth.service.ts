@@ -1,7 +1,7 @@
+// auth.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

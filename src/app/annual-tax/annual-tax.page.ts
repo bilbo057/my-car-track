@@ -1,3 +1,4 @@
+// annual-tax.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -9,10 +10,10 @@ import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc
 })
 export class AnnualTaxPage implements OnInit {
   carId: string = '';
-  licensePlate: string = ''; // Car's license plate
+  licensePlate: string = ''; 
   annualTaxDocuments: any[] = []; // List of annual tax records
   taxYear: number | null = null;
-  paymentHalf: string = ''; // Selected half: "First Half", "Second Half", or "Full Year"
+  paymentHalf: string = ''; // Selected half
   paymentDate: string = ''; // Payment date in YYYY-MM-DD format
   cost: number | null = null; // Cost of the tax payment
   showForm: boolean = false; // Toggle form visibility
@@ -31,7 +32,6 @@ export class AnnualTaxPage implements OnInit {
 
   private async loadCarDetails() {
     try {
-      // Mock license plate retrieval. Replace with actual Firestore call if needed.
       this.licensePlate = `CAR-${this.carId}`;
     } catch (error) {
       console.error('Error loading car details:', error);
@@ -69,8 +69,6 @@ export class AnnualTaxPage implements OnInit {
 
         // Update spending records
         await this.updateSpending(this.cost);
-
-        // Reset the form and refresh the list
         this.taxYear = null;
         this.paymentHalf = '';
         this.paymentDate = '';
@@ -136,7 +134,7 @@ export class AnnualTaxPage implements OnInit {
       const docSnapshot = await getDoc(docRef);
 
       if (docSnapshot.exists()) {
-        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; // FIXED: Explicit Type Casting
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number };
         await updateDoc(docRef, {
           spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
           lastSpent: new Date().toISOString(),

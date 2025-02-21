@@ -41,7 +41,6 @@ export class LoginPage {
     }
   }
 
-  // Update the lastLogin property in Firestore
   private async updateLastLogin(userId: string): Promise<void> {
     try {
       const userDocRef = doc(this.firestore, 'Users', userId);

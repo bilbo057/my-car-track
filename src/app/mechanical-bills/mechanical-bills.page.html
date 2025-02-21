@@ -1,3 +1,4 @@
+<!-- mechanical-bills.page.html -->>
 <ion-content [fullscreen]="true">
   <!-- Toggle Add Mechanical Bill Form -->
   <ion-button expand="full" (click)="toggleBillForm()">
@@ -11,7 +12,7 @@
         <ion-card-title>Add Mechanical Bill</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Type Selection -->
+
         <ion-item>
           <ion-label>Bill Type</ion-label>
           <ion-select [(ngModel)]="billData.type" placeholder="Select Type">
@@ -21,26 +22,22 @@
           </ion-select>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="billData.cost" placeholder="Enter Cost"></ion-input>
         </ion-item>
 
-        <!-- Date Picker -->
         <ion-item>
           <ion-label>Date</ion-label>
           <ion-datetime [(ngModel)]="billData.date" name="billDate"
             presentation="date" [preferWheel]="true"></ion-datetime>
         </ion-item>
 
-        <!-- Bonus Description Input -->
         <ion-item>
           <ion-label position="stacked">Bonus Description</ion-label>
           <ion-textarea [(ngModel)]="billData.description" placeholder="Enter Description"></ion-textarea>
         </ion-item>
 
-        <!-- Save Button -->
         <ion-button expand="full" (click)="addMechanicalBill()">Save</ion-button>
       </ion-card-content>
     </ion-card>

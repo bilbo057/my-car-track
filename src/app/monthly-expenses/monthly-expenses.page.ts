@@ -1,3 +1,4 @@
+// monthly-expenses.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';

@@ -1,8 +1,7 @@
-  <ion-content>
-  <!-- Search Bar for Finding Users -->
+<!-- chat-list.page.html -->>
+<ion-content>
   <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="searchUsers()" placeholder="Search users..."></ion-searchbar>
 
-  <!-- Search Results -->
   <ion-list *ngIf="searchResults.length > 0">
     <ion-item *ngFor="let user of searchResults" (click)="startChat(user)">
       <ion-label>{{ user.username }}</ion-label>

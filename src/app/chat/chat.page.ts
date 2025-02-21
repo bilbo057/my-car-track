@@ -1,3 +1,4 @@
+// chat.page.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../services/chat.service';
@@ -53,7 +54,7 @@ export class ChatPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.unsubscribe) this.unsubscribe(); // Stop listening when page is destroyed
+    if (this.unsubscribe) this.unsubscribe();
   }
 
   listenForMessages() {

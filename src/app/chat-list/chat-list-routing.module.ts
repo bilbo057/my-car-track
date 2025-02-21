@@ -1,6 +1,6 @@
+// chat-list-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { ChatListPage } from './chat-list.page';
 
 const routes: Routes = [

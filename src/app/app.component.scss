@@ -4,7 +4,7 @@ ion-menu ion-content {
 }
 
 ion-button img {
-  width: 4rem; /* Adjust the size of the logo */
+  width: 4rem;
   height: auto;
 }
 
@@ -76,7 +76,7 @@ ion-menu.md ion-item ion-label {
 }
 
 ion-menu {
-  z-index: 10; /* Ensure it's on top */
+  z-index: 10; 
 }
 
 ion-menu.ios ion-content {

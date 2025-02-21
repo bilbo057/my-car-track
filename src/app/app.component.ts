@@ -1,3 +1,4 @@
+// app.component.ts
 import { Component } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
@@ -35,7 +36,7 @@ export class AppComponent {
   private setupRouteWatcher() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
       const menuExcludedRoutes = ['/login', '/register', '/car-details', '/car-add', '/car-edit']; // Menu hidden for these pages
-      const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for login/register
+      const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for these pages
 
       this.showMenu = !menuExcludedRoutes.includes(event.urlAfterRedirects);
       this.showHeader = !headerExcludedRoutes.includes(event.urlAfterRedirects);

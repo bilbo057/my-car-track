@@ -1,3 +1,4 @@
+<!-- car-market.page.html -->>
 <ion-content>
   <!-- Filters Section -->
   <ion-card>
@@ -6,7 +7,6 @@
     </ion-card-header>
     <ion-card-content>
 
-      <!-- Brand Filter -->
       <ion-item>
         <ion-label>Brand</ion-label>
         <ion-select [(ngModel)]="selectedBrand" (ionChange)="updateModels()">
@@ -14,7 +14,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- Model Filter -->
       <ion-item>
         <ion-label>Model</ion-label>
         <ion-select [(ngModel)]="selectedModel">
@@ -22,7 +21,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- Year Range Filter -->
       <ion-item>
         <ion-label>Min Year</ion-label>
         <ion-input type="number" [(ngModel)]="minYear"></ion-input>
@@ -32,7 +30,6 @@
         <ion-input type="number" [(ngModel)]="maxYear"></ion-input>
       </ion-item>
 
-      <!-- Price Range Filter -->
       <ion-item>
         <ion-label>Min Price</ion-label>
         <ion-input type="number" [(ngModel)]="minPrice"></ion-input>
@@ -42,7 +39,6 @@
         <ion-input type="number" [(ngModel)]="maxPrice"></ion-input>
       </ion-item>
 
-      <!-- KM Range Filter -->
       <ion-item>
         <ion-label>Min KM</ion-label>
         <ion-input type="number" [(ngModel)]="minKM"></ion-input>
@@ -52,7 +48,6 @@
         <ion-input type="number" [(ngModel)]="maxKM"></ion-input>
       </ion-item>
 
-      <!-- Engine Volume Range -->
       <ion-item>
         <ion-label>Min Engine Volume (cc)</ion-label>
         <ion-input type="number" [(ngModel)]="minVolume"></ion-input>
@@ -62,7 +57,6 @@
         <ion-input type="number" [(ngModel)]="maxVolume"></ion-input>
       </ion-item>
 
-      <!-- Power Range -->
       <ion-item>
         <ion-label>Min Power (HP)</ion-label>
         <ion-input type="number" [(ngModel)]="minPower"></ion-input>
@@ -72,7 +66,6 @@
         <ion-input type="number" [(ngModel)]="maxPower"></ion-input>
       </ion-item>
 
-      <!-- Color Filter -->
       <ion-item>
         <ion-label>Color</ion-label>
         <ion-select [(ngModel)]="selectedColor">
@@ -80,7 +73,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- Euro Standard Filter -->
       <ion-item>
         <ion-label>Euro Standard</ion-label>
         <ion-select [(ngModel)]="selectedEuro">
@@ -88,7 +80,6 @@
         </ion-select>
       </ion-item>
 
-      <!-- Drive Type Filter -->
       <ion-item>
         <ion-label>Drive Type</ion-label>
         <ion-select [(ngModel)]="selectedDrive">

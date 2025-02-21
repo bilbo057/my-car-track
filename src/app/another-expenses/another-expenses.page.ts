@@ -1,3 +1,4 @@
+// another-expenses.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -40,9 +41,7 @@ export class AnotherExpensesPage implements OnInit {
 
   async addExpenseRecord() {
     if (this.expenseData.date && this.expenseData.cost && this.expenseData.description) {
-      // Ensure only YYYY-MM-DD is saved
       this.expenseData.date = this.formatDate(new Date(this.expenseData.date));
-
       try {
         const expensesCollection = collection(this.firestore, 'AnotherExpenses');
         await addDoc(expensesCollection, {
@@ -50,10 +49,8 @@ export class AnotherExpensesPage implements OnInit {
           ...this.expenseData,
         });
 
-        // Update spending records
         await this.updateSpending(this.expenseData.cost);
 
-        // Reset form and refresh records
         this.expenseData = { date: '', cost: '', description: '' };
         this.showExpenseForm = false;
         await this.loadExpensesRecords();
@@ -85,7 +82,7 @@ export class AnotherExpensesPage implements OnInit {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; // Ensures YYYY-MM-DD format
+    return `${year}-${month}-${day}`; 
   }
 
   toggleExpenseForm() {
@@ -113,9 +110,8 @@ export class AnotherExpensesPage implements OnInit {
   private async modifySpending(docRef: any, amount: number) {
     try {
       const docSnapshot = await getDoc(docRef);
-
       if (docSnapshot.exists()) {
-        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; // FIXED: Explicit Type Casting
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; 
         await updateDoc(docRef, {
           spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
           lastSpent: new Date().toISOString(),

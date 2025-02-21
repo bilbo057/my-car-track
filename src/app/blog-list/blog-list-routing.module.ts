@@ -1,6 +1,6 @@
+// blog-list-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { BlogListPage } from './blog-list.page';
 
 const routes: Routes = [

@@ -1,5 +1,5 @@
+<!-- yearly-vehicle-check.page.html -->>
 <ion-content [fullscreen]="true">
-  <!-- Toggle Add Yearly Vehicle Check Form -->
   <ion-button expand="full" (click)="toggleCheckForm()">
     {{ showCheckForm ? 'Hide Form' : 'Add Yearly Vehicle Check' }}
   </ion-button>
@@ -11,14 +11,12 @@
         <ion-card-title>Add Yearly Vehicle Check</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Start Date Picker -->
         <ion-item>
           <ion-label>Start Date</ion-label>
           <ion-datetime [(ngModel)]="checkData.startDate" name="startDate"
             presentation="date" [preferWheel]="true" displayFormat="YYYY-MM-DD"></ion-datetime>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="checkData.cost" placeholder="Enter Cost"></ion-input>

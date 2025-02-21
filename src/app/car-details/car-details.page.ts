@@ -51,12 +51,11 @@ export class CarDetailsPage implements OnInit {
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
         
-        // Extract first image from photoNames array
         if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
           const firstPhotoName = this.carDetails.photoNames[0];
           this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
         } else {
-          this.carDetails.photoUrl = 'assets/img/default-car.png'; // Default image
+          this.carDetails.photoUrl = 'assets/img/default-car.png'; 
         }
 
         if (this.carDetails.Date_added) {
@@ -77,19 +76,18 @@ export class CarDetailsPage implements OnInit {
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error('Error fetching image URL:', error);
-      return 'assets/img/default-car.png'; // Default image if fetch fails
+      return 'assets/img/default-car.png'; 
     }
   }
 
   private formatDate(date: string | Date): string {
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
-      return 'Invalid Date'; // Handle invalid dates
+      return 'Invalid Date'; 
     }
-  
-    // Format the date as DD-MM-YYYY
+
     const day = parsedDate.getDate().toString().padStart(2, '0');
-    const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); 
     const year = parsedDate.getFullYear();
   
     return `${day}-${month}-${year}`;
@@ -185,7 +183,7 @@ export class CarDetailsPage implements OnInit {
       console.error('Error loading all-time spending:', error);
     }
   }
-  
+
   editCar() {
     if (this.carId) {
       this.router.navigate(['/car-edit', this.carId]);
@@ -193,7 +191,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to edit page.');
     }
   }
-
   goToRefueling() {
     if (this.carId) {
       this.router.navigate([`/refueling`, { carId: this.carId }]);
@@ -201,7 +198,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
-
   goToToll() {
     if (this.carId) {
       this.router.navigate([`/toll-tax`, { carId: this.carId }]);
@@ -209,7 +205,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
-
   goToAnnual() {
     if (this.carId) {
       this.router.navigate([`/annual-tax`, { carId: this.carId }]);
@@ -217,7 +212,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
-  
   goToMaintaining() {
     if (this.carId) {
       this.router.navigate([`/maintaining`, { carId: this.carId }]);
@@ -225,7 +219,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
-
   goToInsurance() {
     if (this.carId) {
       this.router.navigate([`/vehicle-insurance`, { carId: this.carId }]);
@@ -233,7 +226,6 @@ export class CarDetailsPage implements OnInit {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
   }
-
   goToMechanicalbills() {
     if (this.carId) {
       this.router.navigate([`/mechanical-bills`, { carId: this.carId }]);
@@ -399,7 +391,7 @@ export class CarDetailsPage implements OnInit {
   async deleteCar() {
     if (this.carId) {
         try {
-            await this.deleteCarPhotos(); // Delete all photos first
+            await this.deleteCarPhotos(); 
             await this.firestore.collection('Cars').doc(this.carId).delete();
             console.log('Car deleted successfully');
             await this.deleteRelatedDocuments();
@@ -408,7 +400,7 @@ export class CarDetailsPage implements OnInit {
             console.error('Error deleting car:', error);
         }
     }
-}
+  }
 
   private async deleteRelatedDocuments() {
     await Promise.all([

@@ -1,3 +1,4 @@
+//maintaining.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -95,7 +96,6 @@ export class MaintainingPage implements OnInit {
       console.error('Error deleting maintaining record:', error);
     }
   }
-  
 
   private formatDate(date: string): string {
     const parsedDate = new Date(date);
@@ -134,7 +134,7 @@ export class MaintainingPage implements OnInit {
       if (docSnapshot.exists()) {
         const existingData = docSnapshot.data() as { spentsThisPeriod?: number };
         await updateDoc(docRef, {
-          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount, // FIXED
+          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
           lastSpent: new Date().toISOString(),
         });
       } else {

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CarEditPageRoutingModule } from './car-edit-routing.module';
 import { CarEditPage } from './car-edit.page';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore'; // Add this
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 
 @NgModule({
   imports: [
@@ -13,7 +13,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore'; // Add 
     FormsModule,
     IonicModule,
     CarEditPageRoutingModule,
-    AngularFirestoreModule, // Add Firestore here
+    AngularFirestoreModule,
   ],
   declarations: [CarEditPage],
 })

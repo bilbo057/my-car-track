@@ -1,3 +1,4 @@
+// car-offer-details.page.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CarOfferDetailsPage } from './car-offer-details.page';
 

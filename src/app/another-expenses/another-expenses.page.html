@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true">
-  <!-- Toggle Add Expense Form -->
   <ion-button expand="full" (click)="toggleExpenseForm()">
     {{ showExpenseForm ? 'Hide Form' : 'Add Expense' }}
   </ion-button>
@@ -11,19 +10,17 @@
         <ion-card-title>Add Expense Record</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Date Picker -->
+
         <ion-item>
           <ion-label>Date</ion-label>
           <ion-datetime [(ngModel)]="expenseData.date" presentation="date" [preferWheel]="true"></ion-datetime>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="expenseData.cost" placeholder="Enter Cost"></ion-input>
         </ion-item>
 
-        <!-- Description Input -->
         <ion-item>
           <ion-label position="stacked">Description</ion-label>
           <ion-textarea [(ngModel)]="expenseData.description" placeholder="Enter Description"></ion-textarea>

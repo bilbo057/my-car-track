@@ -1,23 +1,20 @@
+<!-- annual-tax.page.html -->>
 <ion-content [fullscreen]="true">
-  <!-- Toggle Add Annual Tax Form -->
   <ion-button expand="full" (click)="toggleForm()">
     {{ showForm ? 'Hide Form' : 'Add Annual Tax' }}
   </ion-button>
 
-  <!-- Annual Tax Form -->
   <div *ngIf="showForm">
     <ion-card>
       <ion-card-header>
         <ion-card-title>Add Annual Tax Record</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Tax Year Input -->
         <ion-item>
           <ion-label position="stacked">Tax Year</ion-label>
           <ion-input type="number" [(ngModel)]="taxYear" placeholder="Enter Year (e.g., 2024)"></ion-input>
         </ion-item>
 
-        <!-- Payment Half Selection -->
         <ion-item>
           <ion-label>Payment Half</ion-label>
           <ion-radio-group [(ngModel)]="paymentHalf">
@@ -36,25 +33,21 @@
           </ion-radio-group>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="cost" placeholder="Enter Cost"></ion-input>
         </ion-item>
 
-        <!-- Date Picker -->
         <ion-item>
           <ion-label>Date</ion-label>
           <ion-datetime [(ngModel)]="paymentDate" name="paymentDate" presentation="date" [preferWheel]="true"></ion-datetime>
         </ion-item>
 
-        <!-- Save Button -->
         <ion-button expand="full" (click)="addAnnualTaxRecord()">Save</ion-button>
       </ion-card-content>
     </ion-card>
   </div>
 
-  <!-- List of Annual Tax Records -->
   <ion-card *ngFor="let tax of annualTaxDocuments">
     <ion-card-header>
       <ion-card-title>Tax Year: {{ tax.taxYear }}</ion-card-title>

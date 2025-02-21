@@ -20,7 +20,6 @@ export class CarEditPage implements OnInit {
   colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver', 'Gray', 'Green', 'Yellow'];
   driveOptions: string[] = ['Rear', 'Front', 'AWD'];
   euroOptions: number[] = [1, 2, 3, 4, 5, 6];
-  
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
   existingImages: string[] = [];
@@ -60,7 +59,6 @@ export class CarEditPage implements OnInit {
         this.carDetails = carSnapshot.data();
         console.log('Car details loaded:', this.carDetails);
 
-        // Ensure photoUrls is properly updated
         this.carDetails.photoUrls = [];
         if (this.carDetails.photoNames) {
             for (const photoName of this.carDetails.photoNames) {

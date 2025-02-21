@@ -1,3 +1,4 @@
+// car-add.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
@@ -18,14 +19,11 @@ export class CarAddPage implements OnInit {
   transmissionTypes: { Type: string; Label: string }[] = [];
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
-
-  // New properties
   colors: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver'];
   driveTypes: string[] = ['Front', 'Rear', 'AWD'];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
 
   private firestore = getFirestore();
-  private storage = getStorage();
 
   constructor(private authService: AuthService, private router: Router) {}
 

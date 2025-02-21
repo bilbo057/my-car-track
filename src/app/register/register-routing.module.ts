@@ -1,7 +1,6 @@
 // register-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { RegisterPage } from './register.page';
 
 const routes: Routes = [

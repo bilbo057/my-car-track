@@ -82,7 +82,7 @@ const routes: Routes = [
   },
   { 
     path: 'chat/:id',
-    loadChildren: () => import('./chat/chat.module').then((m) => m.ChatPageModule), // FIXED: Ensure consistency in parameter name
+    loadChildren: () => import('./chat/chat.module').then((m) => m.ChatPageModule),
   },
   { 
     path: 'chat-list',
@@ -99,11 +99,11 @@ const routes: Routes = [
   {
     path: 'blog-add',
     loadChildren: () => import('./blog-add/blog-add.module').then(m => m.BlogAddPageModule),
-  },  {
+  },
+  {
     path: 'user-settings',
     loadChildren: () => import('./user-settings/user-settings.module').then( m => m.UserSettingsPageModule)
   },
-
 ];
 
 @NgModule({

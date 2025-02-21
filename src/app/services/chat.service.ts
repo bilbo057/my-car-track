@@ -1,3 +1,4 @@
+// chat.service.ts
 import { Injectable } from '@angular/core';
 import { getFirestore, collection, query, where, getDocs, orderBy, addDoc, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { AuthService } from '../services/auth.service';
@@ -69,7 +70,7 @@ export class ChatService {
     } catch (error) {
         console.error('ERROR sending message:', error);
     }
-}
+  }
 
   // Get all user chats
   async getUserChats() {
@@ -116,5 +117,4 @@ export class ChatService {
       return newChat.id;
     }
   }
-  
 }

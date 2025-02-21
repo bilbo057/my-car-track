@@ -1,6 +1,6 @@
+// car-market-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { CarMarketPage } from './car-market.page';
 
 const routes: Routes = [

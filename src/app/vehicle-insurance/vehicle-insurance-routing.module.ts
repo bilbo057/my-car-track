@@ -1,6 +1,6 @@
+// vehicle-insurance-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { VehicleInsurancePage } from './vehicle-insurance.page';
 
 const routes: Routes = [

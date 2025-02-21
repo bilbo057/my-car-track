@@ -1,3 +1,4 @@
+// car-offer-details.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
@@ -43,7 +44,6 @@ export class CarOfferDetailsPage implements OnInit {
           this.carDetails.Date_added = this.formatDate(this.carDetails.Date_added);
         }
 
-        // Fetch the username using UserID (not SellerId)
         if (this.carDetails.UserID) {
           this.carDetails.SellerUsername = await this.getSellerUsername(this.carDetails.UserID);
         } else {
@@ -85,11 +85,11 @@ export class CarOfferDetailsPage implements OnInit {
   }
 
   startChat() {
-    if (!this.carDetails.UserID) { // Updated to use UserID
+    if (!this.carDetails.UserID) {
       console.error('Seller ID is missing.');
       return;
     }
-    this.router.navigate(['/chat', this.carDetails.UserID]); // Updated to use UserID
+    this.router.navigate(['/chat', this.carDetails.UserID]); 
   }
 
   private formatDate(date: string | Date): string {

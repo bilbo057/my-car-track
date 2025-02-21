@@ -1,7 +1,8 @@
+// vehicle-insurance.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
-import { SpendingService } from '../services/spending.service'; // Make sure the spending service is imported
+import { SpendingService } from '../services/spending.service'; 
 
 @Component({
   selector: 'app-vehicle-insurance',
@@ -49,8 +50,6 @@ export class VehicleInsurancePage implements OnInit {
         await deleteDoc(insuranceDoc);
         this.insuranceDocuments = this.insuranceDocuments.filter((record) => record.id !== recordId);
         
-        // Subtract the cost from spending after deletion
-        // Ensure to access 'cost' using bracket notation
         await this.spendingService.subtractExpense(this.carId, data['cost']);
       }
     } catch (error) {

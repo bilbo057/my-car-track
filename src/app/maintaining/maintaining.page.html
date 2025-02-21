@@ -1,5 +1,5 @@
+<!-- maintaining.page.html -->>
 <ion-content [fullscreen]="true">
-  <!-- Toggle Add Maintaining Section -->
   <ion-button expand="full" (click)="toggleForm()">
     {{ showForm ? 'Hide Form' : 'Add Maintaining' }}
   </ion-button>
@@ -21,19 +21,16 @@
           </ion-select>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="maintainingData.cost" placeholder="Enter Cost"></ion-input>
         </ion-item>
 
-        <!-- Date Picker -->
         <ion-item>
           <ion-label position="stacked">Date</ion-label>
           <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="maintainingData.date"></ion-datetime>
         </ion-item>
 
-        <!-- Bonus Description -->
         <ion-item>
           <ion-label position="stacked">Bonus Description</ion-label>
           <ion-textarea [(ngModel)]="maintainingData.bonusDescription" placeholder="Enter additional details"></ion-textarea>

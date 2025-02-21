@@ -1,3 +1,4 @@
+// car-market.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
@@ -16,13 +17,11 @@ export class CarMarketPage implements OnInit {
   colors: string[] = [];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
   driveTypes: string[] = ['Front', 'Rear', 'AWD'];
-
   selectedBrand: string = '';
   selectedModel: string = '';
   selectedColor: string = '';
   selectedEuro: number | null = null;
   selectedDrive: string = '';
-
   minPrice: number | null = null;
   maxPrice: number | null = null;
   minYear: number | null = null;
@@ -129,5 +128,4 @@ export class CarMarketPage implements OnInit {
     const parts = dateString.split('-'); // Split "DD-MM-YYYY"
     return parseInt(parts[2], 10) || 0; // Extract and return the year, default to 0 if NaN
   }
-  
 }

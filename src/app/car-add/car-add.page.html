@@ -1,7 +1,6 @@
+<!-- car-add.page.html -->>
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="addCar()">
-    
-    <!-- Image Upload -->
     <ion-item>
       <ion-label>Car Images</ion-label>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
@@ -14,7 +13,6 @@
       </div>
     </ion-item>
     
-    <!-- Brand Dropdown -->
     <ion-item>
       <ion-label>Brand</ion-label>
       <ion-select
@@ -30,7 +28,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Model Dropdown -->
     <ion-item>
       <ion-label>Model</ion-label>
       <ion-select
@@ -45,7 +42,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Chassis Type Dropdown -->
     <ion-item>
       <ion-label>Chassis Type</ion-label>
       <ion-select [(ngModel)]="carData.Chassis_type" name="Chassis_type">
@@ -55,7 +51,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Engine Type Dropdown -->
     <ion-item>
       <ion-label>Engine Type</ion-label>
       <ion-select [(ngModel)]="carData.Engine_type" name="Engine_type">
@@ -65,7 +60,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Transmission Type Dropdown -->
     <ion-item>
       <ion-label>Transmission Type</ion-label>
       <ion-select [(ngModel)]="carData.Transmission_type" name="Transmission_type">
@@ -75,7 +69,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Color Dropdown -->
     <ion-item>
       <ion-label>Color</ion-label>
       <ion-select [(ngModel)]="carData.Color" name="Color">
@@ -85,7 +78,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Drive Type Dropdown -->
     <ion-item>
       <ion-label>Drive Type</ion-label>
       <ion-select [(ngModel)]="carData.Drive" name="Drive">
@@ -95,13 +87,11 @@
       </ion-select>
     </ion-item>
 
-    <!-- Engine Volume -->
     <ion-item>
       <ion-label>Engine Volume (cc)</ion-label>
       <ion-input [(ngModel)]="carData.Volume" name="Volume" type="number"></ion-input>
     </ion-item>
 
-    <!-- Euro Standard Dropdown -->
     <ion-item>
       <ion-label>Euro Standard</ion-label>
       <ion-select [(ngModel)]="carData.Euro" name="Euro">
@@ -111,13 +101,11 @@
       </ion-select>
     </ion-item>
 
-    <!-- Power (HP) -->
     <ion-item>
       <ion-label>Power (HP)</ion-label>
       <ion-input [(ngModel)]="carData.Power" name="Power" type="number"></ion-input>
     </ion-item>
 
-    <!-- Date Picker -->
     <ion-item>
       <ion-label>Date</ion-label>
       <ion-datetime
@@ -130,19 +118,16 @@
       ></ion-datetime>
     </ion-item>
 
-    <!-- Current KM -->
     <ion-item>
       <ion-label>Current KM</ion-label>
       <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number"></ion-input>
     </ion-item>
 
-    <!-- Price of Buying -->
     <ion-item>
       <ion-label>Price of Buying</ion-label>
       <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number"></ion-input>
     </ion-item>
 
-    <!-- License Plate -->
     <ion-item>
       <ion-label>License Plate</ion-label>
       <ion-input [(ngModel)]="carData.License_plate" name="License_plate"></ion-input>

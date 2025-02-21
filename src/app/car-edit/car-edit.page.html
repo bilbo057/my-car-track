@@ -9,27 +9,23 @@
            style="width: 100%; max-height: 200px; object-fit: cover;">
     </ion-card>
 
-    <!-- Image Upload (Multiple) -->
     <ion-item>
       <ion-label>Car Images</ion-label>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
     </ion-item>
 
-    <!-- Image Previews -->
     <ion-item *ngIf="imagePreviews.length > 0">
       <div *ngFor="let preview of imagePreviews">
         <img [src]="preview" alt="Car Image Preview" style="width: 100px; height: 100px; object-fit: cover; margin-right: 5px;">
       </div>
     </ion-item>
 
-    <!-- Existing Images with Delete Option -->
     <ion-item *ngIf="carDetails.photoNames?.length > 0">
       <div *ngFor="let fileName of carDetails.photoNames">
         <ion-button color="danger" (click)="deletePhoto(fileName)">Delete</ion-button>
       </div>
     </ion-item>
 
-    <!-- Brand Dropdown -->
     <ion-item>
       <ion-label>Brand</ion-label>
       <ion-select
@@ -45,7 +41,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Model Dropdown -->
     <ion-item>
       <ion-label>Model</ion-label>
       <ion-select
@@ -60,7 +55,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Chassis Type Dropdown -->
     <ion-item>
       <ion-label>Chassis Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Chassis_type" name="Chassis_type">
@@ -70,7 +64,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Engine Type Dropdown -->
     <ion-item>
       <ion-label>Engine Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Engine_type" name="Engine_type">
@@ -80,7 +73,6 @@
       </ion-select>
     </ion-item>
 
-    <!-- Transmission Type Dropdown -->
     <ion-item>
       <ion-label>Transmission Type</ion-label>
       <ion-select [(ngModel)]="carDetails.Transmission_type" name="Transmission_type">
@@ -127,7 +119,6 @@
       <ion-input [(ngModel)]="carDetails.Power" name="Power" type="number"></ion-input>
     </ion-item>
 
-    <!-- Date Picker -->
     <ion-item>
       <ion-label>Year</ion-label>
       <ion-datetime
@@ -140,20 +131,16 @@
       ></ion-datetime>
     </ion-item>
     
-
-    <!-- Current KM -->
     <ion-item>
       <ion-label>Current KM</ion-label>
       <ion-input [(ngModel)]="carDetails.Current_KM" name="Current_KM" type="number"></ion-input>
     </ion-item>
 
-    <!-- License Plate Input -->
     <ion-item>
       <ion-label>License Plate</ion-label>
       <ion-input [(ngModel)]="carDetails.License_plate" name="License_plate"></ion-input>
     </ion-item>
 
-    <!-- Submit Button -->
     <ion-button expand="full" type="submit">Save Changes</ion-button>
   </form>
 </ion-content>

@@ -1,7 +1,8 @@
+// toll-tax.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc } from 'firebase/firestore';
-import { SpendingService } from '../services/spending.service'; // Make sure this path is correct
+import { SpendingService } from '../services/spending.service'; 
 
 @Component({
   selector: 'app-toll-tax',
@@ -33,7 +34,7 @@ export class TollTaxPage implements OnInit {
 
       if (carDoc.exists()) {
         const carData = carDoc.data();
-        this.licensePlate = carData['License_plate']; // Get the car's license plate
+        this.licensePlate = carData['License_plate']; 
       } else {
         console.error('Car document not found');
       }

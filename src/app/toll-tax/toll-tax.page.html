@@ -1,5 +1,5 @@
+<!-- toll-tax.page.html -->>
 <ion-content [fullscreen]="true">
-  <!-- Toggle Add Toll Tax Form -->
   <ion-button expand="full" (click)="toggleForm()">
     {{ showForm ? 'Hide Form' : 'Add Toll Tax' }}
   </ion-button>
@@ -11,13 +11,11 @@
         <ion-card-title>Add Toll Tax Record</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Start Date Picker -->
         <ion-item>
           <ion-label>Start Date</ion-label>
           <ion-datetime [(ngModel)]="tollTaxData.startDate" name="startDate" presentation="date" [preferWheel]="true"></ion-datetime>
         </ion-item>
 
-        <!-- Amount -->
         <ion-item>
           <ion-label position="stacked">Amount Paid</ion-label>
           <ion-input type="number" [(ngModel)]="tollTaxData.amount" placeholder="Enter Amount"></ion-input>

@@ -1,7 +1,6 @@
+// blog.service.ts
 import { Injectable } from '@angular/core';
-import { 
-  getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, serverTimestamp 
-} from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({

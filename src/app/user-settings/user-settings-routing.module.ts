@@ -1,6 +1,6 @@
+// user-settings-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { UserSettingsPage } from './user-settings.page';
 
 const routes: Routes = [

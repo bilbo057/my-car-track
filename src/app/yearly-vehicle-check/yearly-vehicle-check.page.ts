@@ -1,3 +1,4 @@
+// yearly-vehicle-check.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
@@ -51,7 +52,6 @@ export class YearlyVehicleCheckPage implements OnInit {
         await deleteDoc(checkDocRef);
         this.vehicleCheckRecords = this.vehicleCheckRecords.filter((record) => record.id !== recordId);
 
-        // Subtract the cost from spendings
         await this.spendingService.subtractExpense(this.carId, cost);
 
         console.log(`Vehicle check record deleted: ${recordId}, cost subtracted: ${cost}`);

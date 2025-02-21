@@ -1,6 +1,6 @@
+// car-offer-details-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { CarOfferDetailsPage } from './car-offer-details.page';
 
 const routes: Routes = [

@@ -1,3 +1,4 @@
+<!-- vehicle-insurance.module.html -->
 <ion-content [fullscreen]="true">
   <!-- Toggle Add Insurance Form -->
   <ion-button expand="full" (click)="toggleInsuranceForm()">
@@ -11,14 +12,12 @@
         <ion-card-title>Add Vehicle Insurance</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Start Date Picker -->
         <ion-item>
           <ion-label>Start Date</ion-label>
           <ion-datetime [(ngModel)]="insuranceData.startDate" name="startDate"
             presentation="date" [preferWheel]="true"></ion-datetime>
         </ion-item>
 
-        <!-- Cost Input -->
         <ion-item>
           <ion-label position="stacked">Cost</ion-label>
           <ion-input type="number" [(ngModel)]="insuranceData.cost" placeholder="Enter Cost"></ion-input>

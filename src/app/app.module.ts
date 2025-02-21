@@ -18,7 +18,7 @@ import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 @NgModule({
   declarations: [
     AppComponent,
-    SidebarComponent, // Declare SidebarComponent
+    SidebarComponent, 
   ],
   imports: [
     BrowserModule,
@@ -26,8 +26,8 @@ import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
-    AngularFireAuthModule, // Ensure AngularFireAuthModule is imported
-    CarDetailsPageModule, // Ensure CarDetailsPageModule is imported
+    AngularFireAuthModule, 
+    CarDetailsPageModule,
     HttpClientModule,
   ],
   providers: [InAppBrowser, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

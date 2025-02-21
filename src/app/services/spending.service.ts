@@ -1,3 +1,4 @@
+// spending.service.ts
 import { Injectable } from '@angular/core';
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 

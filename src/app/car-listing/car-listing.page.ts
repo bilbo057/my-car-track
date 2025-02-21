@@ -1,7 +1,8 @@
+// car-listing.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AuthService } from '../services/auth.service'; // Import AuthService
+import { AuthService } from '../services/auth.service';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 @Component({
@@ -13,13 +14,13 @@ export class CarListingPage implements OnInit {
   carId: string = '';
   carDetails: any = null;
   sellingPrice: number = 0;
-  sellerId: string = ''; // Store the seller's ID
-  description: string = ''; // Description field
+  sellerId: string = '';
+  description: string = ''; 
 
   constructor(
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
-    private authService: AuthService, // Inject AuthService
+    private authService: AuthService, 
     private router: Router
   ) {}
 
@@ -31,7 +32,7 @@ export class CarListingPage implements OnInit {
       }
     });
 
-    this.sellerId = await this.authService.getUserId(); // Get current user ID
+    this.sellerId = await this.authService.getUserId(); 
   }
 
   async loadCarDetails() {
@@ -106,7 +107,6 @@ export class CarListingPage implements OnInit {
       await this.firestore.collection('Offers').doc(this.carId).set(offerData);
       console.log('Car listed for sale successfully');
 
-      // Redirect back to Car Details Page
       this.router.navigate(['/car-details', this.carId]);
 
     } catch (error) {

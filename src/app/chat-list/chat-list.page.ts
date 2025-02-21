@@ -1,3 +1,4 @@
+// chat-list.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../services/chat.service';
 import { Router } from '@angular/router';
@@ -32,7 +33,7 @@ export class ChatListPage implements OnInit {
 
     this.searchResults = snapshot.docs.map(doc => ({
       UID: doc.id,
-      username: doc.data()['username'], // Explicit indexing
+      username: doc.data()['username'],
     }));
     
   }

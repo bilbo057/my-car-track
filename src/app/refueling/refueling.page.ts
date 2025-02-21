@@ -1,7 +1,8 @@
+// refueling.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
-import { SpendingService } from '../services/spending.service'; // Ensure this path is correct
+import { SpendingService } from '../services/spending.service'; 
 
 @Component({
   selector: 'app-refueling',
@@ -64,17 +65,15 @@ export class RefuelingPage implements OnInit {
         const refuelingCollection = collection(this.firestore, 'Refueling');
         await addDoc(refuelingCollection, {
           carId: this.carId,
-          fuelType: this.carFuelType, // Automatically set the car's fuel type
+          fuelType: this.carFuelType, 
           date: formattedDate,
           fuelQuantity: this.refuelingData.fuelQuantity,
           cost: this.refuelingData.cost,
           odometer: this.refuelingData.odometer,
         });
 
-        // Add to spending after adding the record
         await this.spendingService.addExpense(this.carId, this.refuelingData.cost);
 
-        // Reset form and refresh list
         this.refuelingData = { date: '', fuelQuantity: null, cost: null, odometer: null };
         this.showForm = false;
         await this.loadRefuelingDocuments();
@@ -95,8 +94,7 @@ export class RefuelingPage implements OnInit {
         const data = docSnap.data();
         await deleteDoc(refuelDoc);
         this.refuelingDocuments = this.refuelingDocuments.filter((record) => record.id !== recordId);
-        
-        // Subtract the cost from spending after deletion
+    
         await this.spendingService.subtractExpense(this.carId, data['cost']);
       }
     } catch (error) {
