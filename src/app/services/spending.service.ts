@@ -23,7 +23,7 @@ export class SpendingService {
 
     await this.updateOrCreateSpending(monthlyDocRef, amount);
     await this.updateOrCreateSpending(yearlyDocRef, amount);
-    await this.updateOrCreateSpending(allTimeDocRef, amount);
+    await this.updateOrCreateSpendingAllTime(allTimeDocRef, amount, carId);
   }
 
   async subtractExpense(carId: string, amount: number) {
@@ -39,7 +39,7 @@ export class SpendingService {
 
     await this.updateOrCreateSpending(monthlyDocRef, -amount);
     await this.updateOrCreateSpending(yearlyDocRef, -amount);
-    await this.updateOrCreateSpending(allTimeDocRef, -amount);
+    await this.updateOrCreateSpendingAllTime(allTimeDocRef, -amount, carId);
   }
 
   private async updateOrCreateSpending(docRef: any, amount: number) {
@@ -55,6 +55,30 @@ export class SpendingService {
       await setDoc(docRef, {
         carID: docRef.id.split('_')[0],
         spentsThisPeriod: amount,
+        lastSpent: new Date().toISOString(),
+      });
+    }
+  }
+
+  private async updateOrCreateSpendingAllTime(docRef: any, amount: number, carId: string) {
+    const docSnapshot = await getDoc(docRef);
+
+    if (docSnapshot.exists()) {
+      const data = docSnapshot.data() as { spentsThisPeriod?: number };
+      await updateDoc(docRef, {
+        spentsThisPeriod: (data.spentsThisPeriod || 0) + amount,
+        lastSpent: new Date().toISOString(),
+      });
+    } else {
+      // Fetch the car's purchase price
+      const carDocRef = doc(this.firestore, 'Cars', carId);
+      const carDocSnap = await getDoc(carDocRef);
+      const carData = carDocSnap.data() || {};
+      const initialCost = carData['Price_of_buying'] || 0;
+
+      await setDoc(docRef, {
+        carID: carId,
+        spentsThisPeriod: initialCost + amount, 
         lastSpent: new Date().toISOString(),
       });
     }
