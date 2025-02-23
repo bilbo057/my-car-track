@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { getFirestore, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, deleteDoc } from '@firebase/firestore'; // Correct import for updateDoc and deleteDoc
 import { AlertController, ToastController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 

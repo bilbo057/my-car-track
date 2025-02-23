@@ -96,16 +96,25 @@ export class ChatService {
 
   async createOrGetChat(otherUserId: string): Promise<string> {
     const userId = await this.authService.getUserId();
-    if (!userId) return '';
-  
+    if (!userId) {
+      console.error('User ID is not available.');
+      return ''; // Early return if user ID isn't available
+    }
+
+    // Check if trying to start a chat with oneself
+    if (userId === otherUserId) {
+      console.error('Cannot start a chat with yourself.');
+      return ''; // Return empty string or handle appropriately
+    }
+
     const chatQuery = query(collection(this.firestore, 'Chats'), where('participants', 'array-contains', userId));
     const snapshot = await getDocs(chatQuery);
-  
+
     let existingChat = snapshot.docs.find(doc => {
-      const participants = doc.data()['participants']; 
-      return participants.includes(otherUserId);
+      const participants = doc.data()['participants'];
+      return participants.length === 2 && participants.includes(otherUserId);
     });
-  
+
     if (existingChat) {
       return existingChat.id;
     } else {
