@@ -17,7 +17,7 @@ export class CarEditPage implements OnInit {
   chassisTypes: { Chassis_type: string; Label: string }[] = [];
   engineTypes: { Engine_type: string; Label: string }[] = [];
   transmissionTypes: { Type: string; Label: string }[] = [];
-  colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver', 'Gray', 'Green', 'Yellow'];
+  colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Pink', 'Orange', 'Purple',  'Gray', 'Green', 'Yellow'];
   driveOptions: string[] = ['Rear', 'Front', 'AWD'];
   euroOptions: number[] = [1, 2, 3, 4, 5, 6];
   selectedFiles: File[] = [];
@@ -44,31 +44,21 @@ export class CarEditPage implements OnInit {
   }
 
   async loadCarDetails() {
-    try {
-        console.log('Loading car details...');
-
-        const carDoc = doc(this.firestore, 'Cars', this.carId);
-        const carSnapshot = await getDoc(carDoc);
-
-        if (!carSnapshot.exists()) {
-            console.error('Car not found');
-            this.router.navigate(['/cars']);
-            return;
+    const carDocRef = doc(this.firestore, 'Cars', this.carId);
+    const carSnapshot = await getDoc(carDocRef);
+    if (carSnapshot.exists()) {
+      this.carDetails = carSnapshot.data();
+      if (this.carDetails.photoNames) {
+        this.existingImages = [];
+        for (const name of this.carDetails.photoNames) {
+          const url = await getDownloadURL(ref(this.storage, `car_images/${name}`));
+          this.imagePreviews.push(url);
+          this.existingImages.push(name);
         }
-
-        this.carDetails = carSnapshot.data();
-        console.log('Car details loaded:', this.carDetails);
-
-        this.carDetails.photoUrls = [];
-        if (this.carDetails.photoNames) {
-            for (const photoName of this.carDetails.photoNames) {
-                const photoUrl = await getDownloadURL(ref(this.storage, `car_images/${photoName}`));
-                this.carDetails.photoUrls.push(photoUrl);
-            }
-            this.existingImages = this.carDetails.photoNames;
-        }
-    } catch (error) {
-        console.error('Error loading car details:', error);
+      }
+    } else {
+      console.error('Car not found');
+      this.router.navigate(['/cars']);
     }
   }
 
@@ -131,72 +121,55 @@ export class CarEditPage implements OnInit {
   }
 
   onFilesSelected(event: any) {
-    const files = Array.from(event.target.files) as File[];
-    this.selectedFiles = files;
-    this.imagePreviews = [];
-
-    files.forEach(file => {
+    const newFiles = Array.from(event.target.files) as File[];
+    newFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = () => {
-        this.imagePreviews.push(reader.result as string);
+        this.imagePreviews.push(reader.result as string); 
+        this.selectedFiles.push(file);
       };
       reader.readAsDataURL(file);
     });
   }
-
+  
   async saveCar() {
-    try {
-      const updatedCarDetails = { ...this.carDetails };
-
-      if (updatedCarDetails.Year) {
-        const date = new Date(updatedCarDetails.Year);
-        updatedCarDetails.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-      }
-
-      if (this.selectedFiles.length > 0) {
-        await this.uploadImages();
-      }
-
-      const carDoc = doc(this.firestore, 'Cars', this.carId);
-      await updateDoc(carDoc, updatedCarDetails);
-      console.log('Car details updated successfully');
-      this.router.navigate(['/cars']);
-    } catch (error) {
-      console.error('Error updating car:', error);
+    if (this.selectedFiles.length > 0) {
+      await this.uploadImages();
     }
+    const carDocRef = doc(this.firestore, 'Cars', this.carId);
+    await updateDoc(carDocRef, {
+      ...this.carDetails,
+      photoNames: this.existingImages 
+    });
+    console.log('Car details updated successfully');
+    this.router.navigate(['/cars']);
   }
 
   private async uploadImages() {
-    if (this.selectedFiles.length === 0) return;
-
-    const photoNames: string[] = this.existingImages || [];
-    
+    const storageRef = ref(this.storage, 'car_images');
     for (const file of this.selectedFiles) {
-      const fileName = `${this.carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
-      const imageRef = ref(this.storage, `car_images/${fileName}`);
-
-      try {
-        await uploadBytes(imageRef, file);
-        photoNames.push(fileName);
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
+      const fileName = `${this.carId}_${Date.now()}`;
+      const fileRef = ref(storageRef, fileName);
+      await uploadBytes(fileRef, file);
+      this.existingImages.push(fileName);
+      this.imagePreviews.push(await getDownloadURL(fileRef));
     }
-
-    if (photoNames.length > 0) {
-      await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames });
-    }
+    await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames: this.existingImages });
   }
 
-  async deletePhoto(fileName: string) {
+  async deletePhoto(index: number) {
+    const fileName = this.existingImages[index];
+    const imageRef = ref(this.storage, `car_images/${fileName}`);
+  
     try {
-      const imageRef = ref(this.storage, `car_images/${fileName}`);
       await deleteObject(imageRef);
-
-      this.existingImages = this.existingImages.filter(name => name !== fileName);
-      await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames: this.existingImages });
-
+      this.existingImages.splice(index, 1);
+      this.imagePreviews.splice(index, 1);
       console.log('Photo deleted successfully.');
+  
+      await updateDoc(doc(this.firestore, 'Cars', this.carId), {
+        photoNames: this.existingImages
+      });
     } catch (error) {
       console.error('Error deleting photo:', error);
     }

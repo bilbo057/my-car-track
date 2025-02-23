@@ -1,30 +1,24 @@
 <!-- car-edit.page.html -->
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="saveCar()">
-
-    <ion-card *ngIf="carDetails">
-      <img *ngIf="carDetails.photoUrls && carDetails.photoUrls.length > 0" 
-           [src]="carDetails.photoUrls[0]" 
-           alt="Car Image"
-           style="width: 100%; max-height: 200px; object-fit: cover;">
-    </ion-card>
-
     <ion-item>
       <ion-label>Car Images</ion-label>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
     </ion-item>
 
-    <ion-item *ngIf="imagePreviews.length > 0">
-      <div *ngFor="let preview of imagePreviews">
-        <img [src]="preview" alt="Car Image Preview" style="width: 100px; height: 100px; object-fit: cover; margin-right: 5px;">
-      </div>
+    <!-- Display existing images and allow deletion on click -->
+    <ion-item *ngIf="existingImages.length > 0">
+      <ion-label>Existing Images</ion-label>
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngFor="let imageUrl of imagePreviews; let i = index">
+            <img [src]="imageUrl" alt="Car Image" style="width: 100px; height: 100px; object-fit: cover;"
+              (click)="deletePhoto(i)">
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
 
-    <ion-item *ngIf="carDetails.photoNames?.length > 0">
-      <div *ngFor="let fileName of carDetails.photoNames">
-        <ion-button color="danger" (click)="deletePhoto(fileName)">Delete</ion-button>
-      </div>
-    </ion-item>
 
     <ion-item>
       <ion-label>Brand</ion-label>
