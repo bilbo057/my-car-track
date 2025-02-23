@@ -13,6 +13,8 @@ import { AuthService } from '../services/auth.service'; // Import the AuthServic
 export class CarOfferDetailsPage implements OnInit {
   offerId: string = '';
   carDetails: any = {};
+  photoUrls: string[] = [];
+  currentPhotoIndex: number = 0;
 
   private firestore = getFirestore();
   private storage = getStorage();
@@ -40,9 +42,12 @@ export class CarOfferDetailsPage implements OnInit {
       if (offerSnapshot.exists()) {
         this.carDetails = offerSnapshot.data();
         
+        // Load all photos and assign URLs to an array
         if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
-          const firstPhotoName = this.carDetails.photoNames[0];
-          this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
+          this.photoUrls = await Promise.all(this.carDetails.photoNames.map((name: string) => this.getImageUrl(name)));
+          this.currentPhotoIndex = 0; // Initialize or reset the photo index
+        } else {
+          this.photoUrls = ['assets/img/default-car.png']; // Default placeholder if no photos
         }
 
         if (this.carDetails.Date_added) {
@@ -69,7 +74,19 @@ export class CarOfferDetailsPage implements OnInit {
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error('Error fetching image URL:', error);
-      return '';
+      return 'assets/img/default-car.png';
+    }
+  }
+
+  nextPhoto() {
+    if (this.photoUrls.length > 1) {
+      this.currentPhotoIndex = (this.currentPhotoIndex + 1) % this.photoUrls.length;
+    }
+  }
+
+  previousPhoto() {
+    if (this.photoUrls.length > 1) {
+      this.currentPhotoIndex = (this.currentPhotoIndex + this.photoUrls.length - 1) % this.photoUrls.length;
     }
   }
 

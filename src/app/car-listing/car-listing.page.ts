@@ -16,6 +16,8 @@ export class CarListingPage implements OnInit {
   sellingPrice: number = 0;
   sellerId: string = '';
   description: string = ''; 
+  photoUrls: string[] = [];  
+  currentPhotoIndex: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,15 +42,15 @@ export class CarListingPage implements OnInit {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
+        this.photoUrls = [];
 
         if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
-          const firstPhotoName = this.carDetails.photoNames[0];
-          this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
-        }
-
-        if (this.carDetails.Date_added) {
-          const rawDate = this.carDetails.Date_added;
-          this.carDetails.Date_added = this.formatDate(rawDate);
+          for (const photoName of this.carDetails.photoNames) {
+            const url = await this.getImageUrl(photoName);
+            this.photoUrls.push(url); // Push each URL into the photoUrls array
+          }
+        } else {
+          this.photoUrls.push('assets/img/default-car.png'); // Default image if no photos exist
         }
       } else {
         console.error('Car details not found in Firestore.');
@@ -66,7 +68,19 @@ export class CarListingPage implements OnInit {
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error('Error fetching image URL:', error);
-      return '';
+      return 'assets/img/default-car.png';
+    }
+  }
+
+  nextPhoto() {
+    if (this.photoUrls.length > 1) {
+      this.currentPhotoIndex = (this.currentPhotoIndex + 1) % this.photoUrls.length;
+    }
+  }
+
+  previousPhoto() {
+    if (this.photoUrls.length > 1) {
+      this.currentPhotoIndex = (this.currentPhotoIndex + this.photoUrls.length - 1) % this.photoUrls.length;
     }
   }
 
@@ -98,8 +112,9 @@ export class CarListingPage implements OnInit {
       const offerData = {
         ...this.carDetails,
         Price_of_selling: this.sellingPrice,
-        SellerId: this.sellerId, // Store seller ID
-        Description: this.description, // Store description
+        SellerId: this.sellerId,
+        Description: this.description,
+        photoUrls: this.photoUrls, // Include all photo URLs in the listing
       };
 
       delete offerData.Price_of_buying;
