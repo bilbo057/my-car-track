@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Diagnostic</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button (click)="scanForDevices()">Scan for Devices</ion-button>
+  <ion-input placeholder="Device ID" [(ngModel)]="deviceId"></ion-input>
+  <ion-button (click)="connectToDevice(deviceId)">Connect to Device</ion-button>
+  <ion-button (click)="startCommunication(deviceId)">Start Communication</ion-button>
+  <ion-button (click)="disconnect(deviceId)">Disconnect</ion-button>
+
+  <ion-list>
+    <ion-item *ngFor="let device of devices">
+      {{ device.name }} ({{ device.id }})
+    </ion-item>
+  </ion-list>
+</ion-content>
