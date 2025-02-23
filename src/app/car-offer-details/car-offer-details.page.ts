@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { AuthService } from '../services/auth.service'; // Import the AuthService
 
 @Component({
   selector: 'app-car-offer-details',
@@ -16,7 +17,11 @@ export class CarOfferDetailsPage implements OnInit {
   private firestore = getFirestore();
   private storage = getStorage();
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router,
+    private authService: AuthService // Inject AuthService
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -84,9 +89,10 @@ export class CarOfferDetailsPage implements OnInit {
     }
   }
 
-  startChat() {
-    if (!this.carDetails.UserID) {
-      console.error('Seller ID is missing.');
+  async startChat() {
+    const currentUserId = await this.authService.getUserId();
+    if (!this.carDetails.UserID || this.carDetails.UserID === currentUserId) {
+      console.error('Attempt to start chat with oneself or missing seller ID.');
       return;
     }
     this.router.navigate(['/chat', this.carDetails.UserID]); 

@@ -1,6 +1,6 @@
 // chat.service.ts
 import { Injectable } from '@angular/core';
-import { getFirestore, collection, query, where, getDocs, orderBy, addDoc, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, orderBy, addDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -18,8 +18,8 @@ export class ChatService {
       return;
     }
 
-    const chatDocRef = doc(this.firestore, 'Chats', chatId); // Correct reference to chat document
-    const messagesRef = collection(chatDocRef, 'messages'); // Correct reference to messages subcollection
+    const chatDocRef = doc(this.firestore, 'Chats', chatId);
+    const messagesRef = collection(chatDocRef, 'messages');
     const q = query(messagesRef, orderBy('timestamp', 'asc'));
 
     return onSnapshot(q, (snapshot) => {
@@ -41,34 +41,32 @@ export class ChatService {
   // Send a message
   async sendMessage(chatId: string, messageText: string) {
     if (!chatId) {
-        console.error('ERROR: Chat ID is undefined! Cannot send message.');
-        return;
+      console.error('ERROR: Chat ID is undefined! Cannot send message.');
+      return;
     }
 
     if (!messageText.trim()) {
-        console.error('ERROR: Message text is empty.');
-        return;
+      console.error('ERROR: Message text is empty.');
+      return;
     }
-
-    console.log(`Sending message: "${messageText}" to chat ID: ${chatId}`);
 
     const userId = await this.authService.getUserId();
     if (!userId) {
-        console.error('ERROR: User ID is undefined.');
-        return;
+      console.error('ERROR: User ID is undefined.');
+      return;
     }
 
     try {
-        const messagesRef = collection(this.firestore, 'Chats', chatId, 'messages');
-        await addDoc(messagesRef, {
-            senderId: userId,
-            text: messageText,
-            timestamp: serverTimestamp(),
-        });
+      const messagesRef = collection(this.firestore, 'Chats', chatId, 'messages');
+      await addDoc(messagesRef, {
+        senderId: userId,
+        text: messageText,
+        timestamp: serverTimestamp(),
+      });
 
-        console.log('Message sent successfully.');
+      console.log('Message sent successfully.');
     } catch (error) {
-        console.error('ERROR sending message:', error);
+      console.error('ERROR sending message:', error);
     }
   }
 
@@ -94,36 +92,34 @@ export class ChatService {
     }
   }
 
-  async createOrGetChat(otherUserId: string): Promise<string> {
+  async createOrGetChat(otherUserId: string): Promise<string | null> {
     const userId = await this.authService.getUserId();
-    if (!userId) {
-      console.error('User ID is not available.');
-      return ''; // Early return if user ID isn't available
-    }
+    if (!userId) return null;
 
-    // Check if trying to start a chat with oneself
+    // Prevent users from starting a chat with themselves
     if (userId === otherUserId) {
-      console.error('Cannot start a chat with yourself.');
-      return ''; // Return empty string or handle appropriately
+      console.error('Cannot start a chat with oneself');
+      return null;
     }
 
-    const chatQuery = query(collection(this.firestore, 'Chats'), where('participants', 'array-contains', userId));
-    const snapshot = await getDocs(chatQuery);
+    const chatsRef = collection(this.firestore, 'Chats');
+    const q = query(chatsRef, where('participants', 'array-contains', userId));
 
-    let existingChat = snapshot.docs.find(doc => {
-      const participants = doc.data()['participants'];
-      return participants.length === 2 && participants.includes(otherUserId);
+    const snapshot = await getDocs(q);
+    const existingChat = snapshot.docs.find(doc => {
+      const participants = doc.data()['participants'] as Array<string>;
+      return participants.includes(otherUserId);
     });
 
     if (existingChat) {
       return existingChat.id;
     } else {
-      const newChat = await addDoc(collection(this.firestore, 'Chats'), {
+      const newChatRef = await addDoc(chatsRef, {
         participants: [userId, otherUserId],
         lastMessage: '',
-        lastMessageTimestamp: null,
+        lastMessageTimestamp: null
       });
-      return newChat.id;
+      return newChatRef.id;
     }
   }
 }
