@@ -150,41 +150,40 @@ export class CarAddPage implements OnInit {
 
   onFilesSelected(event: any) {
     const files = Array.from(event.target.files) as File[];
-
-    this.selectedFiles = files;
-    this.imagePreviews = [];
-
-    files.forEach(file => {
+    files.forEach((file) => {
+      if (!this.selectedFiles.map(f => f.name).includes(file.name)) {
+        this.selectedFiles.push(file);
         const reader = new FileReader();
         reader.onload = () => {
-            this.imagePreviews.push(reader.result as string);
+          this.imagePreviews.push(reader.result as string);
         };
         reader.readAsDataURL(file);
+      }
     });
   }
 
-  private async uploadImages(carId: string) {
-    if (this.selectedFiles.length === 0) {
-        return;
-    }
+  removePhoto(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+  }
 
-    const storage = getStorage();
+  private async uploadImages(carId: string) {
     const photoNames: string[] = [];
 
     for (const file of this.selectedFiles) {
-        const fileName = `${carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
-        const imageRef = ref(storage, `car_images/${fileName}`);
+      const fileName = `${carId}_${new Date().toISOString().replace(/[:.]/g, '_')}.jpg`;
+      const imageRef = ref(getStorage(), `car_images/${fileName}`);
 
-        try {
-            await uploadBytes(imageRef, file);
-            photoNames.push(fileName);
-        } catch (error) {
-            console.error('Error uploading image:', error);
-        }
+      try {
+        await uploadBytes(imageRef, file);
+        photoNames.push(fileName);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
 
     if (photoNames.length > 0) {
-        await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames });
+      await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames });
     }
   }
 }

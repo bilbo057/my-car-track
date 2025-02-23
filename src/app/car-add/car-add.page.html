@@ -8,8 +8,16 @@
 
     <!-- Image Previews -->
     <ion-item *ngIf="imagePreviews.length > 0">
-      <div *ngFor="let preview of imagePreviews">
-        <img [src]="preview" alt="Car Image Preview" style="width: 100px; height: 100px; object-fit: cover; margin-right: 5px;">
+      <input
+      #fileInput
+      type="file"
+      multiple
+      accept="image/*"
+      style="display: none;"
+      (change)="onFilesSelected($event)"/>
+  
+      <div *ngFor="let preview of imagePreviews; let i = index" style="position: relative; display: inline-block; margin: 10px;">
+        <img [src]="preview" style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;" (click)="removePhoto(i)">
       </div>
     </ion-item>
     
