@@ -27,6 +27,7 @@ export class CarDetailsPage implements OnInit {
   totalSpent: number = 0;
   averageSpentPerMonth: number = 0;
   carImages: string[] = [];
+  currentImageIndex: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,14 +70,35 @@ export class CarDetailsPage implements OnInit {
     }
   }
   
+  async updatePhotoUrl() {
+    if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
+      this.carDetails.photoUrl = await this.getImageUrl(this.carDetails.photoNames[this.currentImageIndex]);
+    } else {
+      this.carDetails.photoUrl = 'assets/img/default-car.png';
+    }
+  }
+
   async getImageUrl(fileName: string): Promise<string> {
     try {
-      const storage = getStorage();
-      const imageRef = ref(storage, `car_images/${fileName}`);
+      const imageRef = ref(getStorage(), `car_images/${fileName}`);
       return await getDownloadURL(imageRef);
     } catch (error) {
       console.error('Error fetching image URL:', error);
-      return 'assets/img/default-car.png'; 
+      return 'assets/img/default-car.png';
+    }
+  }
+
+  showNextImage() {
+    if (this.carDetails.photoNames && this.currentImageIndex < this.carDetails.photoNames.length - 1) {
+      this.currentImageIndex++;
+      this.updatePhotoUrl();
+    }
+  }
+
+  showPreviousImage() {
+    if (this.carDetails.photoNames && this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+      this.updatePhotoUrl();
     }
   }
 

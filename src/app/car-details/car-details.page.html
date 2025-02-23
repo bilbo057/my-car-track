@@ -1,7 +1,11 @@
 <!-- car-details.page.html -->
 <ion-content *ngIf="carDetails">
   <ion-card>
-    <img *ngIf="carDetails.photoUrl" [src]="carDetails.photoUrl" alt="Car Image" />
+    <div style="position: relative; width: 100%; height: 300px;">
+      <img [src]="carDetails.photoUrl" style="width: 100%; height: 100%; object-fit: cover;" (click)="showNextImage()">
+      <button *ngIf="currentImageIndex > 0" (click)="showPreviousImage()" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);">Previous</button>
+      <button *ngIf="currentImageIndex < carDetails.photoNames.length - 1" (click)="showNextImage()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">Next</button>
+    </div>
     
     <ion-card-header>
       <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
