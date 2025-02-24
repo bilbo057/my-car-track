@@ -5,15 +5,19 @@
 </ion-header>
 
 <ion-content>
-  <ion-button (click)="scanForDevices()">Scan for Devices</ion-button>
-  <ion-input placeholder="Device ID" [(ngModel)]="deviceId"></ion-input>
-  <ion-button (click)="connectToDevice(deviceId)">Connect to Device</ion-button>
-  <ion-button (click)="startCommunication(deviceId)">Start Communication</ion-button>
-  <ion-button (click)="disconnect(deviceId)">Disconnect</ion-button>
-
+  <ion-button expand="full" (click)="scanForDevices()">Scan for Devices</ion-button>
+  
   <ion-list>
-    <ion-item *ngFor="let device of devices">
-      {{ device.name }} ({{ device.id }})
+    <ion-item *ngFor="let device of devices" (click)="selectDevice(device)">
+      {{ device.name || 'Unnamed Device' }} ({{ device.deviceId }})
     </ion-item>
   </ion-list>
+
+  <ion-item>
+    <ion-label position="floating">Device ID</ion-label>
+    <ion-input [(ngModel)]="deviceId"></ion-input>
+  </ion-item>
+  <ion-button expand="full" (click)="connectToDevice()">Connect to Device</ion-button>
+  <ion-button expand="full" (click)="startCommunication()">Start Communication</ion-button>
+  <ion-button expand="full" (click)="disconnect()">Disconnect</ion-button>
 </ion-content>
