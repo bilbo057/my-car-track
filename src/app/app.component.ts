@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { filter } from 'rxjs/operators';
 
 @Component({
