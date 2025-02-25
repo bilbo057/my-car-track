@@ -49,3 +49,9 @@ ion-content {
       border-radius: 25px; // Rounded corners for the login link button
     }
   }
+
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }

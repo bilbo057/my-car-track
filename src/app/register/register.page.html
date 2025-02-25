@@ -3,16 +3,20 @@
   <img src="assets/img/logo.png" alt="Logo" class="logo">
   <form (ngSubmit)="register()">
     <ion-item class="custom-input">
-      <ion-input type="email" [(ngModel)]="email" name="email" required placeholder="Email"></ion-input>
+      <ion-input type="email" [(ngModel)]="email" name="email" required placeholder="електронна поща"></ion-input>
     </ion-item>
     <ion-item class="custom-input">
-      <ion-input type="password" [(ngModel)]="password" name="password" required placeholder="Password"></ion-input>
+      <ion-input type="password" [(ngModel)]="password" name="password" required placeholder="парола"></ion-input>
     </ion-item>
-    <ion-button expand="full" type="submit" shape="round" class="register-button">Register</ion-button>
+    <ion-item class="custom-input">
+      <ion-input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required placeholder="повторете паролата"></ion-input>
+    </ion-item>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    <ion-button expand="full" type="submit" shape="round" class="register-button">регистиррай се</ion-button>
   </form>
   <div class="login-link">
     <ion-button expand="full" fill="clear" color="white" routerLink="/login">
-      Already have an account? Login
+      Вече имаш акаунт, влез?
     </ion-button>
   </div>
 </ion-content>
