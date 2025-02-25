@@ -1,24 +1,18 @@
 <!-- register.page.html -->
-<ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Register</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <form (ngSubmit)="register()">
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Password</ion-label>
-          <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
-        </ion-item>
-        <ion-button expand="full" type="submit">Register</ion-button>
-      </form>
-      <ion-button expand="full" fill="clear" routerLink="/login">
-        Already have an account? Login
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="ion-padding">
+  <img src="assets/img/logo.png" alt="Logo" class="logo">
+  <form (ngSubmit)="register()">
+    <ion-item class="custom-input">
+      <ion-input type="email" [(ngModel)]="email" name="email" required placeholder="Email"></ion-input>
+    </ion-item>
+    <ion-item class="custom-input">
+      <ion-input type="password" [(ngModel)]="password" name="password" required placeholder="Password"></ion-input>
+    </ion-item>
+    <ion-button expand="full" type="submit" shape="round" class="register-button">Register</ion-button>
+  </form>
+  <div class="login-link">
+    <ion-button expand="full" fill="clear" color="white" routerLink="/login">
+      Already have an account? Login
+    </ion-button>
+  </div>
 </ion-content>
