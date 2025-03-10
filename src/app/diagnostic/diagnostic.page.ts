@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BluetoothLe } from '@capacitor-community/bluetooth-le';
+import { BleDevice, BluetoothLe } from '@capacitor-community/bluetooth-le';
 
 @Component({
   selector: 'app-diagnostic',
@@ -8,8 +8,8 @@ import { BluetoothLe } from '@capacitor-community/bluetooth-le';
 })
 export class DiagnosticPage implements OnInit {
   deviceId: string = '';
-  devices: any[] = [];
-  selectedDevice: any = null;
+  devices: BleDevice[] = [];
+  selectedDevice: BleDevice | undefined;
 
   constructor() { }
 

@@ -3,36 +3,31 @@
   <ion-header *ngIf="showHeader">
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/cars"></ion-back-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
         <ion-button routerLink="/cars" fill="clear">
-          <img src="assets/img/logo.png" alt="Logo" />
-        </ion-button>
-      </ion-buttons>
-      <ion-menu-toggle *ngIf="showMenu" class="menu-toggle-right">
-        <ion-button menuToggle="end-menu" fill="clear" class="menu-toggle-button">
+          <img src="assets/img/logo.png" alt="Logo" style="margin-right: 8px;" />
           {{ username }}
         </ion-button>
-      </ion-menu-toggle>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-menu-toggle *ngIf="showMenu" class="menu-toggle-right">
+          <ion-button menuToggle="end-menu" fill="clear" class="menu-toggle-button">
+            <ion-icon name="menu" style="font-size: 1.5em;"></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
   <ion-menu *ngIf="showMenu" side="end" contentId="main-content" menuId="main-menu">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Menu Content</ion-title>
-      </ion-toolbar>
-    </ion-header>
     <ion-content class="ion-padding">
       <ion-list>
-        <ion-item routerLink="/cars">Cars</ion-item>
-        <ion-item routerLink="/blog-list">Blogs</ion-item>
-        <ion-item routerLink="/chat-list">Chats</ion-item>
-        <ion-item routerLink="/car-market">Buy Car</ion-item>
-        <ion-item routerLink="/user-settings">User Settings</ion-item>
-        <ion-item routerLink="/diagnostic">Diagnostic</ion-item>
-        <ion-item (click)="logout()">Logout</ion-item>
+        <ion-item routerLink="/cars">КОЛИ</ion-item>
+        <ion-item routerLink="/blog-list">БЛОГ</ion-item>
+        <ion-item routerLink="/chat-list">ЧАТОВЕ</ion-item>
+        <ion-item routerLink="/car-market">ЗАКУПУ КОЛА</ion-item>
+        <ion-item routerLink="/user-settings">НАСТРОЙКИ</ion-item>
+        <ion-item routerLink="/diagnostic">ДИАГНОСТИКА</ion-item>
+        <ion-item (click)="logout()">ИЗЛЕЗ</ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>

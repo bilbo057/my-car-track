@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -9,7 +9,7 @@ import { getAuth, sendEmailVerification } from 'firebase/auth'; // Import verifi
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
 })
-export class RegisterPage {
+export class RegisterPage implements OnInit {
   email: string;
   password: string;
   confirmPassword: string;
@@ -23,6 +23,17 @@ export class RegisterPage {
     this.password = '';
     this.confirmPassword = '';
     this.errorMessage = '';
+  }
+
+  ngOnInit() {
+    this.refreshPageOnce();
+  }
+
+  refreshPageOnce() {
+    if (!sessionStorage.getItem('pageRefreshed')) {
+      sessionStorage.setItem('pageRefreshed', 'true');
+      window.location.reload();
+    }
   }
 
   async register() {

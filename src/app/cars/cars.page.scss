@@ -1,5 +1,89 @@
-:host {
-    ion-content {
-      --padding-top: var(--ion-safe-area-top, 56px); /* Adjust for header height */
-    }
+ion-content {
+  --background: #1D1D1D; // Dark gray background
+  animation: fadeIn 1s ease-in-out;
+  --padding-top: var(--ion-safe-area-top, 56px);
+}
+
+.car-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  width: 100%; // Make the container responsive
+  margin: 10px auto; // Center the container horizontally
+}
+
+.license-plate {
+  display: flex;
+  background: url('/assets/img/empty-plate.png') no-repeat center;
+  background-size: cover;
+  width: 12rem;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+}
+
+.plate-char {
+  height: 40px;
+  margin-right: 2px;
+}
+
+.car-image {
+  width: 120px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* Darker card color (slightly darker than the background) */
+ion-card {
+  background: #141414; // Darker than #1D1D1D
+  color: #256976; // Blue text color
+  border-radius: 15px;
+  transition: transform 0.3s ease-in-out;
+  width: 100%; // Make the card responsive
+  margin: 10px auto; // Center the card
+}
+
+ion-card:hover {
+  transform: scale(1.05);
+}
+
+ion-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #256976; // Blue text color
+}
+
+ion-card-content {
+  font-size: 1rem;
+  color: #256976; // Blue text color
+  bottom: 3rem;
+  left: 1.1rem;
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.add-car-btn {
+  --background: #256976; // Match the register button color
+  --color: #ffffff; // White text color for the button
+  border-radius: 50px; // Rounded corners for the button
+  margin-top: 20px;
+  width: 60%; // Adjusted width
+  display: block; // Ensures the button is a block element for margin auto to work
+  margin-left: auto; // Centers the button horizontally
+  margin-right: auto; // Centers the button horizontally
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}

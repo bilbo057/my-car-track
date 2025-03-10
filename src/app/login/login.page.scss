@@ -1,51 +1,57 @@
 ion-content {
-    --background: #1D1D1D; // Sets the background color of the content area to dark gray
-  }
+  --background: #1D1D1D; // Sets the background color of the content area to dark gray
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 5rem; // Adjust spacing to your preference
+}
+
+.logo {
+  max-width: 12rem; // Adjust the size of your logo
+  margin-bottom: 3rem;
+  border-radius: 3rem; // Rounded corners for the logo
+}  
+
+.custom-input {
+  --background: #256976; // Match the button color
+  --color: #ffffff; // Ensure the input text and floating label are white
+  border-radius: 50px; // Rounded corners for the input fields
+  margin-top: 20px;
+  width: 80%; // Adjusted width
+  display: block; // Ensures the input is a block element for margin auto to work
+  margin-left: auto; // Centers the input horizontally
+  margin-right: auto; // Centers the input horizontally
+}
+
+.custom-input ion-label,
+.custom-input ion-input {
+  color: #ffffff !important;
+}
+
+.login-button {
+  --background: #256976; // Color of the login button
+  --color: #ffffff; // White text color for the login button
+  border-radius: 50px; // Rounded corners for the button
+  margin-top: 20px;
+  width: 60%; // Adjusted width
+  display: block; // Ensures the button is a block element for margin auto to work
+  margin-left: auto; // Centers the button horizontally
+  margin-right: auto; // Centers the button horizontally
+}
+
+.register-link {
+  margin-top: 20px;
   
-  .logo {
-    max-width: 12rem; // Adjust the size of your logo
-    margin-top: 10rem; // Add some space above the logo
-    margin-bottom: 3rem;
-    border-radius: 3rem; // Rounded corners for the logo
-    align-self: center; // Center the logo horizontally within its container
-    display: block; // Ensures the logo behaves as a block-level element
-    margin-left: auto; // Centers the logo horizontally
-    margin-right: auto; // Centers the logo horizontally
-  }  
-  
-  .custom-input {
-    --background: #256976; // Match the button color
-    --color: #ffffff; // Ensure the input text and floating label are white
-    border-radius: 50px; // Rounded corners for the input fields
-    margin-top: 20px;
-    width: 80%; // Adjusted width
-    display: block; // Ensures the input is a block element for margin auto to work
-    margin-left: auto; // Centers the input horizontally
-    margin-right: auto; // Centers the input horizontally
+  ion-button {
+    --background: transparent;
+    --color: #fff; // White text color for the register link
+    border-radius: 25px; // Rounded corners for the register link button
+    white-space: pre-wrap; // Allow text to wrap to the next line
+    text-align: center; // Center the text within the button
+    display: block; // Ensure button is a block element
+    margin-left: auto; // Center button horizontally
+    margin-right: auto; // Center button horizontally
   }
-  
-  .custom-input ion-label,
-  .custom-input ion-input {
-    color: #ffffff !important;
-  }
-  
-  .login-button {
-    --background: #256976; // Color of the login button
-    --color: #ffffff; // White text color for the login button
-    border-radius: 50px; // Rounded corners for the button
-    margin-top: 20px;
-    width: 60%; // Adjusted width
-    display: block; // Ensures the button is a block element for margin auto to work
-    margin-left: auto; // Centers the button horizontally
-    margin-right: auto; // Centers the button horizontally
-  }
-  
-  .register-link {
-    margin-top: 20px;
-    
-    ion-button {
-      --background: transparent;
-      --color: #fff; // White text color for the register link
-      border-radius: 25px; // Rounded corners for the register link button
-    }
-  }
+}

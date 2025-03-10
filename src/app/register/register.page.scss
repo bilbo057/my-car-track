@@ -1,5 +1,6 @@
 ion-content {
     --background: #1D1D1D; // Sets the background color of the content area to dark gray
+    animation: fadeIn 1s ease-in-out; // Add fade-in animation
   }
   
   .logo {
@@ -54,4 +55,13 @@ ion-content {
     color: red;
     text-align: center;
     margin-top: 10px;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }

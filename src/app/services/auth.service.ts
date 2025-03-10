@@ -16,7 +16,7 @@ export class AuthService {
       const userCredential = await this.afAuth.createUserWithEmailAndPassword(email, password);
       if (userCredential.user) {
         await sendEmailVerification(userCredential.user); // Send email verification
-        alert('A verification email has been sent to your email address. Please verify before logging in.');
+        alert('Изпратено Ви е съобщение за потвърждаване. Моля потвърдете регистрацията, преди да взлезете в акаунта.');
 
         // Save user to Firestore with email verification status
         await this.saveUserToFirestore(userCredential.user as User);
@@ -36,7 +36,7 @@ export class AuthService {
       const userCredential = await this.afAuth.signInWithEmailAndPassword(email, password);
 
       if (userCredential.user && !userCredential.user.emailVerified) {
-        throw new Error('Your email is not verified. Please check your email and verify your account.');
+        throw new Error('Пощата Ви не е проверена. Моля проверете за съобщения и потвърдете регистрацията.');
       }
 
       return userCredential;

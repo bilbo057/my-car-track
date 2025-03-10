@@ -1,21 +1,37 @@
-<!-- cars.page.html -->
- <ion-content [fullscreen]="true">
-  <ion-content>
-    <ion-list>
-      <ion-item *ngFor="let car of cars" (click)="goToCarDetails(car.CarID)">
-        <ion-card>
-          <ion-label>
-            <h1>{{ car.License_plate }}</h1>
-          </ion-label>
-        </ion-card>
-      </ion-item>
-    </ion-list>
-    <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
-      Add New Car
-    </ion-button>  
-  </ion-content>
+<ion-content [fullscreen]="true">
+  <!-- Add Car Button -->
+  <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
+    Add New Car
+  </ion-button>
 
-  <!-- Message when no cars are available -->
+  <ion-list>
+    <ion-item *ngFor="let car of displayedCars" (click)="goToCarDetails(car.CarID)">
+      <ion-card>
+        <div class="car-container">
+          <!-- License Plate -->
+          <div class="license-plate">
+            <img *ngFor="let char of car.License_plate.split('')" [src]="getLicensePlateImage(char)" class="plate-char" />
+          </div>
+
+          <!-- Car Image -->
+          <img [src]="car.photoUrl" class="car-image"/>
+        </div>
+
+        <ion-card-content>
+          <ion-card-title>{{ car.Brand }} {{ car.Model }}</ion-card-title>
+          <p><strong>Year:</strong> {{ car.Year }}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-buttons">
+    <ion-button [disabled]="currentPage === 1" (click)="prevPage()">Previous</ion-button>
+    <ion-button [disabled]="currentPage * carsPerPage >= cars.length" (click)="nextPage()">Next</ion-button>
+  </div>
+
+  <!-- No Cars Message -->
   <ion-card *ngIf="cars.length === 0">
     <ion-card-header>
       <ion-card-title>No Cars Available</ion-card-title>
