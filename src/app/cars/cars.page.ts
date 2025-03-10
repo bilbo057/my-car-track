@@ -35,25 +35,29 @@ export class CarsPage implements OnInit {
       console.error("User ID not available.");
       return;
     }
-
+  
     try {
       const db = getFirestore();
       const userCarRef = collection(db, 'User_car');
       const userCarQuery = query(userCarRef, where('UserID', '==', userId));
       const userCarSnapshot = await getDocs(userCarQuery);
-
+  
       if (!userCarSnapshot.empty) {
         const carIds = userCarSnapshot.docs.map(userCarDoc => userCarDoc.data()['CarID'] as string);
-
-        const carPromises = carIds.map(carId => {
+  
+        const carPromises = carIds.map(async (carId) => {
           const carDocRef = doc(db, 'Cars', carId);
-          return getDoc(carDocRef);
+          const carSnapshot = await getDoc(carDocRef);
+          if (carSnapshot.exists()) {
+            return { id: carSnapshot.id, ...carSnapshot.data() };
+          }
+          return null;
         });
-
-        const carSnapshots = await Promise.all(carPromises);
-        this.cars = carSnapshots.filter(carDoc => carDoc.exists()).map(carDoc => carDoc.data());
-
+  
+        this.cars = (await Promise.all(carPromises)).filter(car => car !== null);
+  
         await this.updateCarImages();
+        this.currentPage = 1;  // Reset to first page
         this.updateDisplayedCars();
       } else {
         console.warn('No cars found for the user.');
@@ -63,7 +67,7 @@ export class CarsPage implements OnInit {
     } catch (error) {
       console.error('Error loading cars:', error);
     }
-  }
+  }  
 
   async updateCarImages() {
     const storage = getStorage();
@@ -88,21 +92,22 @@ export class CarsPage implements OnInit {
     const start = (this.currentPage - 1) * this.carsPerPage;
     const end = start + this.carsPerPage;
     this.displayedCars = this.cars.slice(start, end);
-  }
+  }  
 
   nextPage() {
-    if (this.currentPage * this.carsPerPage < this.cars.length) {
+    const maxPage = Math.ceil(this.cars.length / this.carsPerPage);
+    if (this.currentPage < maxPage) {
       this.currentPage++;
       this.updateDisplayedCars();
     }
   }
-
+  
   prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updateDisplayedCars();
     }
-  }
+  } 
 
   goToCarDetails(carId: string) {
     this.router.navigate([`/car-details/${carId}`]); 

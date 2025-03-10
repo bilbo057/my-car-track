@@ -1,8 +1,6 @@
 <ion-content [fullscreen]="true">
   <!-- Add Car Button -->
-  <ion-button expand="full" routerLink="/car-add" color="primary" class="add-car-btn">
-    Add New Car
-  </ion-button>
+  <ion-button expand="full" type="submit" routerLink="/car-add" shape="round" class="add-car-btn">ДОБАВИ КОЛА</ion-button>
 
   <ion-list>
     <ion-item *ngFor="let car of displayedCars" (click)="goToCarDetails(car.CarID)">
@@ -19,7 +17,7 @@
 
         <ion-card-content>
           <ion-card-title>{{ car.Brand }} {{ car.Model }}</ion-card-title>
-          <p><strong>Year:</strong> {{ car.Year }}</p>
+          <p class=""><strong>ГОДИНА:</strong> {{ car.Year }}</p>
         </ion-card-content>
       </ion-card>
     </ion-item>
@@ -27,17 +25,16 @@
 
   <!-- Pagination Controls -->
   <div class="pagination-buttons">
-    <ion-button [disabled]="currentPage === 1" (click)="prevPage()">Previous</ion-button>
-    <ion-button [disabled]="currentPage * carsPerPage >= cars.length" (click)="nextPage()">Next</ion-button>
+    <ion-button *ngIf="currentPage > 1" shape="round" (click)="prevPage()">НАЗАД</ion-button>
+    <ion-button *ngIf="displayedCars.length >= 20 && (cars.length > currentPage * carsPerPage)" shape="round" (click)="nextPage()">НАПРЕД</ion-button>
   </div>
+  
+  
 
   <!-- No Cars Message -->
-  <ion-card *ngIf="cars.length === 0">
-    <ion-card-header>
-      <ion-card-title>No Cars Available</ion-card-title>
-    </ion-card-header>
+  <ion-card *ngIf="cars.length === 0" class="no-cars-card">
     <ion-card-content>
-      You don't have any cars added. Click the "Add New Car" button above to add a car.
+      Нямаш автомобили натисни "ДОБАВИ КОЛА", за да добавиш първата си кола.
     </ion-card-content>
   </ion-card>
 </ion-content>
