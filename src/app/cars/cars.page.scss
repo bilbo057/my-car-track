@@ -1,7 +1,7 @@
 ion-content {
-  --background: #1D1D1D; // Dark gray background
-  animation: fadeIn 1s ease-in-out;
-  --padding-top: var(--ion-safe-area-top, 56px);
+  --background: #1D1D1D; /* Dark gray background */
+  animation: fadeIn 3s ease-in-out;
+  --padding-top: var(--ion-safe-area-top, 2rem);
 }
 
 .car-container {
@@ -9,8 +9,16 @@ ion-content {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem;
-  width: 100%; // Make the container responsive
-  margin: 0.5rem auto; // Center the container horizontally
+  width: 100%; /* Make the container responsive */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Container for the license plate and year */
+.plate-year-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .license-plate {
@@ -21,95 +29,123 @@ ion-content {
   height: 4rem;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .plate-char {
-  height: 1rem;
-  margin-right: 0.2rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: black;
+  margin-left: 1.5rem; /* Space between letters and numbers */
+  margin-right: 0.2rem; /* Space between letters and numbers */
 }
 
+.plate-space {
+  width: 0.2rem; /* Space to match the Bulgarian plate format */
+}
+
+.plate-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: black;
+}
+
+/* Year Below the Plate */
+.car-year {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #256976; /* Blue text */
+  margin-top: 0.5rem; /* Space between plate and year */
+}
+
+/* Car Image */
 .car-image {
   width: 10rem;
-  height: 6rem;
+  height: 6rem; /* Ensure all images have the same height */
+  margin-right: 0.5rem;
+  margin-top: 0.5rem;
   border-radius: 1rem;
-  object-fit: cover;
+  object-fit: cover; /* Ensures the image covers the area without stretching */
 }
 
 /* Darker card color (slightly darker than the background) */
 ion-card {
-  background: #141414; // Darker than #1D1D1D
-  color: #ffffff; // Blue text color
+  background: #141414;
+  color: #ffffff;
   border-radius: 3rem;
   font-size: large;
   font-weight: bold;
   transition: transform 0.3s ease-in-out;
-  width: 100%; // Make the card responsive
-  margin: 1rem auto; // Center the card
+  width: 100%;
+  margin: 1rem auto;
+  min-height: 10rem; /* Set a minimum height for all cards */
 }
 
-ion-card:hover {
-  transform: scale(1.05);
+/* Center the car name */
+.car-details {
+  display: flex;
+  justify-content: center; /* Centers the text */
+  align-items: center;
+  padding: 1rem 0;
+  width: 100%;
 }
 
-ion-card-title {
-  font-size: 1.2rem;
+.car-name {
+  font-size: 1.5rem; /* Matches other text sizes */
   font-weight: bold;
-  color: #256976; // Blue text color
+  color: #256976; /* Matches other text */
+  text-align: center; /* Ensures full centering */
 }
 
-ion-card-content {
-  font-size: 1rem;
-  color: #FFFFFF; // Blue text color
-  font-size: large;
-  font-weight: bold;
-  bottom: 3rem;
-  left: 1.1rem;
-}
-
+/* Pagination Buttons */
 .pagination-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
-  
-  ion-button {
-    --background: #256976; // Match the add-car button color
-    --color: #ffffff; // White text color for the pagination buttons
-    margin: 1.5rem; // Add some space between the buttons
-    width: 8rem; // Adjusted width
-    display: block; // Ensures the button is a block element for margin auto to work
-    margin-left: auto; // Centers the button horizontally
-    margin-right: auto; // Centers the button horizontally
-  }
+  margin-top: 2rem;
 }
 
+.pagination-buttons ion-button {
+  --background: #256976; /* Match the add-car button color */
+  --color: #ffffff; /* White text color for the pagination buttons */
+  margin: 1.5rem; /* Add some space between the buttons */
+  width: 8rem; /* Adjusted width */
+  display: block; /* Ensures the button is a block element for margin auto to work */
+  margin-left: auto; /* Centers the button horizontally */
+  margin-right: auto; /* Centers the button horizontally */
+}
+
+/* Add Car Button */
 .add-car-btn {
-  --background: #256976; // Color of the login button
-  --color: #ffffff; // White text color for the login button
+  --background: #256976; /* Color of the login button */
+  --color: #ffffff; /* White text color for the login button */
   height: 4rem;
   margin-top: 2rem;
   font-size: large;
   font-weight: bold;
-  width: 60%; // Adjusted width
-  display: block; // Ensures the button is a block element for margin auto to work
-  margin-left: auto; // Centers the button horizontally
-  margin-right: auto; // Centers the button horizontally
+  width: 60%; /* Adjusted width */
+  display: block; /* Ensures the button is a block element for margin auto to work */
+  margin-left: auto; /* Centers the button horizontally */
+  margin-right: auto; /* Centers the button horizontally */
 }
 
+/* No Cars Message */
 .no-cars-card {
   margin-top: 1rem;
-  background-color: #292929; // Color of the add button
-  color: #ffffff; // White text color for the add button
-  border-radius: 3rem; // Rounded corners for the button
-  width: 90%; // Adjusted width
-  height: 6rem; // Adjusted height
+  background-color: #292929; /* Color of the add button */
+  color: #ffffff; /* White text color for the add button */
+  border-radius: 3rem; /* Rounded corners for the button */
+  width: 90%; /* Adjusted width */
+  height: 6rem; /* Adjusted height */
   text-align: center;
-  display: flex; // Use Flexbox
-  align-items: center; // Center items vertically
-  justify-content: center; // Center items horizontally
-  margin-left: auto; // Centers the button horizontally
-  margin-right: auto; // Centers the button horizontally
+  display: flex; /* Use Flexbox */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  margin-left: auto; /* Centers the button horizontally */
+  margin-right: auto; /* Centers the button horizontally */
 }
 
+/* Fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;

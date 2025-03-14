@@ -14,7 +14,7 @@ export class CarsPage implements OnInit {
   displayedCars: any[] = []; // Stores cars for the current page
   currentPage: number = 1;
   carsPerPage: number = 20;
-  defaultImage: string = 'assets/img/default-car.jpg'; // Default image for cars with no pictures
+  defaultImage: string = 'assets/img/default-car.png'; // Default image for cars with no pictures
 
   constructor(
     private authService: AuthService,
