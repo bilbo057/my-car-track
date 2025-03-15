@@ -5,13 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CarAddPageRoutingModule } from './car-add-routing.module';
 import { CarAddPage } from './car-add.page';
+import { TypeaheadModule } from '../typeahead/typeahead.module'; 
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CarAddPageRoutingModule
+    CarAddPageRoutingModule,
+    TypeaheadModule
   ],
   declarations: [CarAddPage]
 })

@@ -1,9 +1,10 @@
-// car-add.page.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertController, IonModal } from '@ionic/angular';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { AuthService } from '../services/auth.service';
+import { Item } from '../typeahead/types';
 
 @Component({
   selector: 'app-car-add',
@@ -11,21 +12,27 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./car-add.page.scss'],
 })
 export class CarAddPage implements OnInit {
+  @ViewChild('brandModal', { static: false }) brandModal!: IonModal;
+  @ViewChild('modelModal', { static: false }) modelModal!: IonModal;
+
   carData: any = {};
-  carBrands: { BrandID: string; BrandName: string; Models: string[] }[] = [];
-  carModels: string[] = [];
+  carBrands: Item[] = [];
+  carModels: Item[] = [];
+  selectedBrand: Item | null = null;
+  selectedModel: Item | null = null;
+
   chassisTypes: { Chassis_type: string; Label: string }[] = [];
   engineTypes: { Engine_type: string; Label: string }[] = [];
   transmissionTypes: { Type: string; Label: string }[] = [];
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
-  colors: string[] = ['Red', 'Blue', 'Black', 'White', 'Silver'];
-  driveTypes: string[] = ['Front', 'Rear', 'AWD'];
+  colors: string[] = ['Червено', 'Синьо', 'Черно', 'Бяло', 'Сиво', 'Зелено', 'Жълто', 'Оранжево', 'Кафяво', 'Лилаво', 'Бежово', 'Златисто', 'Розово', 'Металик', 'Друго'];
+  driveTypes: string[] = ['Предно', 'Задно', '4x4'];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
 
   private firestore = getFirestore();
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private alertCtrl: AlertController) {}
 
   ngOnInit() {
     this.loadBrands();
@@ -39,20 +46,40 @@ export class CarAddPage implements OnInit {
       const brandsRef = collection(this.firestore, 'Brands');
       const snapshot = await getDocs(brandsRef);
       this.carBrands = snapshot.docs.map((doc) => ({
-        BrandID: doc.id,
-        BrandName: doc.data()['name'],
-        Models: doc.data()['models'],
+        text: doc.data()['name'],
+        value: doc.id,
+        models: doc.data()['models'] || []
       }));
     } catch (error) {
       console.error('Error fetching brands:', error);
     }
   }
 
-  loadModel(brandId: string) {
-    const selectedBrand = this.carBrands.find((brand) => brand.BrandID === brandId);
-    this.carModels = selectedBrand ? selectedBrand.Models : [];
+  brandSelectionChanged(selectedValues: string[]) {
+    if (selectedValues.length > 0) {
+      this.selectedBrand = this.carBrands.find(brand => brand.value === selectedValues[0]) || null;
+      this.loadModel(this.selectedBrand?.value || ""); // Ensure we load models
+    }
+    this.brandModal?.dismiss();
   }
+  
+  modelSelectionChanged(selectedValues: string[]) {
+    if (selectedValues.length > 0) {
+      this.selectedModel = this.carModels.find(model => model.value === selectedValues[0]) || null;
+    }
+    this.modelModal?.dismiss();
+  }  
 
+  loadModel(brandId?: string) { // Now it accepts optional arguments
+    if (!brandId) {
+      this.carModels = [];
+      return;
+    }
+    
+    const selectedBrand = this.carBrands.find((brand) => brand.value === brandId);
+    this.carModels = selectedBrand?.models ? selectedBrand.models.map((model: string) => ({ text: model, value: model })) : [];
+  }  
+  
   async loadChassisTypes() {
     try {
       const chassisRef = collection(this.firestore, 'Chassies');
@@ -65,6 +92,16 @@ export class CarAddPage implements OnInit {
       console.error('Error fetching chassis types:', error);
     }
   }
+
+  onBrandSelected(selectedBrand: string) {
+    if (!selectedBrand) return; // Ensure valid selection
+    this.carData.Brand = selectedBrand;
+    this.loadModel(selectedBrand);
+  }  
+  
+  onModelSelected(selectedModel: string) {
+    this.carData.Model = selectedModel;
+  }  
 
   async loadEngineTypes() {
     try {
@@ -93,26 +130,28 @@ export class CarAddPage implements OnInit {
   }
 
   async addCar() {
+    if (!this.validateFields()) return;
+    
     const userId = await this.getUserId();
-    if (userId) {
-        this.carData.KM_added = this.carData.Current_KM;
-
-        if (this.carData.Year) {
-            const date = new Date(this.carData.Year);
-            this.carData.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-        }
-
-        const carId = await this.addCarToFirestore(userId);
-        await this.createUserCarEntry(userId, carId);
-
-        if (this.selectedFiles.length > 0) {
-            await this.uploadImages(carId);
-        }
-
-        this.router.navigate(['/cars']);
-    } else {
-        console.error('User ID is not available.');
+    if (!userId) {
+      console.error('User ID is not available.');
+      return;
     }
+
+    this.carData.KM_added = this.carData.Current_KM;
+    if (this.carData.Year) {
+      const date = new Date(this.carData.Year);
+      this.carData.Year = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+    }
+
+    const carId = await this.addCarToFirestore(userId);
+    await this.createUserCarEntry(userId, carId);
+
+    if (this.selectedFiles.length > 0) {
+      await this.uploadImages(carId);
+    }
+
+    this.router.navigate(['/cars']);
   }
 
   private async getUserId(): Promise<string | null> {
@@ -148,26 +187,7 @@ export class CarAddPage implements OnInit {
     });
   }
 
-  onFilesSelected(event: any) {
-    const files = Array.from(event.target.files) as File[];
-    files.forEach((file) => {
-      if (!this.selectedFiles.map(f => f.name).includes(file.name)) {
-        this.selectedFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagePreviews.push(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  removePhoto(index: number) {
-    this.selectedFiles.splice(index, 1);
-    this.imagePreviews.splice(index, 1);
-  }
-
-  private async uploadImages(carId: string) {
+  async uploadImages(carId: string) {
     const photoNames: string[] = [];
 
     for (const file of this.selectedFiles) {
@@ -185,5 +205,47 @@ export class CarAddPage implements OnInit {
     if (photoNames.length > 0) {
       await updateDoc(doc(this.firestore, 'Cars', carId), { photoNames });
     }
+  }
+
+  validateFields(): boolean {
+    if (this.carData.Volume < 250 || this.carData.Volume > 10000) {
+      alert("Обемът на двигателя трябва да бъде между 250 и 10000 cc.");
+      return false;
+    }
+    if (this.carData.Power < 30 || this.carData.Power > 5000) {
+      alert("Мощността трябва да бъде между 30 и 5000 HP.");
+      return false;
+    }
+    if (this.carData.Current_KM < 0 || this.carData.Current_KM > 5000000) {
+      alert("Километрите трябва да са между 0 и 5 000 000.");
+      return false;
+    }
+    if (this.carData.Price_of_buying < 0 || this.carData.Price_of_buying > 10000000) {
+      alert("Цената трябва да бъде между 0 и 10 000 000.");
+      return false;
+    }
+    const platePattern = /^[АВЕКМНОРТХCY]{1,2}\d{4}[АВЕКМНОРТХCY]{1,2}$/;
+    if (!platePattern.test(this.carData.License_plate)) {
+      alert("Регистрационният номер е невалиден.");
+      return false;
+    }
+    return true;
+  }
+
+  onFilesSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    files.forEach((file) => {
+      this.selectedFiles.push(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreviews.push(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removePhoto(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
   }
 }
