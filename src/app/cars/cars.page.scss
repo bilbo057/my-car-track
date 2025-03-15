@@ -10,6 +10,7 @@ ion-content {
   justify-content: space-between;
   padding: 0.5rem;
   width: 100%; /* Make the container responsive */
+  height: 6.5rem; /* Ensure all containers have the same height */
   margin: 0 auto; /* Center the container horizontally */
 }
 
@@ -31,6 +32,7 @@ ion-content {
   justify-content: center;
   padding: 0.5rem;
   border-radius: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .plate-char {
@@ -56,7 +58,6 @@ ion-content {
   font-size: 1.20rem;
   font-weight: bold;
   color: #256976; /* Blue text */
-  margin-top: 0.5rem; /* Space between plate and year */
 }
 
 /* Car Image */
@@ -79,7 +80,7 @@ ion-card {
   transition: transform 0.3s ease-in-out;
   width: 100%;
   margin: 1rem auto;
-  min-height: 10rem; /* Set a minimum height for all cards */
+  min-height: 5rem; /* Set a minimum height for all cards */
 }
 
 /* Center the car name */

@@ -62,7 +62,8 @@ export class CarAddPage implements OnInit {
   brandSelectionChanged(selectedValues: string[]) {
     if (selectedValues.length > 0) {
       this.selectedBrand = this.carBrands.find(brand => brand.value === selectedValues[0]) || null;
-      this.loadModel(this.selectedBrand?.value || ""); // Ensure we load models
+      this.carData.Brand = this.selectedBrand?.text || ''; // ✅ Save brand name
+      this.loadModel(this.selectedBrand?.value || ""); 
     }
     this.brandModal?.dismiss();
   }
@@ -70,6 +71,7 @@ export class CarAddPage implements OnInit {
   modelSelectionChanged(selectedValues: string[]) {
     if (selectedValues.length > 0) {
       this.selectedModel = this.carModels.find(model => model.value === selectedValues[0]) || null;
+      this.carData.Model = this.selectedModel?.text || ''; // ✅ Save model name
     }
     this.modelModal?.dismiss();
   }  
