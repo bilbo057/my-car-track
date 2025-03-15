@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { CarAddPageRoutingModule } from './car-add-routing.module';
 import { CarAddPage } from './car-add.page';
 import { TypeaheadModule } from '../typeahead/typeahead.module'; 
+import { DatetimePickerModule } from '../datetime-picker/datetime-picker.module';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { TypeaheadModule } from '../typeahead/typeahead.module';
     FormsModule,
     IonicModule,
     CarAddPageRoutingModule,
-    TypeaheadModule
+    TypeaheadModule,
+    DatetimePickerModule 
   ],
   declarations: [CarAddPage]
 })

@@ -35,3 +35,12 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+ion-modal::part(header),
+ion-modal ion-toolbar {
+  display: none !important;  /* Hides the entire header including the Close button */
+}
+
+ion-modal::part(content) {
+  padding-top: 0px !important; /* Removes any extra space left by the hidden header */
+}

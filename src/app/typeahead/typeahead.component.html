@@ -1,9 +1,6 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>{{ title }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="clearSearch()">Clear</ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -16,6 +13,6 @@
       (click)="selectItem(item)" 
       [class.selected]="selectedItems.includes(item.value)">
       <ion-label>{{ item.text }}</ion-label>
-    </ion-item> <!-- ✅ Closing the tag properly -->
+    </ion-item>
   </ion-list>
 </ion-content>

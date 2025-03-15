@@ -1,0 +1,74 @@
+ion-datetime {
+  --background: transparent !important;
+  --color: #ffffff !important;
+  --wheel-highlight-background: rgba(218, 216, 255, 0.2) !important;
+  --wheel-highlight-border-radius: 2rem !important;
+  --wheel-fade-background-rgb: 0, 0, 0, 0 !important;
+  --padding: 0 !important;
+  width: 85%;
+  transform: translateX(-10%);
+  height: 5rem; /* ✅ Slimmer height */
+  display: flex;
+  align-items: center; /* ✅ Centers content vertically */
+  justify-content: center; /* ✅ Centers horizontally */
+}
+
+/* ✅ Properly align wheel items */
+ion-datetime::part(wheel-item) {
+  color: rgba(255, 255, 255, 0.5) !important; /* ✅ Dimmed color for non-selected */
+  font-size: 1.4rem !important;
+  font-weight: bold;
+  text-align: center;
+  height: 2rem !important; /* ✅ Ensures correct spacing */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Center the active date */
+ion-datetime::part(wheel-item active) {
+  color: #256976 !important; /* ✅ Matches "Избери" style */
+  font-size: 1.4rem !important;
+  font-weight: bold;
+  text-align: center;
+  height: 2rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Ensure selected date is perfectly centered */
+::ng-deep .picker-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 3rem; /* ✅ Matches new height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ Adjust the columns so selected date is centered */
+::ng-deep .picker-columns {
+  position: relative;
+  overflow: hidden;
+  height: 3rem;
+  mask-image: linear-gradient(to bottom, transparent, white 35%, white 65%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, white 35%, white 65%, transparent);
+  transform: translateY(0) !important; /* ✅ Stops shifting */
+  transition: transform 0.2s ease-out !important;
+}
+
+/* ✅ Smooth animation for fading */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+ion-datetime {
+  animation: fadeIn 1s ease-in-out;
+  overflow: hidden !important; /* ✅ Prevents weird extra scrolling */
+}

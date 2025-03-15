@@ -26,7 +26,7 @@ export class CarAddPage implements OnInit {
   transmissionTypes: { Type: string; Label: string }[] = [];
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
-  colors: string[] = ['Червено', 'Синьо', 'Черно', 'Бяло', 'Сиво', 'Зелено', 'Жълто', 'Оранжево', 'Кафяво', 'Лилаво', 'Бежово', 'Златисто', 'Розово', 'Металик', 'Друго'];
+  colors: string[] = ['Червено', 'Синьо', 'Черно', 'Бяло', 'Сиво', 'Зелено', 'Жълто', 'Оранжево', 'Кафяво', 'Лилаво', 'Бежово', 'Златисто', 'Розово', 'Металик', 'Друг'];
   driveTypes: string[] = ['Предно', 'Задно', '4x4'];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
 
@@ -54,6 +54,10 @@ export class CarAddPage implements OnInit {
       console.error('Error fetching brands:', error);
     }
   }
+
+  onDateChange(event: string) {
+    this.carData.Year = event;
+  }  
 
   brandSelectionChanged(selectedValues: string[]) {
     if (selectedValues.length > 0) {
@@ -208,23 +212,70 @@ export class CarAddPage implements OnInit {
   }
 
   validateFields(): boolean {
-    if (this.carData.Volume < 250 || this.carData.Volume > 10000) {
+    if (!this.selectedBrand) {
+      alert("Моля, изберете марка на автомобила.");
+      return false;
+    }
+    if (!this.selectedModel) {
+      alert("Моля, изберете модел на автомобила.");
+      return false;
+    }
+    if (!this.carData.Chassis_type) {
+      alert("Моля, изберете тип на шасито.");
+      return false;
+    }
+    if (!this.carData.Color) {
+      alert("Моля, изберете цвят.");
+      return false;
+    }
+    if (!this.carData.Engine_type) {
+      alert("Моля, изберете тип двигател.");
+      return false;
+    }
+    if (!this.carData.Transmission_type) {
+      alert("Моля, изберете тип скоростна кутия.");
+      return false;
+    }
+    if (!this.carData.Drive) {
+      alert("Моля, изберете тип задвижване.");
+      return false;
+    }
+    if (!this.carData.Euro) {
+      alert("Моля, изберете евро стандарт.");
+      return false;
+    }
+    if (!this.carData.Volume || this.carData.Volume < 250 || this.carData.Volume > 10000) {
       alert("Обемът на двигателя трябва да бъде между 250 и 10000 cc.");
       return false;
     }
-    if (this.carData.Power < 30 || this.carData.Power > 5000) {
+    if (!this.carData.Power || this.carData.Power < 30 || this.carData.Power > 5000) {
       alert("Мощността трябва да бъде между 30 и 5000 HP.");
       return false;
     }
-    if (this.carData.Current_KM < 0 || this.carData.Current_KM > 5000000) {
+    if (!this.carData.Current_KM || this.carData.Current_KM < 0 || this.carData.Current_KM > 5000000) {
       alert("Километрите трябва да са между 0 и 5 000 000.");
       return false;
     }
-    if (this.carData.Price_of_buying < 0 || this.carData.Price_of_buying > 10000000) {
+    if (!this.carData.Price_of_buying || this.carData.Price_of_buying < 0 || this.carData.Price_of_buying > 10000000) {
       alert("Цената трябва да бъде между 0 и 10 000 000.");
       return false;
     }
-    const platePattern = /^[АВЕКМНОРТХCY]{1,2}\d{4}[АВЕКМНОРТХCY]{1,2}$/;
+
+    if (!this.carData.Year) {
+      alert("Моля, изберете дата на регистрация.");
+      return false;
+    }
+  
+    const selectedDate = new Date(this.carData.Year);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
+    if (selectedDate > today) {
+      alert("Дата на регистрация не може да бъде в бъдещето.");
+      return false;
+    }
+
+    const platePattern = /^[ABEKMHOPTXCY]{1,2}\d{4}[ABEKMHOPTXCY]{1,2}$/;
     if (!platePattern.test(this.carData.License_plate)) {
       alert("Регистрационният номер е невалиден.");
       return false;
@@ -248,4 +299,28 @@ export class CarAddPage implements OnInit {
     this.selectedFiles.splice(index, 1);
     this.imagePreviews.splice(index, 1);
   }
+
+  formatLicensePlate() {
+    if (!this.carData.License_plate) return;
+  
+    const cyrillicToLatinMap: { [key: string]: string } = {
+      'а': 'A', 'в': 'B', 'е': 'E', 'к': 'K', 'м': 'M', 'н': 'H',
+      'о': 'O', 'р': 'P', 'т': 'T', 'х': 'X', 'с': 'C', 'у': 'Y'
+    };
+  
+    this.carData.License_plate = this.carData.License_plate
+      .toUpperCase()
+      .split('')
+      .map((char: string) => cyrillicToLatinMap[char.toLowerCase()] || char)
+      .join('')
+      .replace(/[^ABEKMHOPTXCY0-9]/g, '');
+
+      // **Check if any invalid letters exist after conversion**
+      if (!/^[ABEKMHOPTXCY0-9]+$/.test(this.carData.License_plate)) {
+        alert("Регистрационният номер съдържа неразрешени символи. Разрешени букви: A, B, E, K, M, H, O, P, T, X, C, Y.");
+        this.carData.License_plate = ""; // Clear invalid input
+      }
+  }
+
+  
 }
