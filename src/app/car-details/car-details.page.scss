@@ -1,0 +1,186 @@
+/* Global Styling */
+ion-content {
+    --background: #1D1D1D;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+
+  .toggle-button-container {
+    --background: #256976; /* Color of the login button */
+    --color: #ffffff; /* White text color for the login button */
+    height: 4rem;
+    font-size: large;
+    font-weight: bold;
+    width: 60%; /* Adjusted width */
+    display: block; /* Ensures the button is a block element for margin auto to work */
+    margin-left: auto; /* Centers the button horizontally */
+    margin-right: auto; /* Centers the button horizontally */
+  }
+  
+  /* Car Image Section */
+  .car-image-container {
+    position: relative;
+    width: 100%;
+    height: 20rem; /* Increase height for better visibility */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  /* Image Wrapper - Ensuring Full Rounded Corners */
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem; /* Ensure all corners are rounded */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Car Image - High Resolution & Full Fit */
+  .car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures the full image fits without stretching */
+    border-radius: 1rem; /* Make sure the image itself also has rounded corners */
+  }
+  
+  .license-plate {
+    display: flex;
+    background: url('/assets/img/empty-plate.png') no-repeat center;
+    background-size: cover;
+    width: 12rem;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin: auto; /* Centers it horizontally */
+    text-align: center; /* Ensures text is centered */
+  }  
+  
+  .plate-char {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+    margin-left: 1.5rem; /* Space between letters and numbers */
+    margin-right: 0.2rem; /* Space between letters and numbers */
+  }
+  
+  .plate-space {
+    width: 0.2rem; /* Space to match the Bulgarian plate format */
+  }
+  
+  .plate-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+  }
+  
+  /* Image Navigation Buttons */
+  .image-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+  }
+  
+  .image-nav.left {
+    left: 1rem;
+  }
+  
+  .image-nav.right {
+    right: 1rem;
+  }
+  
+  /* Car Details Card */
+  .car-details-card {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    width: 90%;
+    padding: 1rem;
+    font-size: 1.4rem;
+    position: relative;
+  }
+  
+  .car-details-card ion-card-title {
+    text-align: center;
+    font-size: 2rem; /* Larger title */
+    font-weight: bold;
+  }
+  
+  /* Align Details in Two Columns */
+  .car-detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .car-detail-item:last-child {
+    border-bottom: none; /* Remove border for last item */
+  }
+  
+  /* Labels on the Left */
+  .detail-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+    color: #aaa;
+  }
+  
+  /* Values on the Right */
+  .detail-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: right;
+    color: white;
+  }
+  
+  /* Expenses Card */
+  .expenses-card {
+    background: #0F0F0F;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    width: 90%;
+    padding: 1rem;
+  }
+  
+  /* Buttons */
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem auto;
+    width: 90%;
+  }
+  
+  ion-button {
+    --background: #256976;
+    --color: #ffffff;
+    height: 3.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+  }
+  
+  ion-button[color="danger"] {
+    --background: #ff4d4d;
+  }
+  
+  ion-button[color="secondary"] {
+    --background: #3a3a3a;
+  }
+  

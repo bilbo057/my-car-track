@@ -1,84 +1,115 @@
-<!-- car-details.page.html -->
 <ion-content *ngIf="carDetails">
-  <ion-card>
-    <div style="position: relative; width: 100%; height: 300px;">
-      <img [src]="carDetails.photoUrl" style="width: 100%; height: 100%; object-fit: cover;" (click)="showNextImage()">
-      <button *ngIf="currentImageIndex > 0" (click)="showPreviousImage()" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);">Previous</button>
-      <button *ngIf="currentImageIndex < carDetails.photoNames.length - 1" (click)="showNextImage()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">Next</button>
+  <!-- Car Photos -->
+  <ion-card class="car-details-card">
+    <div class="car-image-container">
+      <div class="image-wrapper">
+        <img [src]="carDetails.photoUrl" class="car-image" (click)="showNextImage()">
+      </div>
+      <button *ngIf="currentImageIndex > 0" (click)="showPreviousImage()" class="image-nav left">❮</button>
+      <button *ngIf="currentImageIndex < carDetails.photoNames.length - 1" (click)="showNextImage()" class="image-nav right">❯</button>
     </div>
-    
+
+    <!-- License Plate -->
+    <div class="license-plate">
+      <span class="plate-char">
+        {{ carDetails.License_plate.length === 8 ? carDetails.License_plate.substring(0, 2) : carDetails.License_plate.substring(0, 1) }}
+      </span>
+      <span class="plate-space"></span>
+      <span class="plate-number">
+        {{ carDetails.License_plate.length === 8 ? carDetails.License_plate.substring(2) : carDetails.License_plate.substring(1) }}
+      </span>
+    </div>
+  </ion-card>
+
+  <!-- Car Details -->
+  <ion-card class="car-details-card">
     <ion-card-header>
       <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
-      <ion-card-subtitle>{{ carDetails.License_plate }}</ion-card-subtitle>
     </ion-card-header>
-    
-     <ion-card-content>
-      <p><strong>Chassis Type:</strong> {{ carDetails.Chassis_type }}</p>
-      <p><strong>Engine Type:</strong> {{ carDetails.Engine_type }}</p>
-      <p><strong>Transmission:</strong> {{ carDetails.Transmission_type }}</p>
-      <p><strong>Color:</strong> {{ carDetails.Color }}</p>
-      <p><strong>Drive:</strong> {{ carDetails.Drive }}</p>
-      <p><strong>Engine Volume:</strong> {{ carDetails.Volume }} cc</p>
-      <p><strong>Euro Standard:</strong> {{ carDetails.Euro }}</p>
-      <p><strong>Power:</strong> {{ carDetails.Power }} HP</p>
-      <p><strong>Year:</strong> {{ carDetails.Year }}</p>
-      <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
-      <p><strong>Price:</strong> {{ carDetails.Price_of_buying | currency }}</p>
-    </ion-card-content> 
+
+    <ion-card-content *ngIf="showDetails">
+      <div class="car-detail-item">
+        <span class="detail-label">Тип на шасито:</span>
+        <span class="detail-value">{{ carDetails.Chassis_type }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Тип на двигателя:</span>
+        <span class="detail-value">{{ carDetails.Engine_type }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Скоростна кутия:</span>
+        <span class="detail-value">{{ carDetails.Transmission_type }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Цвят:</span>
+        <span class="detail-value">{{ carDetails.Color }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Задвижване:</span>
+        <span class="detail-value">{{ carDetails.Drive }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Обем на двигателя:</span>
+        <span class="detail-value">{{ carDetails.Volume }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Евро стандарт:</span>
+        <span class="detail-value">{{ carDetails.Euro }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Мощност:</span>
+        <span class="detail-value">{{ carDetails.Power }} HP</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Година:</span>
+        <span class="detail-value">{{ carDetails.Year }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Kилометраж:</span>
+        <span class="detail-value">{{ carDetails.Current_KM }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Цена:</span>
+        <span class="detail-value">{{ carDetails.Price_of_buying }}</span>
+      </div>
+    </ion-card-content>
+    <div class="toggle-button-container">
+      <ion-button fill="clear" shape="round" (click)="toggleDetails()">
+        {{ showDetails ? 'Скрий детайлите' : 'Покажи детайлите' }}
+      </ion-button>
+    </div>
+  </ion-card> 
+
+  <!-- Expenses Section -->
+  <ion-card class="expenses-card">
+    <ion-card-content>
+      <p><strong>Money Spent This Month:</strong> {{ carDetails.spentThisMonth | currency }}</p>
+      <p><strong>Average Spent Per Month:</strong> {{ carDetails.averageSpentThisMonth | currency }}</p>
+      <p><strong>Money Spent This Year:</strong> {{ carDetails.spentThisYear | currency }}</p>
+      <p><strong>Total Money Spent:</strong> {{ carDetails.totalSpent | currency }}</p>
+    </ion-card-content>
   </ion-card>
-  
-  <ion-card-content>
-    <p><strong>Money Spent This Month:</strong> {{ carDetails.spentThisMonth | currency }}</p>
-    <p><strong>Average Spent Per Month:</strong> {{ carDetails.averageSpentThisMonth | currency }}</p>
-    <p><strong>Money Spent This Year:</strong> {{ carDetails.spentThisYear | currency }}</p>
-    <p><strong>Total Money Spent:</strong> {{ carDetails.totalSpent | currency }}</p>
-  </ion-card-content>
-  <ion-content class="ion-padding">
-    <ion-button color="primary" expand="full" (click)="editCar()">
-      Edit Car
-    </ion-button>
-    <ion-button color="primary" expand="full" (click)="showAddUserPopup()">
-      Add User to Car
-    </ion-button>
-    <ion-button color="danger" expand="full" (click)="transferOwnership()">
-      Transfer Ownership
-    </ion-button>
-    <ion-button color="danger" expand="full" (click)="deleteCar()">
-      Delete Car
-    </ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToRefueling()">
-      Refueling
-    </ion-button>   
-    <ion-button color="secondary" expand="full" (click)="goToToll()">
-      Toll Tax
-    </ion-button>  
-    <ion-button color="secondary" expand="full" (click)="goToAnnual()">
-      Annual Tax
-    </ion-button> 
-    <ion-button color="secondary" expand="full" (click)="goToMaintaining()">
-      Maintaining
-    </ion-button> 
-    <ion-button color="secondary" expand="full" (click)="goToInsurance()">
-      Insurance
-    </ion-button> 
-    <ion-button color="secondary" expand="full" (click)="goToMechanicalbills()">
-      Mechanical Bills
-    </ion-button> 
-    <ion-button color="secondary" expand="full" (click)="goToYearlyCheck()">
-      Yearly Vehicle Check
-    </ion-button> 
-    <ion-button color="secondary" expand="full" (click)="goToAnotherExpenses()">
-      Another Expenses
-    </ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToMonthlyExpenses()">
-      Monthly Expenses
-    </ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToCarListing()">
-      List the car
-    </ion-button>
-  </ion-content>
+
+  <!-- Action Buttons -->
+  <div class="button-container">
+    <ion-button color="primary" expand="full" (click)="editCar()">Edit Car</ion-button>
+    <ion-button color="primary" expand="full" (click)="showAddUserPopup()">Add User to Car</ion-button>
+    <ion-button color="danger" expand="full" (click)="transferOwnership()">Transfer Ownership</ion-button>
+    <ion-button color="danger" expand="full" (click)="deleteCar()">Delete Car</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToRefueling()">Refueling</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToToll()">Toll Tax</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToAnnual()">Annual Tax</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToMaintaining()">Maintaining</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToInsurance()">Insurance</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToMechanicalbills()">Mechanical Bills</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToYearlyCheck()">Yearly Vehicle Check</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToAnotherExpenses()">Another Expenses</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToMonthlyExpenses()">Monthly Expenses</ion-button>
+    <ion-button color="secondary" expand="full" (click)="goToCarListing()">List the car</ion-button>
+  </div>
 </ion-content>
 
+<!-- Error Message if No Car Details Found -->
 <ion-content *ngIf="!carDetails">
   <ion-text color="danger">
     <h2>Car details not found.</h2>

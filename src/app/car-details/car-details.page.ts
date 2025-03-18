@@ -28,6 +28,7 @@ export class CarDetailsPage implements OnInit {
   averageSpentPerMonth: number = 0;
   carImages: string[] = [];
   currentImageIndex: number = 0;
+  showDetails = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +45,10 @@ export class CarDetailsPage implements OnInit {
         this.loadSpendingData();
       }
     });
+  }
+
+  toggleDetails() {
+    this.showDetails = !this.showDetails;
   }
 
   async loadCarDetails() {
