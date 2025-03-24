@@ -2,7 +2,7 @@
   <!-- Add Car Title -->
   <form (ngSubmit)="addCar()">
     <div class="section-title">Качи снимки</div>
-    <ion-item class="custom-item">
+    <ion-item>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
     </ion-item>
 
@@ -147,31 +147,31 @@
     </ion-item>
 
     <!-- Volume Input -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Обем на двигателя (cc)</ion-label>
       <ion-input [(ngModel)]="carData.Volume" name="Volume" type="number" min="250" max="10000" required></ion-input>
     </ion-item>
 
     <!-- Power Input -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Мощност (HP)</ion-label>
       <ion-input [(ngModel)]="carData.Power" name="Power" type="number" min="30" max="5000" required></ion-input>
     </ion-item>
 
     <!-- Current KM Input -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Текущ километраж</ion-label>
       <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number" min="0" max="5000000" required></ion-input>
     </ion-item>
 
     <!-- Price of Buying Input -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Цена на покупка</ion-label>
       <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number" min="0" max="10000000" required></ion-input>
     </ion-item>
 
     <!-- License Plate Input -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Регистрационен номер</ion-label>
       <ion-input [(ngModel)]="carData.License_plate"
                 name="License_plate"
@@ -182,11 +182,10 @@
     </ion-item>
 
     <!-- Date Picker -->
-    <ion-item class="custom-item">
+    <ion-item>
       <ion-label>Дата</ion-label>
       <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
     </ion-item>
-
 
     <!-- Submit Button -->
     <ion-button expand="full" type="submit" shape="round" class="add-car-btn">Добави кола</ion-button>

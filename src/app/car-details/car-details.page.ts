@@ -29,6 +29,7 @@ export class CarDetailsPage implements OnInit {
   carImages: string[] = [];
   currentImageIndex: number = 0;
   showDetails = false;
+  showSpendings = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,6 +50,10 @@ export class CarDetailsPage implements OnInit {
 
   toggleDetails() {
     this.showDetails = !this.showDetails;
+  }
+
+  toggleSpendings() {
+    this.showSpendings = !this.showSpendings;
   }
 
   async loadCarDetails() {

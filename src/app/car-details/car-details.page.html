@@ -81,37 +81,106 @@
   </ion-card> 
 
   <!-- Expenses Section -->
-  <ion-card class="expenses-card">
-    <ion-card-content>
-      <p><strong>Money Spent This Month:</strong> {{ carDetails.spentThisMonth | currency }}</p>
-      <p><strong>Average Spent Per Month:</strong> {{ carDetails.averageSpentThisMonth | currency }}</p>
-      <p><strong>Money Spent This Year:</strong> {{ carDetails.spentThisYear | currency }}</p>
-      <p><strong>Total Money Spent:</strong> {{ carDetails.totalSpent | currency }}</p>
+  <ion-card class="car-details-card">
+    <ion-card-header>
+      <ion-card-title>Разходи</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content *ngIf="showSpendings">
+      <div class="expense-item">
+        <span class="expense-label">Този месец:</span>
+        <span class="expense-value">{{ carDetails.spentThisMonth}}</span>
+      </div>
+      <div class="expense-item">
+        <span class="expense-label">Средно на месец:</span>
+        <span class="expense-value">{{ carDetails.averageSpentThisMonth}}</span>
+      </div>
+      <div class="expense-item">
+        <span class="expense-label">Тази година:</span>
+        <span class="expense-value">{{ carDetails.spentThisYear}}</span>
+      </div>
+      <div class="expense-item">
+        <span class="expense-label">Общо похарчени:</span>
+        <span class="expense-value total">{{ carDetails.totalSpent}}</span>
+      </div>
+      <div class="action-item" (click)="goToMonthlyExpenses()">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <span>Месечни разходи</span>
+      </div>
     </ion-card-content>
+
+    <!-- Toggle Button -->
+    <div class="toggle-button-container">
+      <ion-button fill="clear" shape="round" (click)="toggleSpendings()">
+        {{ showSpendings ? 'Скрий разходите' : 'Покажи разходите' }}
+      </ion-button>
+    </div>
   </ion-card>
 
   <!-- Action Buttons -->
-  <div class="button-container">
-    <ion-button color="primary" expand="full" (click)="editCar()">Edit Car</ion-button>
-    <ion-button color="primary" expand="full" (click)="showAddUserPopup()">Add User to Car</ion-button>
-    <ion-button color="danger" expand="full" (click)="transferOwnership()">Transfer Ownership</ion-button>
-    <ion-button color="danger" expand="full" (click)="deleteCar()">Delete Car</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToRefueling()">Refueling</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToToll()">Toll Tax</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToAnnual()">Annual Tax</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToMaintaining()">Maintaining</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToInsurance()">Insurance</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToMechanicalbills()">Mechanical Bills</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToYearlyCheck()">Yearly Vehicle Check</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToAnotherExpenses()">Another Expenses</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToMonthlyExpenses()">Monthly Expenses</ion-button>
-    <ion-button color="secondary" expand="full" (click)="goToCarListing()">List the car</ion-button>
-  </div>
-</ion-content>
 
-<!-- Error Message if No Car Details Found -->
-<ion-content *ngIf="!carDetails">
-  <ion-text color="danger">
-    <h2>Car details not found.</h2>
-  </ion-text>
-</ion-content>
+  <ion-card class="car-details-card">
+    <ion-card-header>
+      <ion-card-title>Плащания</ion-card-title>
+    </ion-card-header> 
+    <div class="actions-grid">
+      <div class="action-item" (click)="goToRefueling()">
+        <ion-icon name="water-outline"></ion-icon>
+        <span>Зареждане</span>
+      </div>
+      <div class="action-item" (click)="goToToll()">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>Тол такса</span>
+      </div>
+      <div class="action-item" (click)="goToAnnual()">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>Годишен данък</span>
+      </div>
+      <div class="action-item" (click)="goToMaintaining()">
+        <ion-icon name="construct-outline"></ion-icon>
+        <span>Поддръжка</span>
+      </div>
+      <div class="action-item" (click)="goToInsurance()">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Застраховка</span>
+      </div>
+      <div class="action-item" (click)="goToMechanicalbills()">
+        <ion-icon name="hammer-outline"></ion-icon>
+        <span>Механични разходи</span>
+      </div>
+      <div class="action-item" (click)="goToYearlyCheck()">
+        <ion-icon name="clipboard-outline"></ion-icon>
+        <span>ГТП</span>
+      </div>
+      <div class="action-item" (click)="goToAnotherExpenses()">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <span>Други разходи</span>
+      </div>
+    </div>
+  </ion-card>
+
+  <ion-card class="car-details-card">
+    <ion-card-header>
+      <ion-card-title>За колата</ion-card-title>
+    </ion-card-header>
+      <div class="action-item2" (click)="editCar()">
+        <ion-icon name="create-outline"></ion-icon>
+        <span>Редактиране</span>
+      </div>
+      <div class="action-item2" (click)="showAddUserPopup()">
+        <ion-icon name="person-add-outline"></ion-icon>
+        <span>Добави потребител</span>
+      </div>
+      <div class="action-item2" (click)="goToCarListing()">
+        <ion-icon name="car-outline"></ion-icon>
+        <span>Обяви за продажба</span>
+      </div>
+      <div class="action-item3" (click)="transferOwnership()">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+        <span>Прехвърли собственост</span>
+      </div>
+    <div class="action-item3" (click)="deleteCar()">
+      <ion-icon name="trash-outline"></ion-icon>
+      <span>Изтрий колата</span>
+    </div>
+  </ion-card>

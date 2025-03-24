@@ -10,7 +10,7 @@ ion-content {
     height: 4rem;
     font-size: large;
     font-weight: bold;
-    width: 60%; /* Adjusted width */
+    width: 80%; /* Adjusted width */
     display: block; /* Ensures the button is a block element for margin auto to work */
     margin-left: auto; /* Centers the button horizontally */
     margin-right: auto; /* Centers the button horizontally */
@@ -146,16 +146,6 @@ ion-content {
     color: white;
   }
   
-  /* Expenses Card */
-  .expenses-card {
-    background: #0F0F0F;
-    color: #ffffff;
-    border-radius: 1rem;
-    margin: 1rem auto;
-    width: 90%;
-    padding: 1rem;
-  }
-  
   /* Buttons */
   .button-container {
     display: flex;
@@ -175,6 +165,160 @@ ion-content {
     width: 100%;
     text-align: center;
   }
+
+  /* Expenses Card - Same Styling as Details Card */
+.expenses-card {
+  background: #141414; /* Same as details card */
+  color: #ffffff;
+  border-radius: 1rem;
+  margin: 1rem auto;
+  width: 90%;
+  padding: 1rem;
+  font-size: 1.4rem;
+}
+
+/* Title - Matches Details Card */
+.expenses-card ion-card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.expenses-card ion-card-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #ffffff; /* Gold color */
+}
+
+/* Expenses List - Styled Like Details */
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  font-size: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Remove border from the last item */
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+/* Labels on the Left */
+.expense-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+    color: #aaa;
+}
+
+/* Values on the Right */
+.expense-value {
+  font-weight: bold;
+  color: white;
+  text-align: right;
+  font-size: 1.5rem;
+}
+
+/* Highlighted Total Money Spent */
+.expense-value.total {
+  color: #ff4d4d; /* Red for emphasis */
+  font-size: 1.5rem;
+}
+
+/* Actions Grid Layout */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive Grid */
+  gap: 1rem;
+  margin: 1.5rem auto;
+  width: 90%;
+  text-align: center;
+}
+
+/* Individual Action Items */
+.action-item {
+  background: #256976;
+  color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.action-item2 {
+  background: #256976;
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width: 90%;
+  max-width: 320px;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action-item3 {
+  background: rgb(190, 24, 24);
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width: 90%;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action-item ion-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.action-item2 ion-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.action-item3 ion-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Hover & Click Effects */
+.action-item:hover {
+  background: #1b4c59;
+  transform: scale(1.05);
+}
+
+/* Special Color for Danger Actions (Delete, Transfer Ownership) */
+.action-item.danger {
+  background: #ff4d4d;
+}
+
+.action-item.danger:hover {
+  background: #cc0000;
+}
   
   ion-button[color="danger"] {
     --background: #ff4d4d;
