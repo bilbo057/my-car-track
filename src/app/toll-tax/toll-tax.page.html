@@ -1,43 +1,59 @@
-<!-- toll-tax.page.html -->
 <ion-content [fullscreen]="true">
-  <ion-button expand="full" (click)="toggleForm()">
-    {{ showForm ? 'Hide Form' : 'Add Toll Tax' }}
+  <!-- Toggle Form Button -->
+  <ion-button expand="full" shape="round" (click)="toggleForm()" class="add-btn">
+    {{ showForm ? 'Скрий формата' : 'Добави тол такса' }}
   </ion-button>
 
-  <!-- Toll Tax Form -->
+  <!-- Toll Tax Form Section -->
   <div *ngIf="showForm">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Add Toll Tax Record</ion-card-title>
-      </ion-card-header>
+    <form (ngSubmit)="addTollTaxRecord()">
       <ion-card-content>
-        <ion-item>
-          <ion-label>Start Date</ion-label>
-          <ion-datetime [(ngModel)]="tollTaxData.startDate" name="startDate" presentation="date" [preferWheel]="true"></ion-datetime>
-        </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Amount Paid</ion-label>
-          <ion-input type="number" [(ngModel)]="tollTaxData.amount" placeholder="Enter Amount"></ion-input>
+        <!-- Amount Paid -->
+        <ion-item [class.invalid-item]="(!tollTaxData.amount || tollTaxData.amount < 0 || tollTaxData.amount > 10000) && showValidation">
+          <ion-label>Платена сума</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="tollTaxData.amount"
+            name="amount"
+            placeholder="Въведи сума">
+          </ion-input>
         </ion-item>
+        <div *ngIf="!tollTaxData.amount && showValidation" class="error-text">
+          Полето е задължително.
+        </div>
+        <div *ngIf="tollTaxData.amount && (tollTaxData.amount < 0 || tollTaxData.amount > 10000) && showValidation" class="error-text">
+          Стойността трябва да е между 0 и 10000.
+        </div>
 
-        <!-- Save Button -->
-        <ion-button expand="full" (click)="addTollTaxRecord()">Save</ion-button>
+        <!-- Start Date -->
+        <ion-item [class.invalid-item]="!tollTaxData.startDate && showValidation">
+          <ion-label>Начална дата</ion-label>
+          <app-datetime-picker (dateSelected)="onStartDateChange($event)"></app-datetime-picker>
+        </ion-item>
+        <div *ngIf="!tollTaxData.startDate && showValidation" class="error-text">
+          Полето е задължително.
+        </div>
+
+        <!-- Submit Button -->
+        <ion-button expand="full" type="submit" shape="round" class="add-btn">
+          Запази
+        </ion-button>
       </ion-card-content>
-    </ion-card>
+    </form>
   </div>
 
   <!-- List of Toll Tax Records -->
-  <ion-card *ngFor="let toll of tollTaxDocuments">
+  <ion-card *ngFor="let toll of tollTaxDocuments" class="custom-item">
     <ion-card-header>
-      <ion-card-title>Start Date: {{ toll.startDate }}</ion-card-title>
-      <ion-card-subtitle>End Date: {{ toll.endDate }}</ion-card-subtitle>
+      <ion-card-title class="section-title">Начална дата: {{ toll.startDate }}</ion-card-title>
+      <ion-card-subtitle>Крайна дата: {{ toll.endDate }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Amount:</strong> {{ toll.amount | currency }}</p>
-      <p><strong>License Plate:</strong> {{ toll.licensePlate }}</p>
-      <ion-button color="danger" expand="full" (click)="deleteTollTaxRecord(toll.id)">
-        Delete
+      <p><strong>Сума:</strong> {{ toll.amount | currency }}</p>
+      <p><strong>Рег. номер:</strong> {{ toll.licensePlate }}</p>
+      <ion-button color="danger" expand="full" shape="round" (click)="deleteTollTaxRecord(toll.id)">
+        Изтрий
       </ion-button>
     </ion-card-content>
   </ion-card>

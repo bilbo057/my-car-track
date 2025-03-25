@@ -15,6 +15,7 @@ export class TollTaxPage implements OnInit {
   tollTaxDocuments: any[] = []; // List of toll tax records
   tollTaxData: any = { startDate: '', amount: null }; // Holds the form data
   showForm: boolean = false; // Toggle form visibility
+  showValidation: boolean = false; // Show validation errors
   private firestore = getFirestore();
 
   constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
@@ -58,6 +59,7 @@ export class TollTaxPage implements OnInit {
   }
 
   async addTollTaxRecord() {
+    if (!this.validateForm()) return;
     if (this.tollTaxData.startDate && this.tollTaxData.amount) {
       try {
         const formattedStartDate = this.formatDate(this.tollTaxData.startDate);
@@ -122,5 +124,16 @@ export class TollTaxPage implements OnInit {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+  onStartDateChange(date: string) {
+    this.tollTaxData.startDate = date;
+  }
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const { startDate, amount } = this.tollTaxData;
+    const isAmountValid = amount !== null && amount >= 0 && amount <= 1000;
+  
+    return !!startDate && isAmountValid;
   }
 }
