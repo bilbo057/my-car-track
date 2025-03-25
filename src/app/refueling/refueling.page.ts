@@ -58,7 +58,7 @@ export class RefuelingPage implements OnInit {
   }
 
   async addRefuelingRecord() {
-    this.showValidation = true;
+    if (!this.validateForm()) return;
 
     if (this.refuelingData.date && this.refuelingData.fuelQuantity && this.refuelingData.cost && this.refuelingData.odometer) {
       try {
@@ -108,6 +108,19 @@ export class RefuelingPage implements OnInit {
       console.error('Error deleting refueling record:', error);
     }
   }
+
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const { fuelQuantity, cost, odometer, date } = this.refuelingData;
+  
+    const isQuantityValid = fuelQuantity !== null && fuelQuantity >= 0 && fuelQuantity <= 200;
+    const isCostValid = cost !== null && cost >= 0 && cost <= 600;
+    const isOdometerValid = odometer !== null && odometer >= 0 && odometer <= 10000000;
+    const isDateValid = !!date;
+  
+    return isQuantityValid && isCostValid && isOdometerValid && isDateValid;
+  }  
 
   private formatDate(date: string): string {
     const parsedDate = new Date(date);

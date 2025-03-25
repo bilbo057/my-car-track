@@ -17,6 +17,7 @@ export class AnnualTaxPage implements OnInit {
   paymentDate: string = ''; // Payment date in YYYY-MM-DD format
   cost: number | null = null; // Cost of the tax payment
   showForm: boolean = false; // Toggle form visibility
+  showValidation: boolean = false; // Show validation errors
 
   private firestore = getFirestore();
 
@@ -52,7 +53,19 @@ export class AnnualTaxPage implements OnInit {
     }
   }
 
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const isTaxYearValid = this.taxYear !== null && this.taxYear >= 1900 && this.taxYear <= 2100;
+    const isHalfValid = !!this.paymentHalf;
+    const isCostValid = this.cost !== null && this.cost >= 0 && this.cost <= 5000;
+    const isDateValid = !!this.paymentDate;
+  
+    return isTaxYearValid && isHalfValid && isCostValid && isDateValid;
+  }  
+
   async addAnnualTaxRecord() {
+    if (!this.validateForm()) return;
     if (this.taxYear && this.paymentHalf && this.paymentDate && this.cost !== null) {
       try {
         const formattedDate = this.formatDate(this.paymentDate); // Ensure YYYY-MM-DD format

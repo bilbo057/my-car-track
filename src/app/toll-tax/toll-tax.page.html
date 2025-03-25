@@ -50,8 +50,7 @@
       <ion-card-subtitle>Крайна дата: {{ toll.endDate }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Сума:</strong> {{ toll.amount | currency }}</p>
-      <p><strong>Рег. номер:</strong> {{ toll.licensePlate }}</p>
+      <p><strong>Сума:</strong> {{ toll.amount }} лева</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteTollTaxRecord(toll.id)">
         Изтрий
       </ion-button>

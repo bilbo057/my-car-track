@@ -85,7 +85,7 @@
     </ion-card-header>
     <ion-card-content>
       <p><strong>Количество:</strong> {{ refuel.fuelQuantity }} литра</p>
-      <p><strong>Цена:</strong> {{ refuel.cost | currency }}</p>
+      <p><strong>Цена:</strong> {{ refuel.cost }} лева</p>
       <p><strong>Километраж:</strong> {{ refuel.odometer }} км</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteRefuelingRecord(refuel.id)">
         Изтрий

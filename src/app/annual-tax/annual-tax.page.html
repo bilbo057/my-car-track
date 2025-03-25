@@ -1,63 +1,90 @@
-<!-- annual-tax.page.html -->
 <ion-content [fullscreen]="true">
-  <ion-button expand="full" (click)="toggleForm()">
-    {{ showForm ? 'Hide Form' : 'Add Annual Tax' }}
+  <!-- Toggle Form Button -->
+  <ion-button expand="full" shape="round" (click)="toggleForm()" class="add-btn">
+    {{ showForm ? 'Скрий формата' : 'Добави годишен данък' }}
   </ion-button>
 
+  <!-- Annual Tax Form Section -->
   <div *ngIf="showForm">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Add Annual Tax Record</ion-card-title>
-      </ion-card-header>
+    <form (ngSubmit)="addAnnualTaxRecord()">
       <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Tax Year</ion-label>
-          <ion-input type="number" [(ngModel)]="taxYear" placeholder="Enter Year (e.g., 2024)"></ion-input>
-        </ion-item>
 
-        <ion-item>
-          <ion-label>Payment Half</ion-label>
-          <ion-radio-group [(ngModel)]="paymentHalf">
-            <ion-item>
-              <ion-label>First Half (Jan - Jun)</ion-label>
-              <ion-radio slot="start" value="Jan - Jun"></ion-radio>
-            </ion-item>
-            <ion-item>
-              <ion-label>Second Half (Jul - Dec)</ion-label>
-              <ion-radio slot="start" value="Jul - Dec"></ion-radio>
-            </ion-item>
-            <ion-item>
-              <ion-label>Full Year (Jan - Dec)</ion-label>
-              <ion-radio slot="start" value="Jan - Dec"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
+        <!-- Tax Year -->
+        <ion-item [class.invalid-item]="(!taxYear || taxYear < 1900 || taxYear > 2100) && showValidation">
+          <ion-label>Данък за</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="taxYear"
+            name="taxYear"
+            placeholder="Въведи година (напр. 2024)">
+          </ion-input>
         </ion-item>
+        <div *ngIf="!taxYear && showValidation" class="error-text">Полето е задължително.</div>
+        <div *ngIf="taxYear && (taxYear < 1900 || taxYear > 2100) && showValidation" class="error-text">
+          Стойността трябва да е между 1900 и 2100.
+        </div>
 
-        <ion-item>
-          <ion-label position="stacked">Cost</ion-label>
-          <ion-input type="number" [(ngModel)]="cost" placeholder="Enter Cost"></ion-input>
+        <!-- Payment Half -->
+        <ion-item [class.invalid-item]="!paymentHalf && showValidation">
+          <ion-label>Период на плащане</ion-label>
         </ion-item>
+        <ion-radio-group [(ngModel)]="paymentHalf" name="paymentHalf">
+          <ion-item>
+            <ion-label>Първо полугодие (Ян - Юни)</ion-label>
+            <ion-radio slot="start" value="Ян - Юни"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Второ полугодие (Юли - Дек)</ion-label>
+            <ion-radio slot="start" value="Юли - Дек"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Цяла година (Ян - Дек)</ion-label>
+            <ion-radio slot="start" value="Ян - Дек"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+        <div *ngIf="!paymentHalf && showValidation" class="error-text">Моля, избери период.</div>
 
-        <ion-item>
-          <ion-label>Date</ion-label>
-          <ion-datetime [(ngModel)]="paymentDate" name="paymentDate" presentation="date" [preferWheel]="true"></ion-datetime>
+        <!-- Cost -->
+        <ion-item [class.invalid-item]="(cost === null || cost < 0 || cost > 10000) && showValidation">
+          <ion-label>Цена</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="cost"
+            name="cost"
+            placeholder="Въведи цена">
+          </ion-input>
         </ion-item>
+        <div *ngIf="cost === null && showValidation" class="error-text">Полето е задължително.</div>
+        <div *ngIf="cost !== null && (cost < 0 || cost > 10000) && showValidation" class="error-text">
+          Стойността трябва да е между 0 и 10000.
+        </div>
 
-        <ion-button expand="full" (click)="addAnnualTaxRecord()">Save</ion-button>
+        <!-- Date -->
+        <ion-item [class.invalid-item]="!paymentDate && showValidation">
+          <ion-label>Дата на плащане</ion-label>
+          <app-datetime-picker (dateSelected)="paymentDate = $event"></app-datetime-picker>
+        </ion-item>
+        <div *ngIf="!paymentDate && showValidation" class="error-text">Полето е задължително.</div>
+
+        <!-- Submit Button -->
+        <ion-button expand="full" type="submit" shape="round" class="add-btn">
+          Запази
+        </ion-button>
       </ion-card-content>
-    </ion-card>
+    </form>
   </div>
 
-  <ion-card *ngFor="let tax of annualTaxDocuments">
+  <!-- List of Annual Tax Records -->
+  <ion-card *ngFor="let tax of annualTaxDocuments" class="custom-item">
     <ion-card-header>
-      <ion-card-title>Tax Year: {{ tax.taxYear }}</ion-card-title>
-      <ion-card-subtitle>Payment for: {{ tax.paymentHalf }}</ion-card-subtitle>
+      <ion-card-title class="section-title">Година: {{ tax.taxYear }}</ion-card-title>
+      <ion-card-subtitle>Период: {{ tax.paymentHalf }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Payment Date:</strong> {{ tax.paymentDate }}</p>
-      <p><strong>Cost:</strong> {{ tax.cost | currency }}</p>
-      <ion-button color="danger" expand="full" (click)="deleteAnnualTaxRecord(tax.id)">
-        Delete
+      <p><strong>Дата:</strong> {{ tax.paymentDate }}</p>
+      <p><strong>Цена:</strong> {{ tax.cost }} лева</p>
+      <ion-button color="danger" expand="full" shape="round" (click)="deleteAnnualTaxRecord(tax.id)">
+        Изтрий
       </ion-button>
     </ion-card-content>
   </ion-card>

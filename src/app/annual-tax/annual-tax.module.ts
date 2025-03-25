@@ -8,14 +8,16 @@ import { IonicModule } from '@ionic/angular';
 import { AnnualTaxPageRoutingModule } from './annual-tax-routing.module';
 
 import { AnnualTaxPage } from './annual-tax.page';
+import { DatetimePickerModule } from "../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AnnualTaxPageRoutingModule
-  ],
+    AnnualTaxPageRoutingModule,
+    DatetimePickerModule
+],
   declarations: [AnnualTaxPage]
 })
 export class AnnualTaxPageModule {}

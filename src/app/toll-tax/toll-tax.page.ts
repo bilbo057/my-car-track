@@ -132,7 +132,7 @@ export class TollTaxPage implements OnInit {
     this.showValidation = true;
   
     const { startDate, amount } = this.tollTaxData;
-    const isAmountValid = amount !== null && amount >= 0 && amount <= 1000;
+    const isAmountValid = amount !== null && amount >= 0 && amount <= 10000;
   
     return !!startDate && isAmountValid;
   }
