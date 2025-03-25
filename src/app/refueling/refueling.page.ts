@@ -1,8 +1,7 @@
-// refueling.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
-import { SpendingService } from '../services/spending.service'; 
+import { SpendingService } from '../services/spending.service';
 
 @Component({
   selector: 'app-refueling',
@@ -11,10 +10,11 @@ import { SpendingService } from '../services/spending.service';
 })
 export class RefuelingPage implements OnInit {
   carId: string = '';
-  carFuelType: string = ''; // Holds the fuel type of the car
-  refuelingDocuments: any[] = []; // List of refueling documents
-  refuelingData: any = { date: '', fuelQuantity: null, cost: null, odometer: null }; // Holds the form data
-  showForm: boolean = false; // Toggle form visibility
+  carFuelType: string = '';
+  refuelingDocuments: any[] = [];
+  refuelingData: any = { date: '', fuelQuantity: null, cost: null, odometer: null };
+  showForm: boolean = false;
+  showValidation: boolean = false;
   private firestore = getFirestore();
 
   constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
@@ -34,7 +34,7 @@ export class RefuelingPage implements OnInit {
 
       if (carDoc.exists()) {
         const carData = carDoc.data();
-        this.carFuelType = carData['Engine_type']; // Get the engine type as the fuel type
+        this.carFuelType = carData['Engine_type'];
       } else {
         console.error('Car document not found');
       }
@@ -58,14 +58,16 @@ export class RefuelingPage implements OnInit {
   }
 
   async addRefuelingRecord() {
+    this.showValidation = true;
+
     if (this.refuelingData.date && this.refuelingData.fuelQuantity && this.refuelingData.cost && this.refuelingData.odometer) {
       try {
-        const formattedDate = this.formatDate(this.refuelingData.date); // Ensure YYYY-MM-DD format
+        const formattedDate = this.formatDate(this.refuelingData.date);
 
         const refuelingCollection = collection(this.firestore, 'Refueling');
         await addDoc(refuelingCollection, {
           carId: this.carId,
-          fuelType: this.carFuelType, 
+          fuelType: this.carFuelType,
           date: formattedDate,
           fuelQuantity: this.refuelingData.fuelQuantity,
           cost: this.refuelingData.cost,
@@ -76,6 +78,7 @@ export class RefuelingPage implements OnInit {
 
         this.refuelingData = { date: '', fuelQuantity: null, cost: null, odometer: null };
         this.showForm = false;
+        this.showValidation = false;
         await this.loadRefuelingDocuments();
       } catch (error) {
         console.error('Error adding refueling record:', error);
@@ -83,6 +86,10 @@ export class RefuelingPage implements OnInit {
     } else {
       console.error('All fields are required.');
     }
+  }
+
+  onDateChange(selectedDate: string) {
+    this.refuelingData.date = selectedDate;
   }
 
   async deleteRefuelingRecord(recordId: string) {
@@ -94,7 +101,7 @@ export class RefuelingPage implements OnInit {
         const data = docSnap.data();
         await deleteDoc(refuelDoc);
         this.refuelingDocuments = this.refuelingDocuments.filter((record) => record.id !== recordId);
-    
+
         await this.spendingService.subtractExpense(this.carId, data['cost']);
       }
     } catch (error) {

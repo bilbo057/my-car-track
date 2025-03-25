@@ -5,14 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RefuelingPageRoutingModule } from './refueling-routing.module';
 import { RefuelingPage } from './refueling.page';
+import { DatetimePickerModule } from "../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    RefuelingPageRoutingModule
-  ],
+    RefuelingPageRoutingModule,
+    DatetimePickerModule
+],
   declarations: [RefuelingPage]
 })
 export class RefuelingPageModule {}

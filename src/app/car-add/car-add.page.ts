@@ -323,6 +323,4 @@ export class CarAddPage implements OnInit {
         this.carData.License_plate = ""; // Clear invalid input
       }
   }
-
-  
 }

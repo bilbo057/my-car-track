@@ -79,6 +79,12 @@ ion-content {
     display: none;
     width: 90%;
   }
+
+  ion-input.invalid-input {
+    --highlight-color-invalid: #ff4d4d;
+    --color-invalid: #ff4d4d;
+    --border-color: #ff4d4d;
+  }  
   
 /* Animations */
 @keyframes fadeIn {
