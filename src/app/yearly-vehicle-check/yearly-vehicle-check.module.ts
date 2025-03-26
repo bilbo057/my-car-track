@@ -5,14 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { YearlyVehicleCheckPageRoutingModule } from './yearly-vehicle-check-routing.module';
 import { YearlyVehicleCheckPage } from './yearly-vehicle-check.page';
+import { DatetimePickerModule } from "../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    YearlyVehicleCheckPageRoutingModule
-  ],
+    YearlyVehicleCheckPageRoutingModule,
+    DatetimePickerModule
+],
   declarations: [YearlyVehicleCheckPage]
 })
 export class YearlyVehicleCheckPageModule {}

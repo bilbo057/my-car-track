@@ -14,6 +14,7 @@ export class YearlyVehicleCheckPage implements OnInit {
   vehicleCheckRecords: any[] = [];
   checkData: any = { startDate: '', endDate: '', cost: null };
   showCheckForm: boolean = false;
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
 
@@ -79,28 +80,34 @@ export class YearlyVehicleCheckPage implements OnInit {
   }
 
   async addVehicleCheckRecord() {
-    if (this.checkData.startDate && this.checkData.cost !== null) {
+    this.showValidation = true;
+  
+    const cost = this.checkData.cost;
+  
+    const isValidCost = cost !== null && cost >= 0 && cost <= 10000;
+  
+    if (this.checkData.startDate && isValidCost) {
       this.checkData.startDate = this.formatDate(new Date(this.checkData.startDate));
       this.checkData.endDate = this.calculateEndDate(this.checkData.startDate);
-      const cost = this.checkData.cost;
-
+  
       try {
         const checksCollection = collection(this.firestore, 'YearlyVehicleCheck');
         await addDoc(checksCollection, {
           carId: this.carId,
           ...this.checkData,
         });
-
+  
         await this.spendingService.addExpense(this.carId, cost);
-
+  
         this.checkData = { startDate: '', endDate: '', cost: null };
         this.showCheckForm = false;
+        this.showValidation = false;
         await this.loadVehicleCheckRecords();
       } catch (error) {
         console.error('Error adding vehicle check record:', error);
       }
     } else {
-      console.error('Start date and cost are required.');
+      console.error('Start date and valid cost are required.');
     }
   }
 
