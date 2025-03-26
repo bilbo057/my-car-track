@@ -1,7 +1,17 @@
-// another-expenses.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  getDoc,
+  updateDoc
+} from 'firebase/firestore';
 
 @Component({
   selector: 'app-another-expenses',
@@ -10,9 +20,14 @@ import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc
 })
 export class AnotherExpensesPage implements OnInit {
   carId: string = '';
-  expensesRecords: any[] = []; // List of expenses records
-  expenseData: any = { date: '', cost: '', description: '' }; // Form data with description
-  showExpenseForm: boolean = false; // Toggle form visibility
+  expensesRecords: any[] = [];
+  expenseData: any = {
+    date: '',
+    cost: null,
+    description: ''
+  };
+  showExpenseForm: boolean = false;
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
 
@@ -23,6 +38,11 @@ export class AnotherExpensesPage implements OnInit {
     if (this.carId) {
       await this.loadExpensesRecords();
     }
+  }
+
+  toggleExpenseForm() {
+    this.showExpenseForm = !this.showExpenseForm;
+    this.showValidation = false;
   }
 
   private async loadExpensesRecords() {
@@ -40,25 +60,35 @@ export class AnotherExpensesPage implements OnInit {
   }
 
   async addExpenseRecord() {
-    if (this.expenseData.date && this.expenseData.cost && this.expenseData.description) {
-      this.expenseData.date = this.formatDate(new Date(this.expenseData.date));
-      try {
-        const expensesCollection = collection(this.firestore, 'AnotherExpenses');
-        await addDoc(expensesCollection, {
-          carId: this.carId,
-          ...this.expenseData,
-        });
+    this.showValidation = true;
 
-        await this.updateSpending(this.expenseData.cost);
+    const { date, cost, description } = this.expenseData;
+    const isValid =
+      date &&
+      cost != null &&
+      cost >= 0 &&
+      cost <= 1000000 &&
+      description;
 
-        this.expenseData = { date: '', cost: '', description: '' };
-        this.showExpenseForm = false;
-        await this.loadExpensesRecords();
-      } catch (error) {
-        console.error('Error adding expense record:', error);
-      }
-    } else {
-      console.error('Date, cost, and description are required.');
+    if (!isValid) return;
+
+    this.expenseData.date = this.formatDate(new Date(this.expenseData.date));
+
+    try {
+      const expensesCollection = collection(this.firestore, 'AnotherExpenses');
+      await addDoc(expensesCollection, {
+        carId: this.carId,
+        ...this.expenseData,
+      });
+
+      await this.updateSpending(this.expenseData.cost);
+
+      this.expenseData = { date: '', cost: null, description: '' };
+      this.showExpenseForm = false;
+      this.showValidation = false;
+      await this.loadExpensesRecords();
+    } catch (error) {
+      console.error('Error adding expense record:', error);
     }
   }
 
@@ -71,8 +101,7 @@ export class AnotherExpensesPage implements OnInit {
 
       const expenseDoc = doc(this.firestore, 'AnotherExpenses', recordId);
       await deleteDoc(expenseDoc);
-      this.expensesRecords = this.expensesRecords.filter((record) => record.id !== recordId);
-      console.log('Expense record deleted:', recordId);
+      this.expensesRecords = this.expensesRecords.filter((r) => r.id !== recordId);
     } catch (error) {
       console.error('Error deleting expense record:', error);
     }
@@ -82,11 +111,7 @@ export class AnotherExpensesPage implements OnInit {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; 
-  }
-
-  toggleExpenseForm() {
-    this.showExpenseForm = !this.showExpenseForm;
+    return `${year}-${month}-${day}`;
   }
 
   private async updateSpending(amount: number) {
@@ -111,13 +136,15 @@ export class AnotherExpensesPage implements OnInit {
     try {
       const docSnapshot = await getDoc(docRef);
       if (docSnapshot.exists()) {
-        const existingData = docSnapshot.data() as { spentsThisPeriod?: number }; 
+        const existingData = docSnapshot.data() as { spentsThisPeriod?: number };
         await updateDoc(docRef, {
-          spentsThisPeriod: (existingData['spentsThisPeriod'] || 0) + amount,
+          spentsThisPeriod: (existingData.spentsThisPeriod || 0) + amount,
           lastSpent: new Date().toISOString(),
         });
       } else {
-        await addDoc(collection(this.firestore, docRef.path), {
+        const docPath = docRef.path;
+        const [collectionName] = docPath.split('/');
+        await addDoc(collection(this.firestore, collectionName), {
           carID: this.carId,
           spentsThisPeriod: amount,
           lastSpent: new Date().toISOString(),
