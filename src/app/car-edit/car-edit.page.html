@@ -1,140 +1,190 @@
-<!-- car-edit.page.html -->
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="saveCar()">
+    <!-- Section: Upload Images -->
+    <div class="section-title">Качи снимки</div>
     <ion-item>
-      <ion-label>Car Images</ion-label>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
     </ion-item>
 
-    <!-- Display existing images and allow deletion on click -->
-    <ion-item *ngIf="existingImages.length > 0">
-      <ion-label>Existing Images</ion-label>
-      <ion-grid>
-        <ion-row>
-          <ion-col *ngFor="let imageUrl of imagePreviews; let i = index">
-            <img [src]="imageUrl" alt="Car Image" style="width: 100px; height: 100px; object-fit: cover;"
-              (click)="deletePhoto(i)">
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-item>
+    <div class="image-preview-container" *ngIf="imagePreviews.length > 0">
+      <div *ngFor="let preview of imagePreviews; let i = index" class="image-preview">
+        <img [src]="preview" (click)="deletePhoto(i)">
+      </div>
+    </div>
 
+    <!-- Section: Car Details -->
+    <div class="section-title">Детайли на колата</div>
 
-    <ion-item>
-      <ion-label>Brand</ion-label>
-      <ion-select
-        [(ngModel)]="carDetails.Brand"
-        (ionChange)="loadModels(carDetails.Brand)"
-        name="Brand"
-        interface="popover"
-        placeholder="Select Brand"
-      >
+    <ion-item button (click)="brandSelect.open()" [class.invalid-item]="!carDetails.Brand && showValidation">
+      <ion-label>Марка</ion-label>
+      <ion-text slot="end">
+        {{ getBrandName(carDetails.Brand) || "Избери" }}
+      </ion-text>
+      <ion-select #brandSelect interface="modal" [(ngModel)]="carDetails.Brand"
+                  (ionChange)="loadModels(carDetails.Brand)"
+                  name="Brand" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let brand of brandOptions" [value]="brand.BrandID">
           {{ brand.BrandName }}
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="!carDetails.Brand && showValidation" class="error-text">Полето е задължително.</div>    
 
-    <ion-item>
-      <ion-label>Model</ion-label>
-      <ion-select
-        [(ngModel)]="carDetails.Model"
-        name="Model"
-        interface="popover"
-        placeholder="Select Model"
-      >
+    <ion-item button (click)="modelSelect.open()" [class.invalid-item]="!carDetails.Model && showValidation">
+      <ion-label>Модел</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Model || "Избери модел" }}
+      </ion-text>
+      <ion-select #modelSelect interface="modal" [(ngModel)]="carDetails.Model"
+                  name="Model" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let model of filteredModels" [value]="model">
           {{ model }}
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="!carDetails.Model && showValidation" class="error-text">Полето е задължително.</div>    
 
-    <ion-item>
-      <ion-label>Chassis Type</ion-label>
-      <ion-select [(ngModel)]="carDetails.Chassis_type" name="Chassis_type">
+    <!-- Chassis Type -->
+    <ion-item button (click)="chassisSelect.open()">
+      <ion-label>Тип на шасито</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Chassis_type || "Избери" }}
+      </ion-text>
+      <ion-select #chassisSelect interface="modal" [(ngModel)]="carDetails.Chassis_type"
+                  name="Chassis_type" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let type of chassisTypes" [value]="type.Chassis_type">
           {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Engine Type</ion-label>
-      <ion-select [(ngModel)]="carDetails.Engine_type" name="Engine_type">
+    <!-- Engine Type -->
+    <ion-item button (click)="engineSelect.open()">
+      <ion-label>Тип двигател</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Engine_type || "Избери" }}
+      </ion-text>
+      <ion-select #engineSelect interface="modal" [(ngModel)]="carDetails.Engine_type"
+                  name="Engine_type" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let type of engineTypes" [value]="type.Engine_type">
           {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Transmission Type</ion-label>
-      <ion-select [(ngModel)]="carDetails.Transmission_type" name="Transmission_type">
+    <!-- Transmission Type -->
+    <ion-item button (click)="transmissionSelect.open()">
+      <ion-label>Скоростна кутия</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Transmission_type || "Избери" }}
+      </ion-text>
+      <ion-select #transmissionSelect interface="modal" [(ngModel)]="carDetails.Transmission_type"
+                  name="Transmission_type" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let type of transmissionTypes" [value]="type.Type">
           {{ type.Label }}
         </ion-select-option>
       </ion-select>
     </ion-item>
-    
-    <ion-item>
-      <ion-label>Color</ion-label>
-      <ion-select [(ngModel)]="carDetails.Color" name="Color">
+
+    <!-- Color -->
+    <ion-item button (click)="colorSelect.open()">
+      <ion-label>Цвят</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Color || "Избери" }}
+      </ion-text>
+      <ion-select #colorSelect interface="modal" [(ngModel)]="carDetails.Color"
+                  name="Color" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let color of colorOptions" [value]="color">
           {{ color }}
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Drive</ion-label>
-      <ion-select [(ngModel)]="carDetails.Drive" name="Drive">
+    <!-- Drive -->
+    <ion-item button (click)="driveSelect.open()">
+      <ion-label>Задвижване</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Drive || "Избери" }}
+      </ion-text>
+      <ion-select #driveSelect interface="modal" [(ngModel)]="carDetails.Drive"
+                  name="Drive" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let drive of driveOptions" [value]="drive">
           {{ drive }}
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Volume (cc)</ion-label>
-      <ion-input [(ngModel)]="carDetails.Volume" name="Volume" type="number"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Euro Standard</ion-label>
-      <ion-select [(ngModel)]="carDetails.Euro" name="Euro">
+    <!-- Euro Standard -->
+    <ion-item button (click)="euroSelect.open()">
+      <ion-label>Евро стандарт</ion-label>
+      <ion-text slot="end">
+        {{ carDetails.Euro || "Избери" }}
+      </ion-text>
+      <ion-select #euroSelect interface="modal" [(ngModel)]="carDetails.Euro"
+                  name="Euro" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
         <ion-select-option *ngFor="let euro of euroOptions" [value]="euro">
           {{ euro }}
         </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Power (HP)</ion-label>
+    <!-- Volume -->
+    <ion-item [class.invalid-item]="(carDetails.Volume < 250 || carDetails.Volume > 10000) && showValidation">
+      <ion-label>Обем (cc)</ion-label>
+      <ion-input [(ngModel)]="carDetails.Volume" name="Volume" type="number"></ion-input>
+    </ion-item>
+    <div *ngIf="carDetails.Volume && (carDetails.Volume < 250 || carDetails.Volume > 10000) && showValidation" class="error-text">
+      Стойността трябва да е между 250 и 10000.
+    </div>
+
+    <!-- Power -->
+    <ion-item [class.invalid-item]="(carDetails.Power < 30 || carDetails.Power > 5000) && showValidation">
+      <ion-label>Мощност (HP)</ion-label>
       <ion-input [(ngModel)]="carDetails.Power" name="Power" type="number"></ion-input>
     </ion-item>
+    <div *ngIf="carDetails.Power && (carDetails.Power < 30 || carDetails.Power > 5000) && showValidation" class="error-text">
+      Стойността трябва да е между 30 и 5000.
+    </div>
 
-    <ion-item>
-      <ion-label>Year</ion-label>
-      <ion-datetime
-        [(ngModel)]="carDetails.Year"
-        name="Year"
-        presentation="date"
-        [preferWheel]="true"
-        display-format="DD-MM-YYYY"
-        picker-format="DD-MM-YYYY"
-      ></ion-datetime>
-    </ion-item>
-    
-    <ion-item>
-      <ion-label>Current KM</ion-label>
+    <!-- KM -->
+    <ion-item [class.invalid-item]="(carDetails.Current_KM < 0 || carDetails.Current_KM > 5000000) && showValidation">
+      <ion-label>Текущ километраж</ion-label>
       <ion-input [(ngModel)]="carDetails.Current_KM" name="Current_KM" type="number"></ion-input>
     </ion-item>
+    <div *ngIf="carDetails.Current_KM && (carDetails.Current_KM < 0 || carDetails.Current_KM > 5000000) && showValidation" class="error-text">
+      Стойността трябва да е между 0 и 5 000 000.
+    </div>
 
-    <ion-item>
-      <ion-label>License Plate</ion-label>
+    <!-- License Plate -->
+    <ion-item [class.invalid-item]="!carDetails.License_plate && showValidation">
+      <ion-label>Регистрационен номер</ion-label>
       <ion-input [(ngModel)]="carDetails.License_plate" name="License_plate"></ion-input>
     </ion-item>
+    <div *ngIf="!carDetails.License_plate && showValidation" class="error-text">Полето е задължително.</div>
 
-    <ion-button expand="full" type="submit">Save Changes</ion-button>
+    <!-- Date -->
+    <ion-item>
+      <ion-label>Дата</ion-label>
+      <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
+    </ion-item>
+
+    <!-- Save Button -->
+    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">Запази промените</ion-button>
   </form>
 </ion-content>

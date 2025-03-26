@@ -1,4 +1,3 @@
-// car-edit.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
@@ -17,31 +16,40 @@ export class CarEditPage implements OnInit {
   chassisTypes: { Chassis_type: string; Label: string }[] = [];
   engineTypes: { Engine_type: string; Label: string }[] = [];
   transmissionTypes: { Type: string; Label: string }[] = [];
-  colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Pink', 'Orange', 'Purple',  'Gray', 'Green', 'Yellow'];
+  colorOptions: string[] = ['Red', 'Blue', 'Black', 'White', 'Pink', 'Orange', 'Purple', 'Gray', 'Green', 'Yellow'];
   driveOptions: string[] = ['Rear', 'Front', 'AWD'];
   euroOptions: number[] = [1, 2, 3, 4, 5, 6];
   selectedFiles: File[] = [];
   imagePreviews: string[] = [];
   existingImages: string[] = [];
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
   private storage = getStorage();
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
-  ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+  async ngOnInit() {
+    this.route.paramMap.subscribe(async (params) => {
       this.carId = params.get('id') || '';
+      
+      await Promise.all([
+        this.loadBrands(),
+        this.loadChassisTypes(),
+        this.loadEngineTypes(),
+        this.loadTransmissionTypes()
+      ]);
+  
       if (this.carId) {
-        this.loadCarDetails();
+        await this.loadCarDetails(); // Move this AFTER types are loaded
       }
     });
+  }  
 
-    this.loadBrands();
-    this.loadChassisTypes();
-    this.loadEngineTypes();
-    this.loadTransmissionTypes();
-  }
+  getBrandName(brandId: string): string | null {
+    const brand = this.brandOptions.find(b => b.BrandID === brandId);
+    return brand ? brand.BrandName : null;
+  }  
 
   async loadCarDetails() {
     const carDocRef = doc(this.firestore, 'Cars', this.carId);
@@ -125,22 +133,40 @@ export class CarEditPage implements OnInit {
     newFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = () => {
-        this.imagePreviews.push(reader.result as string); 
+        this.imagePreviews.push(reader.result as string);
         this.selectedFiles.push(file);
       };
       reader.readAsDataURL(file);
     });
   }
-  
+
   async saveCar() {
+    this.showValidation = true;
+
+    // Validate required fields
+    const isValid =
+      this.carDetails.Brand &&
+      this.carDetails.Model &&
+      this.carDetails.License_plate &&
+      this.carDetails.Volume >= 250 && this.carDetails.Volume <= 10000 &&
+      this.carDetails.Power >= 30 && this.carDetails.Power <= 5000 &&
+      this.carDetails.Current_KM >= 0 && this.carDetails.Current_KM <= 5000000;
+
+    if (!isValid) {
+      console.warn('Validation failed');
+      return;
+    }
+
     if (this.selectedFiles.length > 0) {
       await this.uploadImages();
     }
+
     const carDocRef = doc(this.firestore, 'Cars', this.carId);
     await updateDoc(carDocRef, {
       ...this.carDetails,
-      photoNames: this.existingImages 
+      photoNames: this.existingImages
     });
+
     console.log('Car details updated successfully');
     this.router.navigate(['/cars']);
   }
@@ -160,18 +186,22 @@ export class CarEditPage implements OnInit {
   async deletePhoto(index: number) {
     const fileName = this.existingImages[index];
     const imageRef = ref(this.storage, `car_images/${fileName}`);
-  
+
     try {
       await deleteObject(imageRef);
       this.existingImages.splice(index, 1);
       this.imagePreviews.splice(index, 1);
       console.log('Photo deleted successfully.');
-  
+
       await updateDoc(doc(this.firestore, 'Cars', this.carId), {
         photoNames: this.existingImages
       });
     } catch (error) {
       console.error('Error deleting photo:', error);
     }
+  }
+
+  onDateChange(event: string) {
+    this.carDetails.Date_added = event;
   }
 }
