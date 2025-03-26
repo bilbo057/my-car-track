@@ -14,6 +14,7 @@ export class VehicleInsurancePage implements OnInit {
   insuranceDocuments: any[] = [];
   insuranceData: any = { startDate: '', endDate: '', cost: null };
   showInsuranceForm: boolean = false;
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
 
@@ -40,6 +41,16 @@ export class VehicleInsurancePage implements OnInit {
     }
   }
 
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const { startDate, cost } = this.insuranceData;
+    const isDateValid = !!startDate;
+    const isCostValid = cost !== null && cost >= 0 && cost <= 10000;
+  
+    return isDateValid && isCostValid;
+  }  
+
   async deleteInsuranceRecord(recordId: string) {
     try {
       const insuranceDoc = doc(this.firestore, 'VehicleInsurance', recordId);
@@ -56,33 +67,30 @@ export class VehicleInsurancePage implements OnInit {
       console.error('Error deleting insurance record:', error);
     }
   }
-  
 
   async addInsuranceRecord() {
-    if (this.insuranceData.startDate && this.insuranceData.cost) {
-      this.insuranceData.startDate = this.formatDate(new Date(this.insuranceData.startDate));
-      this.insuranceData.endDate = this.calculateEndDate(this.insuranceData.startDate);
-      
-      try {
-        const insuranceCollection = collection(this.firestore, 'VehicleInsurance');
-        await addDoc(insuranceCollection, {
-          carId: this.carId,
-          ...this.insuranceData,
-        });
-
-        // Add the cost to spending after addition
-        await this.spendingService.addExpense(this.carId, this.insuranceData.cost);
-
-        this.insuranceData = { startDate: '', endDate: '', cost: null };
-        this.showInsuranceForm = false;
-        await this.loadInsuranceDocuments();
-      } catch (error) {
-        console.error('Error adding insurance record:', error);
-      }
-    } else {
-      console.error('Start date and cost are required.');
+    if (!this.validateForm()) return;
+  
+    this.insuranceData.startDate = this.formatDate(new Date(this.insuranceData.startDate));
+    this.insuranceData.endDate = this.calculateEndDate(this.insuranceData.startDate);
+  
+    try {
+      const insuranceCollection = collection(this.firestore, 'VehicleInsurance');
+      await addDoc(insuranceCollection, {
+        carId: this.carId,
+        ...this.insuranceData,
+      });
+  
+      await this.spendingService.addExpense(this.carId, this.insuranceData.cost);
+  
+      this.insuranceData = { startDate: '', endDate: '', cost: null };
+      this.showInsuranceForm = false;
+      this.showValidation = false;
+      await this.loadInsuranceDocuments();
+    } catch (error) {
+      console.error('Error adding insurance record:', error);
     }
-  }
+  }  
 
   private formatDate(date: Date): string {
     const day = String(date.getDate()).padStart(2, '0');
