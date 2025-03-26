@@ -1,60 +1,82 @@
-<!-- maintaining.page.html -->
 <ion-content [fullscreen]="true">
-  <ion-button expand="full" (click)="toggleForm()">
-    {{ showForm ? 'Hide Form' : 'Add Maintaining' }}
+  <ion-button expand="full" shape="round" (click)="toggleForm()" class="add-btn">
+    {{ showForm ? 'Скрий формата' : 'Добави поддръжка' }}
   </ion-button>
 
-  <!-- Maintaining Form (Hidden by Default) -->
+  <!-- Maintaining Form Section -->
   <div *ngIf="showForm">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Add Maintaining Record</ion-card-title>
-      </ion-card-header>
+    <form (ngSubmit)="addMaintainingRecord()">
       <ion-card-content>
-        <!-- Dropdown for Maintaining Type -->
-        <ion-item>
-          <ion-label position="stacked">Maintaining Type</ion-label>
-          <ion-select [(ngModel)]="maintainingData.type" placeholder="Select Type">
+        <ion-item button (click)="typeSelect.open()" [class.invalid-item]="!maintainingData.type && showValidation">
+          <ion-label>Тип поддръжка</ion-label>
+          <ion-text slot="end">{{ getSelectedTypeLabel() }}</ion-text>
+        
+          <ion-select #typeSelect interface="modal"
+                      [(ngModel)]="maintainingData.type"
+                      name="type"
+                      [selectedText]="''"
+                      placeholder=""
+                      cancelText=""
+                      okText=""
+                      style="opacity: 0; height: 0; width: 0; position: center;">
             <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
               {{ option.label }}
             </ion-select-option>
           </ion-select>
         </ion-item>
+        <div *ngIf="!maintainingData.type && showValidation" class="error-text">
+          Полето е задължително.
+        </div>
+        
+        <!-- Cost -->
+        <ion-item [class.invalid-item]="(maintainingData.cost === null || maintainingData.cost < 0 || maintainingData.cost > 10000) && showValidation">
+          <ion-label>Цена</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="maintainingData.cost"
+            name="cost"
+            placeholder="Въведи цена">
+          </ion-input>
+        </ion-item>
+        <div *ngIf="maintainingData.cost === null && showValidation" class="error-text">Полето е задължително.</div>
+        <div *ngIf="maintainingData.cost !== null && (maintainingData.cost < 0 || maintainingData.cost > 10000) && showValidation" class="error-text">
+          Стойността трябва да е между 0 и 10000.
+        </div>
 
+        <!-- Bonus Description -->
         <ion-item>
-          <ion-label position="stacked">Cost</ion-label>
-          <ion-input type="number" [(ngModel)]="maintainingData.cost" placeholder="Enter Cost"></ion-input>
+          <ion-label position="stacked">Допълнително описание</ion-label>
+          <ion-textarea [(ngModel)]="maintainingData.bonusDescription" name="bonusDescription" placeholder="Въведи допълнителни детайли"></ion-textarea>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Date</ion-label>
-          <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="maintainingData.date"></ion-datetime>
+        <!-- Date -->
+        <ion-item [class.invalid-item]="!maintainingData.date && showValidation">
+          <ion-label>Дата</ion-label>
+          <app-datetime-picker (dateSelected)="maintainingData.date = $event"></app-datetime-picker>
         </ion-item>
+        <div *ngIf="!maintainingData.date && showValidation" class="error-text">
+          Полето е задължително.
+        </div>
 
-        <ion-item>
-          <ion-label position="stacked">Bonus Description</ion-label>
-          <ion-textarea [(ngModel)]="maintainingData.bonusDescription" placeholder="Enter additional details"></ion-textarea>
-        </ion-item>
-
-        <!-- Save Button -->
-        <ion-button expand="full" (click)="addMaintainingRecord()">Save</ion-button>
+        <!-- Submit Button -->
+        <ion-button expand="full" type="submit" shape="round" class="add-btn">
+          Запази
+        </ion-button>
       </ion-card-content>
-    </ion-card>
+    </form>
   </div>
 
   <!-- List of Maintaining Records -->
-  <ion-card *ngFor="let record of maintainingDocuments">
+  <ion-card *ngFor="let record of maintainingDocuments" class="custom-item">
     <ion-card-header>
-      <ion-card-title>Type: {{ record.type }}</ion-card-title>
+      <ion-card-title class="section-title">Тип: {{ record.type }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Date:</strong> {{ record.date }}</p>
-      <p><strong>Cost:</strong> {{ record.cost | currency }}</p>
-      <p *ngIf="record.bonusDescription"><strong>Bonus Description:</strong> {{ record.bonusDescription }}</p>
-      
-      <!-- Delete Button -->
-      <ion-button color="danger" expand="full" (click)="deleteMaintainingRecord(record.id)">
-        Delete
+      <p><strong>Дата:</strong> {{ record.date }}</p>
+      <p><strong>Цена:</strong> {{ record.cost }} лева</p>
+      <p *ngIf="record.bonusDescription"><strong>Описание:</strong> {{ record.bonusDescription }}</p>
+      <ion-button color="danger" expand="full" shape="round" (click)="deleteMaintainingRecord(record.id)">
+        Изтрий
       </ion-button>
     </ion-card-content>
   </ion-card>

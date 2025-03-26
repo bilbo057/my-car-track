@@ -13,6 +13,7 @@ export class MaintainingPage implements OnInit {
   maintainingDocuments: any[] = [];
   maintainingData: any = { type: '', cost: '', date: '', description: '' };
   showForm: boolean = false;
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
 
@@ -36,6 +37,18 @@ export class MaintainingPage implements OnInit {
     }
   }
 
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const { type, cost, date } = this.maintainingData;
+  
+    const isTypeValid = !!type;
+    const isCostValid = cost !== null && cost !== '' && +cost >= 0 && +cost <= 5000;
+    const isDateValid = !!date;
+  
+    return isTypeValid && isCostValid && isDateValid;
+  }  
+
   private async loadMaintainingRecords() {
     try {
       const maintainingCollection = collection(this.firestore, 'Maintaining');
@@ -51,33 +64,30 @@ export class MaintainingPage implements OnInit {
   }
 
   async addMaintainingRecord() {
-    if (this.maintainingData.type && this.maintainingData.cost && this.maintainingData.date) {
-      try {
-        const formattedDate = this.formatDate(this.maintainingData.date);
-
-        const maintainingCollection = collection(this.firestore, 'Maintaining');
-        await addDoc(maintainingCollection, {
-          carId: this.carId,
-          type: this.maintainingData.type,
-          cost: this.maintainingData.cost,
-          date: formattedDate,
-          description: this.maintainingData.description || ''
-        });
-
-        // Update spending records
-        await this.updateSpending(this.maintainingData.cost);
-
-        // Reset form and refresh records
-        this.maintainingData = { type: '', cost: '', date: '', description: '' };
-        this.showForm = false;
-        await this.loadMaintainingRecords();
-      } catch (error) {
-        console.error('Error adding maintaining record:', error);
-      }
-    } else {
-      console.error('All required fields must be filled.');
+    if (!this.validateForm()) return;
+  
+    try {
+      const formattedDate = this.formatDate(this.maintainingData.date);
+  
+      const maintainingCollection = collection(this.firestore, 'Maintaining');
+      await addDoc(maintainingCollection, {
+        carId: this.carId,
+        type: this.maintainingData.type,
+        cost: +this.maintainingData.cost,
+        date: formattedDate,
+        description: this.maintainingData.bonusDescription || ''
+      });
+  
+      await this.updateSpending(+this.maintainingData.cost);
+  
+      this.maintainingData = { type: '', cost: '', date: '', description: '' };
+      this.showForm = false;
+      this.showValidation = false;
+      await this.loadMaintainingRecords();
+    } catch (error) {
+      console.error('Error adding maintaining record:', error);
     }
-  }
+  }  
 
   async deleteMaintainingRecord(recordId: string) {
     try {
@@ -96,6 +106,11 @@ export class MaintainingPage implements OnInit {
       console.error('Error deleting maintaining record:', error);
     }
   }
+
+  getSelectedTypeLabel(): string {
+    const found = this.maintainingOptions.find(option => option.value === this.maintainingData.type);
+    return found ? found.label : 'Избери';
+  }  
 
   private formatDate(date: string): string {
     const parsedDate = new Date(date);

@@ -5,14 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { MaintainingPageRoutingModule } from './maintaining-routing.module';
 import { MaintainingPage } from './maintaining.page';
+import { DatetimePickerModule } from "../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MaintainingPageRoutingModule
-  ],
+    MaintainingPageRoutingModule,
+    DatetimePickerModule
+],
   declarations: [MaintainingPage]
 })
 export class MaintainingPageModule {}
