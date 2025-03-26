@@ -11,7 +11,7 @@
 
         <!-- Tax Year -->
         <ion-item [class.invalid-item]="(!taxYear || taxYear < 1900 || taxYear > 2100) && showValidation">
-          <ion-label>Данък за</ion-label>
+          <ion-label>Година</ion-label>
           <ion-input
             type="number"
             [(ngModel)]="taxYear"

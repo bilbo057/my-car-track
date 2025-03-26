@@ -22,6 +22,7 @@ export class MechanicalBillsPage implements OnInit {
     { label: 'Окачване', value: 'suspension' },
     { label: 'Кутия', value: 'transmission' }
   ];
+  showValidation: boolean = false;
 
   private firestore = getFirestore();
 
@@ -43,22 +44,42 @@ export class MechanicalBillsPage implements OnInit {
       ...doc.data(),
     }));
   }
+  
+  getTypeLabel(value: string): string {
+    const selected = this.maintainingOptions.find(option => option.value === value);
+    return selected ? selected.label : 'Избери';
+  }  
+
+  validateForm(): boolean {
+    this.showValidation = true;
+  
+    const { type, cost, date } = this.billData;
+    const isTypeValid = !!type;
+    const isDateValid = !!date;
+    const isCostValid = cost !== null && cost !== '' && +cost >= 0 && +cost <= 1000000;
+  
+    return isTypeValid && isDateValid && isCostValid;
+  }  
 
   async addMechanicalBill() {
-    if (this.billData.type && this.billData.cost && this.billData.date) {
-      const formattedDate = this.formatDate(new Date(this.billData.date));
-      const billsCollection = collection(this.firestore, 'MechanicalBills');
-      await addDoc(billsCollection, {
-        carId: this.carId,
-        ...this.billData,
-        date: formattedDate,
-      });
-      await this.spendingService.addExpense(this.carId, this.billData.cost);
-      this.billData = { type: '', cost: '', date: '', description: '' };
-      this.showBillForm = false;
-      await this.loadMechanicalBills();
-    }
-  }
+    if (!this.validateForm()) return;
+  
+    const formattedDate = this.formatDate(new Date(this.billData.date));
+    const billsCollection = collection(this.firestore, 'MechanicalBills');
+    await addDoc(billsCollection, {
+      carId: this.carId,
+      type: this.billData.type,
+      cost: +this.billData.cost,
+      date: formattedDate,
+      description: this.billData.description || ''
+    });
+  
+    await this.spendingService.addExpense(this.carId, +this.billData.cost);
+    this.billData = { type: '', cost: '', date: '', description: '' };
+    this.showBillForm = false;
+    this.showValidation = false;
+    await this.loadMechanicalBills();
+  }  
 
   async deleteMechanicalBill(recordId: string) {
     const billDoc = doc(this.firestore, 'MechanicalBills', recordId);

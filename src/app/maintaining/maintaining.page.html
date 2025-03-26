@@ -44,9 +44,13 @@
         </div>
 
         <!-- Bonus Description -->
-        <ion-item>
-          <ion-label position="stacked">Допълнително описание</ion-label>
-          <ion-textarea [(ngModel)]="maintainingData.bonusDescription" name="bonusDescription" placeholder="Въведи допълнителни детайли"></ion-textarea>
+        <ion-item class="form-item">
+          <ion-label class="no-wrap-label">Oписание</ion-label>
+          <ion-input
+            [(ngModel)]="maintainingData.description"
+            name="description"
+            placeholder="Въведи описание">
+          </ion-input>
         </ion-item>
 
         <!-- Date -->
