@@ -13,11 +13,12 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 export class CarListingPage implements OnInit {
   carId: string = '';
   carDetails: any = null;
-  sellingPrice: number = 0;
+  sellingPrice: number | null = null;
   sellerId: string = '';
   description: string = ''; 
   photoUrls: string[] = [];  
   currentPhotoIndex: number = 0;
+  showValidation: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -98,34 +99,35 @@ export class CarListingPage implements OnInit {
   }
 
   async confirmListing() {
-    if (!this.sellingPrice || this.sellingPrice <= 0) {
-      console.error('Invalid selling price');
+    this.showValidation = true;
+  
+    if (!this.sellingPrice || this.sellingPrice <= 0 || this.sellingPrice > 1000000 || !this.description) {
+      console.error('Validation failed');
       return;
     }
-
+  
     if (!this.sellerId) {
       console.error('Seller ID is missing!');
       return;
     }
-
+  
     try {
       const offerData = {
         ...this.carDetails,
         Price_of_selling: this.sellingPrice,
         SellerId: this.sellerId,
         Description: this.description,
-        photoUrls: this.photoUrls, // Include all photo URLs in the listing
+        photoUrls: this.photoUrls,
       };
-
+  
       delete offerData.Price_of_buying;
-
+  
       await this.firestore.collection('Offers').doc(this.carId).set(offerData);
       console.log('Car listed for sale successfully');
-
+  
       this.router.navigate(['/car-details', this.carId]);
-
     } catch (error) {
       console.error('Error listing car for sale:', error);
     }
-  }
+  } 
 }
