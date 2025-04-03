@@ -62,7 +62,7 @@ const routes: Routes = [
   },
   {
     path: 'another-expenses',
-    loadChildren: () => import('./expenses/annual-tax/another-expenses/another-expenses.module').then((m) => m.AnotherExpensesPageModule),
+    loadChildren: () => import('./expenses/another-expenses/another-expenses.module').then((m) => m.AnotherExpensesPageModule),
   },
   {
     path: 'monthly-expenses',

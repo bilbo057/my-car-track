@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AnotherExpensesPageRoutingModule } from './another-expenses-routing.module';
 import { AnotherExpensesPage } from './another-expenses.page';
-import { DatetimePickerModule } from "../../../datetime-picker/datetime-picker.module";
+import { DatetimePickerModule } from "../../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [

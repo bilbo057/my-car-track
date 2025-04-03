@@ -78,6 +78,7 @@
     <ion-card-content>
       <p><strong>Дата:</strong> {{ record.date }}</p>
       <p><strong>Цена:</strong> {{ record.cost }} лева</p>
+      <p><strong>Цена:</strong> {{ record.cost }} лева</p>
       <p *ngIf="record.bonusDescription"><strong>Описание:</strong> {{ record.bonusDescription }}</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteMaintainingRecord(record.id)">
         Изтрий

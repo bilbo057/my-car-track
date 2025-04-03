@@ -18,14 +18,14 @@ export class MaintainingPage implements OnInit {
   private firestore = getFirestore();
 
   maintainingOptions = [
-    { label: 'Двигател редовна', value: 'oil_change' },
-    { label: 'Гуми', value: 'tires' },
-    { label: 'Спирачки', value: 'brake' },
-    { label: 'Акумолатор', value: 'battery' },
-    { label: 'Окачване', value: 'suspension' },
-    { label: 'Кутия', value: 'transmission' },
-    { label: 'Климатик', value: 'AC' },
-    { label: 'Двигател разширена', value: 'general_service' }
+    { label: 'Смяна на масло', value: 'Смяна на масло' },
+    { label: 'Гуми', value: 'Гуми' },
+    { label: 'Спирачки', value: 'Спирачки' },
+    { label: 'Акумолатор', value: 'Акумолатор' },
+    { label: 'Окачване', value: 'Окачване' },
+    { label: 'Скоростна кутия', value: 'Скоростна кутия' },
+    { label: 'Климатик', value: 'Климатик' },
+    { label: 'Разширено обслужване', value: 'Разширено обслужване' }
   ];
 
   constructor(private route: ActivatedRoute) {}
