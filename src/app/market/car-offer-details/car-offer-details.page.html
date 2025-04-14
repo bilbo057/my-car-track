@@ -1,39 +1,82 @@
-<!-- car-offer-details.page.html -->
 <ion-content *ngIf="carDetails">
-  <ion-card> 
-    <div *ngIf="photoUrls.length > 0">
-      <img [src]="photoUrls[currentPhotoIndex]" alt="Car Image" style="width: 100%;">
-      <ion-button (click)="previousPhoto()" *ngIf="photoUrls.length > 1">Previous</ion-button>
-      <ion-button (click)="nextPhoto()" *ngIf="photoUrls.length > 1">Next</ion-button>
+  <!-- Image Section -->
+  <ion-card class="car-details-card">
+    <div class="car-image-container">
+      <div class="image-wrapper">
+        <img [src]="photoUrls[currentPhotoIndex]" class="car-image" (click)="nextPhoto()">
+      </div>
+      <button *ngIf="currentPhotoIndex > 0" (click)="previousPhoto()" class="image-nav left">❮</button>
+      <button *ngIf="currentPhotoIndex < photoUrls.length - 1" (click)="nextPhoto()" class="image-nav right">❯</button>
     </div>
+  </ion-card>
 
+  <!-- Car Info Card -->
+  <ion-card class="car-details-card">
     <ion-card-header>
       <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
-      <ion-card-subtitle>{{ carDetails.License_plate }}</ion-card-subtitle>
-      <ion-card-subtitle>
-        Seller: <a (click)="startChat()">{{ carDetails.SellerUsername }}</a>
-      </ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
-      <p><strong>Chassis Type:</strong> {{ carDetails.Chassis_type }}</p>
-      <p><strong>Engine Type:</strong> {{ carDetails.Engine_type }}</p>
-      <p><strong>Transmission:</strong> {{ carDetails.Transmission_type }}</p>
-      <p><strong>Color:</strong> {{ carDetails.Color }}</p>
-      <p><strong>Drive:</strong> {{ carDetails.Drive }}</p>
-      <p><strong>Engine Volume:</strong> {{ carDetails.Volume }} cc</p>
-      <p><strong>Euro Standard:</strong> {{ carDetails.Euro }}</p>
-      <p><strong>Power:</strong> {{ carDetails.Power }} HP</p>
-      <p><strong>Year:</strong> {{ carDetails.Year }}</p>
-      <p><strong>Current KM:</strong> {{ carDetails.Current_KM }}</p>
-      <p><strong>Selling Price:</strong> {{ carDetails.Price_of_selling | currency }}</p>
-      <p><strong>Description:</strong> {{ carDetails.Description }}</p>
+      <div class="car-detail-item" *ngIf="carDetails.Chassis_type">
+        <span class="detail-label">Тип на шасито:</span>
+        <span class="detail-value">{{ carDetails.Chassis_type }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Engine_type">
+        <span class="detail-label">Тип двигател:</span>
+        <span class="detail-value">{{ carDetails.Engine_type }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Transmission_type">
+        <span class="detail-label">Скоростна кутия:</span>
+        <span class="detail-value">{{ carDetails.Transmission_type }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Color">
+        <span class="detail-label">Цвят:</span>
+        <span class="detail-value">{{ carDetails.Color }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Drive">
+        <span class="detail-label">Задвижване:</span>
+        <span class="detail-value">{{ carDetails.Drive }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Volume">
+        <span class="detail-label">Обем:</span>
+        <span class="detail-value">{{ carDetails.Volume }} cc</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Euro">
+        <span class="detail-label">Евро стандарт:</span>
+        <span class="detail-value">{{ carDetails.Euro }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Power">
+        <span class="detail-label">Мощност:</span>
+        <span class="detail-value">{{ carDetails.Power }} HP</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Year">
+        <span class="detail-label">Година:</span>
+        <span class="detail-value">{{ carDetails.Year }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Current_KM">
+        <span class="detail-label">Километраж:</span>
+        <span class="detail-value">{{ carDetails.Current_KM }}</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Price_of_selling">
+        <span class="detail-label">Цена:</span>
+        <span class="detail-value">{{ carDetails.Price_of_selling }} лв.</span>
+      </div>
+      <div class="car-detail-item" *ngIf="carDetails.Description">
+        <span class="detail-label">Описание:</span>
+        <span class="detail-value">{{ carDetails.Description }}</span>
+      </div>
+      <div class="car-detail-item">
+        <span class="detail-label">Продавач:</span>
+        <span class="detail-value">
+          <a (click)="startChat()">{{ carDetails.SellerUsername }}</a>
+        </span>
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>
 
 <ion-content *ngIf="!carDetails">
   <ion-text color="danger">
-    <h2>Offer details not found.</h2>
+    <h2 style="text-align: center; padding: 2rem;">Офертата не беше намерена.</h2>
   </ion-text>
 </ion-content>

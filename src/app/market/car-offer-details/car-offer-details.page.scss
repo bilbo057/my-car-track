@@ -1,0 +1,208 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 3s ease-in-out;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+  
+  /* Section Titles */
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 1rem 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  /* Card Styling */
+  .car-details-card {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    width: 90%;
+    padding: 1rem;
+    font-size: 1.4rem;
+  }
+  
+  ion-card-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  /* Image Container */
+  .car-image-container {
+    position: relative;
+    width: 100%;
+    height: 20rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  ion-label {
+    font-weight: bold;
+    color: white;
+    font-size: 1.3rem;
+  }
+  
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 1rem;
+  }
+  
+  .image-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    z-index: 2;
+  }
+  
+  .image-nav.left {
+    left: 1rem;
+  }
+  
+  .image-nav.right {
+    right: 1rem;
+  }
+  
+  /* License Plate Styling */
+  .license-plate {
+    display: flex;
+    background: url('/assets/img/empty-plate.png') no-repeat center;
+    background-size: cover;
+    width: 12rem;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .plate-char {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+    margin-left: 1.5rem;
+    margin-right: 0.2rem;
+  }
+  
+  .plate-space {
+    width: 0.2rem;
+  }
+  
+  .plate-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+  }
+  
+  /* Info Rows */
+  .car-detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .car-detail-item:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-label {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #aaa;
+  }
+  
+  .detail-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+    text-align: right;
+  }
+  
+  /* Input Fields */
+  ion-item {
+    --background: transparent;
+    --color: white;
+    --highlight-color-focused: #256976;
+    --highlight-color: #256976;
+    margin-bottom: 1rem;
+  }
+  
+  ion-input, ion-textarea {
+    text-align: right;
+    color: #ffffff;
+    font-size: 1.3rem;
+  }
+  
+  .custom-item {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 0.5rem auto;
+    width: 90%;
+  }
+  
+  /* Error Messages */
+  .error-text {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    text-align: right;
+    margin: 0 1.2rem 0.5rem auto;
+  }
+  
+  .invalid-item {
+    --highlight-color-invalid: #ff4d4d;
+    --color: #ff4d4d;
+  }  
+  
+  /* Confirm Button */
+  .add-btn {
+    --background: #256976;
+    --color: #ffffff;
+    height: 4rem;
+    font-size: large;
+    font-weight: bold;
+    width: 70%;
+    display: block;
+    margin: 2rem auto;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
