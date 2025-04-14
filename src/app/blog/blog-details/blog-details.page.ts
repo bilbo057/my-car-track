@@ -13,6 +13,7 @@ export class BlogDetailsPage implements OnInit {
   blog: any;
   newComment: string = '';
   replyInputs: { [key: number]: string } = {};
+  showReplies: { [key: number]: boolean } = {};
 
   constructor(private route: ActivatedRoute, private blogService: BlogService) {}
 
@@ -27,21 +28,29 @@ export class BlogDetailsPage implements OnInit {
 
   async loadBlog() {
     this.blog = await this.blogService.getBlogById(this.blogId);
+    this.showReplies = {};
+    this.blog.comments?.forEach((_: any, i: number) => {
+      this.showReplies[i] = false;
+    });
   }
 
   async addComment() {
     if (!this.newComment.trim()) return;
-
     await this.blogService.addComment(this.blogId, this.newComment);
-    this.newComment = ''; 
+    this.newComment = '';
     await this.loadBlog();
   }
 
   async addReply(commentIndex: number) {
-    if (!this.replyInputs[commentIndex] || !this.replyInputs[commentIndex].trim()) return;
+    const replyText = this.replyInputs[commentIndex];
+    if (!replyText || !replyText.trim()) return;
 
-    await this.blogService.addReply(this.blogId, commentIndex, this.replyInputs[commentIndex]);
-    this.replyInputs[commentIndex] = ''; 
-    await this.loadBlog(); 
+    await this.blogService.addReply(this.blogId, commentIndex, replyText.trim());
+    this.replyInputs[commentIndex] = '';
+    await this.loadBlog();
+  }
+
+  toggleReplies(index: number) {
+    this.showReplies[index] = !this.showReplies[index];
   }
 }

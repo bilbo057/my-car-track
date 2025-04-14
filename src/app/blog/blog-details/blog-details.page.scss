@@ -1,0 +1,101 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 3s ease-in-out;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+
+  /* Blog content styling */
+ion-card-content p {
+    font-size: 1rem;  /* bigger font */
+    line-height: 1.3rem;
+    color: #ffffff;
+    white-space: pre-wrap; /* preserves line breaks */
+  }
+  
+  
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 1.5rem 0 1rem;
+    text-align: center;
+  }
+  
+  .custom-item {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 0.5rem auto;
+    width: 90%;
+    padding: 0.5rem;
+  }
+  
+  .comment-wrapper, .reply-wrapper {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #333;
+  }
+  
+  .reply-toggle-btn {
+    color: #56b0c8;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+  
+  .send-button {
+    display: none; // remove button completely
+  }
+  
+  .reply-wrapper {
+    margin-left: 2rem;
+    border-left: 2px solid #444;
+    padding-left: 1rem;
+  }
+  
+  .comment-author {
+    font-weight: bold;
+    color: #56b0c8;
+    margin: 0;
+  }
+  
+  .comment-text {
+    margin: 0.2rem 0;
+    color: #ffffff;
+  }
+  
+  .comment-date {
+    font-size: 0.9rem;
+    color: #aaaaaa;
+  }
+  
+  .comment-input-item {
+    --background: transparent;
+    margin: 0.5rem 0 1rem;
+  }
+  
+  .custom-input {
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.3rem;
+  }
+  
+  .send-button {
+    --background: #256976;
+    --color: #ffffff;
+    font-weight: bold;
+    height: 3rem;
+    margin-left: 0.5rem;
+    padding: 0 1.6rem;
+    border-radius: 999px; /* pill style */
+    font-size: 1.2rem;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

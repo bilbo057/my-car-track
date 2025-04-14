@@ -1,15 +1,10 @@
-<!-- blog-details.page.html -->
-<ion-header>
-  <ion-toolbar>
-    <ion-title>{{ blog?.title }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" *ngIf="blog">
+  <div class="section-title">{{ blog.title }}</div>
 
-<ion-content *ngIf="blog">
-  <ion-card>
+  <!-- Blog Content -->
+  <ion-card class="custom-item">
     <ion-card-header>
-      <ion-card-title>{{ blog.title }}</ion-card-title>
-      <ion-card-subtitle>By {{ blog.authorName }} - {{ blog.timestamp | date }}</ion-card-subtitle>
+      <ion-card-subtitle>от {{ blog.authorName }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
       <p>{{ blog.content }}</p>
@@ -17,45 +12,55 @@
   </ion-card>
 
   <!-- Comments Section -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Comments</ion-card-title>
-    </ion-card-header>
+  <div class="section-title">Коментари</div>
+  <ion-card class="custom-item">
     <ion-card-content>
-      <ion-item *ngFor="let comment of blog.comments; let i = index">
-        <ion-label>
-          <p><strong>{{ comment.username }}</strong>: {{ comment.text }}</p>
-          <p><small>{{ comment.timestamp | date:'short' }}</small></p>
-          
-          <!-- Replies -->
-          <div *ngIf="comment.replies">
-            <ion-item *ngFor="let reply of comment.replies">
-              <ion-label>
-                <p><strong>{{ reply.username }}</strong>: {{ reply.text }}</p>
-                <p><small>{{ reply.timestamp | date:'short' }}</small></p>
-              </ion-label>
-            </ion-item>
-          </div>
+      <div *ngFor="let comment of blog.comments; let i = index" class="comment-wrapper">
+        <p class="comment-author"><strong>{{ comment.username }}</strong></p>
+        <p class="comment-text">{{ comment.text }}</p>
+        <p class="comment-date">{{ comment.timestamp | date:'short' }}</p>
 
-          <!-- Reply Input -->
-          <ion-item>
-            <ion-input [(ngModel)]="replyInputs[i]" placeholder="Write a reply..."></ion-input>
-            <ion-button (click)="addReply(i)">Reply</ion-button>
-          </ion-item>
-        </ion-label>
-      </ion-item>
+        <!-- Toggle Replies -->
+        <ion-button size="small" fill="clear" class="reply-toggle-btn" (click)="toggleReplies(i)">
+          {{ showReplies[i] ? 'Скрий отговори' : 'Покажи отговори' }}
+        </ion-button>
+
+        <!-- Replies -->
+        <div *ngIf="showReplies[i] && comment.replies">
+          <div *ngFor="let reply of comment.replies" class="reply-wrapper">
+            <p class="comment-author"><strong>{{ reply.username }}</strong></p>
+            <p class="comment-text">{{ reply.text }}</p>
+            <p class="comment-date">{{ reply.timestamp | date:'short' }}</p>
+          </div>
+        </div>
+
+        <!-- Reply Input -->
+        <ion-item class="comment-input-item">
+          <ion-input
+            [(ngModel)]="replyInputs[i]"
+            placeholder="Отговори..."
+            class="custom-input"
+            (keyup.enter)="addReply(i)">
+          </ion-input>
+        </ion-item>
+      </div>
     </ion-card-content>
   </ion-card>
 
-  <!-- Add Comment Section -->
-  <ion-item>
-    <ion-input [(ngModel)]="newComment" placeholder="Write a comment..."></ion-input>
-    <ion-button (click)="addComment()">Post</ion-button>
+  <!-- Add Comment -->
+  <div class="section-title">Добави коментар</div>
+  <ion-item class="comment-input-item">
+    <ion-input
+      [(ngModel)]="newComment"
+      placeholder="Напиши коментар..."
+      class="custom-input"
+      (keyup.enter)="addComment()">
+    </ion-input>
   </ion-item>
 </ion-content>
 
 <ion-content *ngIf="!blog">
   <ion-text color="danger">
-    <h2>Blog not found.</h2>
+    <h2>Блог публикацията не е намерена.</h2>
   </ion-text>
 </ion-content>
