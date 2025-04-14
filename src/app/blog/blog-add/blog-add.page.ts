@@ -1,4 +1,3 @@
-// blog-add.page.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { BlogService } from '../../services/blog.service';
@@ -9,15 +8,31 @@ import { BlogService } from '../../services/blog.service';
   styleUrls: ['./blog-add.page.scss'],
 })
 export class BlogAddPage {
+  showValidation = false;
   title: string = '';
   content: string = '';
 
   constructor(private blogService: BlogService, private router: Router) {}
 
   async submitBlog() {
-    if (this.title.trim() && this.content.trim()) {
-      await this.blogService.addBlog(this.title, this.content);
-      this.router.navigate(['/blog-list']);
+    this.showValidation = true;
+  
+    if (!this.title.trim() || !this.content.trim() || this.content.length > 5000) {
+      return;
     }
-  }
+  
+    try {
+      await this.blogService.addBlog(this.title.trim(), this.content.trim());
+  
+      // Reset form
+      this.title = '';
+      this.content = '';
+      this.showValidation = false;
+  
+      // Navigate
+      this.router.navigate(['/blog-list']);
+    } catch (error) {
+      console.error('Error submitting blog:', error);
+    }
+  }  
 }

@@ -1,0 +1,75 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 3s ease-in-out;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 1rem 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  ion-item {
+    --background: transparent;
+    --color: white;
+    --highlight-color-focused: #256976;
+    --highlight-color: #256976;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+  
+  ion-label {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  ion-input,
+  ion-textarea {
+    text-align: right;
+    color: #ffffff;
+    font-size: 1.3rem;
+  }
+  
+  ion-textarea {
+    min-height: 8rem;
+  }
+  
+  .add-car-btn {
+    --background: #256976;
+    --color: #ffffff;
+    height: 4rem;
+    font-size: large;
+    font-weight: bold;
+    width: 60%;
+    display: block;
+    margin: 2rem auto;
+    border-radius: 2rem;
+  }
+  
+  .error-text {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    text-align: right;
+    margin: 0 1.2rem 0.5rem auto;
+  }
+  
+  .invalid-item {
+    --highlight-color-invalid: #ff4d4d;
+    --color: #ff4d4d;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
