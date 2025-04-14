@@ -298,18 +298,18 @@ export class CarDetailsPage implements OnInit {
       header: 'Add User',
       inputs: [
         {
-          name: 'username',
+          name: 'Поре',
           type: 'text',
-          placeholder: 'Enter username',
+          placeholder: 'Потребителско име',
         },
       ],
       buttons: [
         {
-          text: 'Cancel',
+          text: 'Отказ',
           role: 'cancel',
         },
         {
-          text: 'Add',
+          text: 'Добави',
           handler: async (data) => {
             if (data.username) {
               await this.addUserToCar(data.username);
@@ -346,26 +346,26 @@ export class CarDetailsPage implements OnInit {
 
   async transferOwnership() {
     const alert = await this.alertController.create({
-      header: 'Transfer Ownership',
+      header: 'Прехвърли собствеността',
       inputs: [
         {
           name: 'username',
           type: 'text',
-          placeholder: 'Enter new owner username',
+          placeholder: 'Въведи потребителско име на новия собственик',
         },
         {
           name: 'licensePlate',
           type: 'text',
-          placeholder: 'Confirm car license plate',
+          placeholder: 'Потвърдете регистрационния номер',
         },
       ],
       buttons: [
         {
-          text: 'Cancel',
+          text: 'Отказ',
           role: 'cancel',
         },
         {
-          text: 'Transfer',
+          text: 'Прехвърли',
           handler: async (data) => {
             if (data.username && data.licensePlate === this.carDetails.License_plate) {
               await this.executeTransferOwnership(data.username);

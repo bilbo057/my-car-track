@@ -62,7 +62,7 @@
       <ion-card-title class="section-title">Дата: {{ expense.date }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Цена:</strong> {{ expense.cost | currency }}</p>
+      <p><strong>Цена:</strong> {{ expense.cost }} лв.</p>
       <p><strong>Описание:</strong> {{ expense.description }}</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteExpenseRecord(expense.id)">
         Изтрий

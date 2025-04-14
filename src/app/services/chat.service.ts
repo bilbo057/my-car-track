@@ -1,17 +1,27 @@
-// chat.service.ts
 import { Injectable } from '@angular/core';
-import { getFirestore, collection, query, where, getDocs, orderBy, addDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  addDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp
+} from 'firebase/firestore';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatService {
   private firestore = getFirestore();
 
   constructor(private authService: AuthService) {}
 
-  // Listen for chat messages in real-time
+  // Listen for messages
   listenForMessages(chatId: string, callback: (messages: any[]) => void) {
     if (!chatId) {
       console.error('Chat ID is undefined.');
@@ -22,24 +32,23 @@ export class ChatService {
     const messagesRef = collection(chatDocRef, 'messages');
     const q = query(messagesRef, orderBy('timestamp', 'asc'));
 
-    return onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const messages = snapshot.docs.map(doc => ({
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const messages = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data()
         }));
         callback(messages);
-      } else {
-        console.warn('No messages found for this chat.');
-        callback([]);
+      },
+      (error) => {
+        console.error('Error fetching messages:', error);
       }
-    }, (error) => {
-      console.error('Error fetching messages:', error);
-    });
+    );
   }
 
-  // Send a message
-  async sendMessage(chatId: string, messageText: string) {
+  // Now accepts username
+  async sendMessage(chatId: string, messageText: string, senderId: string, username: string) {
     if (!chatId) {
       console.error('ERROR: Chat ID is undefined! Cannot send message.');
       return;
@@ -50,16 +59,11 @@ export class ChatService {
       return;
     }
 
-    const userId = await this.authService.getUserId();
-    if (!userId) {
-      console.error('ERROR: User ID is undefined.');
-      return;
-    }
-
     try {
       const messagesRef = collection(this.firestore, 'Chats', chatId, 'messages');
       await addDoc(messagesRef, {
-        senderId: userId,
+        senderId,
+        username,
         text: messageText,
         timestamp: serverTimestamp(),
       });
@@ -79,10 +83,13 @@ export class ChatService {
     }
 
     try {
-      const q = query(collection(this.firestore, 'Chats'), where('participants', 'array-contains', userId));
+      const q = query(
+        collection(this.firestore, 'Chats'),
+        where('participants', 'array-contains', userId)
+      );
       const snapshot = await getDocs(q);
-      
-      return snapshot.docs.map(doc => ({
+
+      return snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
       }));
@@ -92,11 +99,11 @@ export class ChatService {
     }
   }
 
+  // Create or get existing chat
   async createOrGetChat(otherUserId: string): Promise<string | null> {
     const userId = await this.authService.getUserId();
     if (!userId) return null;
 
-    // Prevent users from starting a chat with themselves
     if (userId === otherUserId) {
       console.error('Cannot start a chat with oneself');
       return null;
@@ -104,10 +111,10 @@ export class ChatService {
 
     const chatsRef = collection(this.firestore, 'Chats');
     const q = query(chatsRef, where('participants', 'array-contains', userId));
-
     const snapshot = await getDocs(q);
-    const existingChat = snapshot.docs.find(doc => {
-      const participants = doc.data()['participants'] as Array<string>;
+
+    const existingChat = snapshot.docs.find((doc) => {
+      const participants = doc.data()['participants'] as string[];
       return participants.includes(otherUserId);
     });
 

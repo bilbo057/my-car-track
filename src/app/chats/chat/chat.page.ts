@@ -1,4 +1,3 @@
-// chat.page.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../../services/chat.service';
@@ -12,21 +11,23 @@ import { AuthService } from '../../services/auth.service';
 export class ChatPage implements OnInit, OnDestroy {
   chatId: string = '';
   messages: any[] = [];
-  newMessage: string = '';
+  messageInput: string = '';
   currentUserId: string = '';
   private unsubscribe: any;
-  messageInput: string = '';
 
-  constructor(private route: ActivatedRoute, private chatService: ChatService, private authService: AuthService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private chatService: ChatService,
+    private authService: AuthService
+  ) {}
 
   async ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get('id'); // Get ID from route parameters
-      console.log('Extracted Chat ID:', id); // Debugging output
+    this.currentUserId = await this.authService.getUserId();
 
+    this.route.paramMap.subscribe(async (params) => {
+      const id = params.get('id');
       if (id) {
-        this.chatId = id; // Assign it properly
-        console.log('Chat ID assigned:', this.chatId); // Debugging output
+        this.chatId = id;
         this.listenForMessages();
       } else {
         console.error('Chat ID is missing from the URL!');
@@ -35,19 +36,23 @@ export class ChatPage implements OnInit, OnDestroy {
   }
 
   async sendMessage() {
-    if (!this.chatId) {
-      console.error('Chat ID is missing! Cannot send message.');
-      return;
-    }
-
-    if (!this.messageInput.trim()) {
-      console.error('Message is empty.');
-      return;
-    }
+    if (!this.chatId || !this.messageInput.trim()) return;
 
     try {
-      await this.chatService.sendMessage(this.chatId, this.messageInput);
-      this.messageInput = ''; // Clear input after sending
+      const username = await this.authService.getUsername();
+      if (!username) {
+        console.error('Username is missing!');
+        return;
+      }
+
+      await this.chatService.sendMessage(
+        this.chatId,
+        this.messageInput,
+        this.currentUserId,
+        username
+      );
+
+      this.messageInput = '';
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -58,12 +63,7 @@ export class ChatPage implements OnInit, OnDestroy {
   }
 
   listenForMessages() {
-    if (!this.chatId) {
-      console.error('Chat ID is missing! Cannot listen for messages.');
-      return;
-    }
-
-    this.chatService.listenForMessages(this.chatId, (messages) => {
+    this.unsubscribe = this.chatService.listenForMessages(this.chatId, (messages) => {
       this.messages = messages;
     });
   }
