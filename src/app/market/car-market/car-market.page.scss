@@ -1,0 +1,119 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 1s ease-in-out;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 1.5rem 0 1rem 1rem;
+  }
+  
+  ion-item {
+    --background: transparent;
+    --color: white;
+    --highlight-color-focused: #256976;
+    margin: 0.5rem 1rem;
+    border-radius: 1rem;
+  }
+  
+  ion-label {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  ion-input,
+  ion-select {
+    color: #ffffff;
+    text-align: right;
+  }
+  
+  .add-car-btn {
+    --background: #256976;
+    --color: #ffffff;
+    height: 4rem;
+    font-size: large;
+    font-weight: bold;
+    width: 60%;
+    display: block;
+    margin: 2rem auto;
+    border-radius: 2rem;
+  }
+  
+  .custom-item {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .custom-item img {
+    width: 100%;
+    height: auto;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+  }
+
+  .car-market-image {
+    width: 100%;
+    height: 14rem;
+    object-fit: cover;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+  }
+  
+  .offer-item {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 0.7rem 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .offer-item:hover {
+    transform: scale(1.01);
+    cursor: pointer;
+  }
+  
+  .offer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .offer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+  }
+  
+  .offer-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 0 0 0.2rem;
+  }
+  
+  .offer-thumbnail {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 0.8rem;
+    object-fit: cover;
+    margin-left: 1rem;
+    flex-shrink: 0;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

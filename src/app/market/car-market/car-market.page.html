@@ -1,111 +1,123 @@
-<!-- car-market.page.html -->
-<ion-content>
-  <!-- Filters Section -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Filters</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+<ion-content [fullscreen]="true">
+  <div class="section-title">Филтрирай офертите</div>
 
-      <ion-item>
-        <ion-label>Brand</ion-label>
-        <ion-select [(ngModel)]="selectedBrand" (ionChange)="updateModels()">
-          <ion-select-option *ngFor="let brand of brands" [value]="brand">{{ brand }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+  <!-- Filters Form -->
+  <form (ngSubmit)="applyFilters()">
+    <!-- Brand -->
+    <ion-item>
+      <ion-label>Марка</ion-label>
+      <ion-select [(ngModel)]="selectedBrand" name="Brand" (ionChange)="updateModels()">
+        <ion-select-option *ngFor="let brand of brands" [value]="brand">{{ brand }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Model</ion-label>
-        <ion-select [(ngModel)]="selectedModel">
-          <ion-select-option *ngFor="let model of models" [value]="model">{{ model }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+    <!-- Model -->
+    <ion-item>
+      <ion-label>Модел</ion-label>
+      <ion-select [(ngModel)]="selectedModel" name="Model">
+        <ion-select-option *ngFor="let model of models" [value]="model">{{ model }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Min Year</ion-label>
-        <ion-input type="number" [(ngModel)]="minYear"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Max Year</ion-label>
-        <ion-input type="number" [(ngModel)]="maxYear"></ion-input>
-      </ion-item>
+    <!-- Year -->
+    <ion-item>
+      <ion-label>Мин. година</ion-label>
+      <ion-input type="number" [(ngModel)]="minYear" name="MinYear"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Макс. година</ion-label>
+      <ion-input type="number" [(ngModel)]="maxYear" name="MaxYear"></ion-input>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Min Price</ion-label>
-        <ion-input type="number" [(ngModel)]="minPrice"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Max Price</ion-label>
-        <ion-input type="number" [(ngModel)]="maxPrice"></ion-input>
-      </ion-item>
+    <!-- Price -->
+    <ion-item>
+      <ion-label>Мин. цена</ion-label>
+      <ion-input type="number" [(ngModel)]="minPrice" name="MinPrice"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Макс. цена</ion-label>
+      <ion-input type="number" [(ngModel)]="maxPrice" name="MaxPrice"></ion-input>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Min KM</ion-label>
-        <ion-input type="number" [(ngModel)]="minKM"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Max KM</ion-label>
-        <ion-input type="number" [(ngModel)]="maxKM"></ion-input>
-      </ion-item>
+    <!-- KM -->
+    <ion-item>
+      <ion-label>Мин. км</ion-label>
+      <ion-input type="number" [(ngModel)]="minKM" name="MinKM"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Макс. км</ion-label>
+      <ion-input type="number" [(ngModel)]="maxKM" name="MaxKM"></ion-input>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Min Engine Volume (cc)</ion-label>
-        <ion-input type="number" [(ngModel)]="minVolume"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Max Engine Volume (cc)</ion-label>
-        <ion-input type="number" [(ngModel)]="maxVolume"></ion-input>
-      </ion-item>
+    <!-- Volume -->
+    <ion-item>
+      <ion-label>Мин. обем (cc)</ion-label>
+      <ion-input type="number" [(ngModel)]="minVolume" name="MinVolume"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Макс. обем (cc)</ion-label>
+      <ion-input type="number" [(ngModel)]="maxVolume" name="MaxVolume"></ion-input>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Min Power (HP)</ion-label>
-        <ion-input type="number" [(ngModel)]="minPower"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Max Power (HP)</ion-label>
-        <ion-input type="number" [(ngModel)]="maxPower"></ion-input>
-      </ion-item>
+    <!-- Power -->
+    <ion-item>
+      <ion-label>Мин. мощност</ion-label>
+      <ion-input type="number" [(ngModel)]="minPower" name="MinPower"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Макс. мощност</ion-label>
+      <ion-input type="number" [(ngModel)]="maxPower" name="MaxPower"></ion-input>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Color</ion-label>
-        <ion-select [(ngModel)]="selectedColor">
-          <ion-select-option *ngFor="let color of colors" [value]="color">{{ color }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+    <!-- Color -->
+    <ion-item>
+      <ion-label>Цвят</ion-label>
+      <ion-select [(ngModel)]="selectedColor" name="Color">
+        <ion-select-option *ngFor="let color of colors" [value]="color">{{ color }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Euro Standard</ion-label>
-        <ion-select [(ngModel)]="selectedEuro">
-          <ion-select-option *ngFor="let euro of euroStandards" [value]="euro">{{ euro }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+    <!-- Euro -->
+    <ion-item>
+      <ion-label>Евро стандарт</ion-label>
+      <ion-select [(ngModel)]="selectedEuro" name="Euro">
+        <ion-select-option *ngFor="let euro of euroStandards" [value]="euro">{{ euro }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <ion-item>
-        <ion-label>Drive Type</ion-label>
-        <ion-select [(ngModel)]="selectedDrive">
-          <ion-select-option *ngFor="let drive of driveTypes" [value]="drive">{{ drive }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+    <!-- Drive -->
+    <ion-item>
+      <ion-label>Задвижване</ion-label>
+      <ion-select [(ngModel)]="selectedDrive" name="Drive">
+        <ion-select-option *ngFor="let drive of driveTypes" [value]="drive">{{ drive }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <ion-button expand="full" (click)="applyFilters()">Search</ion-button>
-    </ion-card-content>
-  </ion-card>
+    <!-- Submit -->
+    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">
+      Потърси
+    </ion-button>
+  </form>
+
+  <div class="section-title">Намерени оферти</div>
 
   <!-- Car Offers -->
-  <ion-list>
-    <ion-card *ngFor="let offer of filteredOffers" (click)="viewOfferDetails(offer.offerId)">
-      <img *ngIf="offer.photoUrl" [src]="offer.photoUrl" alt="Car Image" />
+  <ion-card *ngFor="let offer of filteredOffers" class="offer-item" (click)="viewOfferDetails(offer.offerId)">
+    <ion-card-content class="offer-content">
+      <!-- Car Info (Left) -->
+      <div class="offer-details">
+        <h3 class="offer-title">{{ offer.Brand }} {{ offer.Model }}</h3>
+        <p><strong>Година:</strong> {{ offer.Year }}</p>
+        <p><strong>Километраж:</strong> {{ offer.Current_KM }} км</p>
+        <p><strong>Цена:</strong> {{ offer.Price_of_selling }} лв.</p>
+      </div>
 
-      <ion-card-header>
-        <ion-card-title>{{ offer.Brand }} {{ offer.Model }}</ion-card-title>
-        <ion-card-subtitle>{{ offer.License_plate }}</ion-card-subtitle>
-      </ion-card-header>
-
-      <ion-card-content>
-        <p><strong>Year:</strong> {{ offer.Year }}</p>
-        <p><strong>Current KM:</strong> {{ offer.Current_KM }}</p>
-        <p><strong>Selling Price:</strong> {{ offer.Price_of_selling | currency }}</p>
-      </ion-card-content>
-    </ion-card>
-  </ion-list>
+      <!-- Car Image (Right) -->
+      <img
+        [src]="offer.photoUrl || '/assets/img/default-car.png'"
+        alt="Car Image"
+        class="offer-thumbnail"
+      />
+    </ion-card-content>
+  </ion-card>
 </ion-content>
