@@ -1,21 +1,26 @@
-<!-- chat-list.page.html -->
-<ion-content>
-  <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="searchUsers()" placeholder="Search users..."></ion-searchbar>
+<ion-content [fullscreen]="true">
+  <!-- Searchbar -->
+  <ion-searchbar
+    [(ngModel)]="searchQuery"
+    (ionInput)="searchUsers()"
+    placeholder="Търси потребител..."
+    class="custom-search">
+  </ion-searchbar>
 
-  <ion-list *ngIf="searchResults.length > 0">
-    <ion-item *ngFor="let user of searchResults" (click)="startChat(user)">
-      <ion-label>{{ user.username }}</ion-label>
-    </ion-item>
-  </ion-list>
+  <!-- Search Results -->
+  <div class="section-title" *ngIf="searchResults.length > 0">Намерените потребители</div>
+  <ion-card *ngFor="let user of searchResults" class="custom-item" (click)="startChat(user)">
+    <ion-card-content>
+      <p class="chat-username">{{ '@' + user.username }}</p>
+    </ion-card-content>
+  </ion-card>
 
-  <!-- List of Existing Chats -->
-  <ion-list>
-    <ion-item *ngFor="let chat of chats" (click)="openChat(chat.id)">
-      <ion-label>
-        <h2>{{ chat.otherUser }}</h2>
-        <p>{{ chat.lastMessage }}</p>
-      </ion-label>
-      <ion-note>{{ chat.lastMessageTimestamp?.toDate() | date: 'short' }}</ion-note>
-    </ion-item>
-  </ion-list>
+  <!-- Existing Chats -->
+  <div class="section-title">Чатове</div>
+  <ion-card *ngFor="let chat of chats" class="custom-item" (click)="openChat(chat.id)">
+    <ion-card-content>
+      <p class="chat-username">{{ '@' + chat.otherUsername }}</p>
+      <p class="chat-time">{{ chat.lastMessageTimestamp?.toDate() | date: 'short' }}</p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
