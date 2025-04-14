@@ -1,0 +1,62 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 0.5s ease-in-out;
+    padding: 2rem 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    margin: 2rem 0 1rem;
+  }
+  
+  .inline-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #141414;
+    padding: 1rem;
+    border-radius: 1rem;
+    width: 90%;
+    margin: 0 auto 1.5rem auto;
+  }
+  
+  .inline-setting ion-label {
+    color: #ffffff;
+    font-weight: bold;
+    margin-right: 1rem;
+    font-size: 1.3rem;
+  }
+  
+  .settings-input {
+    flex: 1;
+    text-align: right;
+    color: #ffffff;
+    font-size: 1.3rem;
+  }
+  
+  .add-btn,
+  .danger-btn {
+    height: 3.5rem;
+    width: 70%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: block;
+    margin: 0 auto 2rem auto;
+    text-transform: uppercase;
+  }
+  
+  .add-btn {
+    --background: #256976;
+    --color: #ffffff;
+    border-radius: 2rem;
+  }
+  
+  .danger-btn {
+    --background: #ff4d4d;
+    --color: #ffffff;
+    border-radius: 2rem;
+  }
+  

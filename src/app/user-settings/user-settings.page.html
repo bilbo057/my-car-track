@@ -1,27 +1,19 @@
-<!-- user-settings.page.html -->
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Account Settings</ion-card-title>
-    </ion-card-header>
+<ion-content [fullscreen]="true">
+  <!-- Section Title -->
+  <div class="section-title">Настройки на профила</div>
 
-    <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Username</ion-label>
-        <ion-input [(ngModel)]="username" type="text"></ion-input>
-      </ion-item>
+  <!-- Username Input + Button -->
+  <div class="inline-setting">
+    <ion-label>Потребителско име:</ion-label>
+    <ion-input [(ngModel)]="username" type="text" class="settings-input"></ion-input>
+  </div>
 
-      <ion-button expand="full" color="primary" (click)="updateUsername()">Update Username</ion-button>
-    </ion-card-content>
-  </ion-card>
+  <ion-button expand="full" shape="round" class="add-btn" (click)="updateUsername()">
+    Обнови
+  </ion-button>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Danger Zone</ion-card-title>
-    </ion-card-header>
 
-    <ion-card-content>
-      <ion-button expand="full" color="danger" (click)="deleteAccount()">Delete Account</ion-button>
-    </ion-card-content>
-  </ion-card>
+  <ion-button expand="full" shape="round" color="danger" class="danger-btn" (click)="deleteAccount()">
+    Изтрий aкаунта
+  </ion-button>
 </ion-content>
