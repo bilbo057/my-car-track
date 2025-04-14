@@ -1,0 +1,75 @@
+ion-content {
+    --background: #1D1D1D;
+    animation: fadeIn 1s ease-in-out;
+    --padding-top: var(--ion-safe-area-top, 2rem);
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 1.5rem 0 1rem 1rem;
+  }
+  
+  .custom-item {
+    background: #141414;
+    color: #ffffff;
+    border-radius: 1rem;
+    margin: 0.5rem 1rem;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+  }
+  
+  .custom-item:hover {
+    transform: scale(1.01);
+    cursor: pointer;
+  }
+  
+  .device-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #56b0c8;
+  }
+  
+  .device-id {
+    font-size: 1rem;
+    color: #ccc;
+  }
+  
+  .custom-input-item {
+    --background: transparent;
+    margin: 0.5rem 1rem;
+  }
+  
+  .custom-input {
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.2rem;
+  }
+  
+  .action-btn {
+    --background: #256976;
+    --color: #ffffff;
+    height: 3.8rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 70%;
+    display: block;
+    margin: 1rem auto;
+    border-radius: 2rem;
+  }
+  
+  ion-button[color="danger"] {
+    --background: #ff4d4d;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
