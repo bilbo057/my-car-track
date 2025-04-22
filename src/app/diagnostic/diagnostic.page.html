@@ -29,6 +29,14 @@
     Стартирай комуникация
   </ion-button>
 
+  <div class="section-title" *ngIf="errors.length > 0">Намерени грешки</div>
+
+  <ion-card *ngFor="let code of errors" class="custom-item">
+    <ion-card-content>
+      <p><strong>Код:</strong> {{ code }}</p>
+    </ion-card-content>
+  </ion-card>
+
   <ion-button expand="full" shape="round" color="danger" (click)="disconnect()" class="action-btn">
     Прекъсни връзката
   </ion-button>
