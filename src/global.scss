@@ -44,3 +44,15 @@ ion-modal ion-toolbar {
 ion-modal::part(content) {
   padding-top: 0px !important; /* Removes any extra space left by the hidden header */
 }
+
+.collapsible-content {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 1s ease, opacity 1s ease;
+}
+
+.collapsible-content.open {
+  max-height: 1000px; // Adjust this to the max height you expect
+  opacity: 1;
+}

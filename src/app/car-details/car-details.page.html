@@ -27,8 +27,8 @@
       <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
     </ion-card-header>
 
-    <ion-card-content *ngIf="showDetails">
-      <div class="car-detail-item">
+    <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showDetails }">
+      <div class="car-detail-item" *ngIf="showDetails">
         <span class="detail-label">Тип на шасито:</span>
         <span class="detail-value">{{ carDetails.Chassis_type }}</span>
       </div>
@@ -73,12 +73,13 @@
         <span class="detail-value">{{ carDetails.Price_of_buying }}</span>
       </div>
     </ion-card-content>
+
     <div class="toggle-button-container">
       <ion-button fill="clear" shape="round" (click)="toggleDetails()">
         {{ showDetails ? 'Скрий детайлите' : 'Покажи детайлите' }}
       </ion-button>
     </div>
-  </ion-card> 
+  </ion-card>
 
   <!-- Expenses Section -->
   <ion-card class="car-details-card">
@@ -86,22 +87,22 @@
       <ion-card-title>Разходи</ion-card-title>
     </ion-card-header>
 
-    <ion-card-content *ngIf="showSpendings">
-      <div class="expense-item">
+    <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showSpendings }">
+      <div class="expense-item" *ngIf="showSpendings">
         <span class="expense-label">Този месец:</span>
-        <span class="expense-value">{{ carDetails.spentThisMonth}}</span>
+        <span class="expense-value">{{ carDetails.spentThisMonth }}</span>
       </div>
       <div class="expense-item">
         <span class="expense-label">Средно на месец:</span>
-        <span class="expense-value">{{ carDetails.averageSpentThisMonth}}</span>
+        <span class="expense-value">{{ carDetails.averageSpentThisMonth }}</span>
       </div>
       <div class="expense-item">
         <span class="expense-label">Тази година:</span>
-        <span class="expense-value">{{ carDetails.spentThisYear}}</span>
+        <span class="expense-value">{{ carDetails.spentThisYear }}</span>
       </div>
       <div class="expense-item">
         <span class="expense-label">Общо похарчени:</span>
-        <span class="expense-value total">{{ carDetails.totalSpent}}</span>
+        <span class="expense-value total">{{ carDetails.totalSpent }}</span>
       </div>
       <div class="action-item" (click)="goToMonthlyExpenses()">
         <ion-icon name="bar-chart-outline"></ion-icon>
@@ -109,7 +110,6 @@
       </div>
     </ion-card-content>
 
-    <!-- Toggle Button -->
     <div class="toggle-button-container">
       <ion-button fill="clear" shape="round" (click)="toggleSpendings()">
         {{ showSpendings ? 'Скрий разходите' : 'Покажи разходите' }}

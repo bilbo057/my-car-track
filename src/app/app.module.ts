@@ -13,6 +13,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
     AngularFireAuthModule, 
     CarDetailsPageModule,
     HttpClientModule,
+    BrowserAnimationsModule  
   ],
   providers: [InAppBrowser, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
