@@ -1,12 +1,14 @@
-<!-- monthly-expenses.page.html -->
-<ion-content class="ion-padding">
-  <ion-card *ngFor="let expense of monthlyExpenses">
+<ion-content class="ion-padding" [fullscreen]="true">
+  <div class="section-title">Месечни разходи</div>
+
+  <ion-card *ngFor="let expense of monthlyExpenses" class="custom-item">
     <ion-card-header>
-      <ion-card-title>Month: {{ expense.id.split('_')[1] }}</ion-card-title>
+      <ion-card-title class="section-title">Месец: {{ expense.id.split('_')[1] }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p><strong>Amount Spent:</strong> {{ expense.spentsThisPeriod | currency }}</p>
-      <p><strong>Last Updated:</strong> {{ expense.lastSpent }}</p>
+      <p><strong>Похарчено:</strong> {{ expense.spentsThisPeriod }} лв.</p>
+      <p><strong>Последна актуализация:</strong> {{ expense.lastSpent | date:'dd-MM-yyyy' }}</p>
+
     </ion-card-content>
   </ion-card>
 </ion-content>
