@@ -22,100 +22,100 @@
   </ion-card>
 
   <!-- Car Details -->
-  <ion-card class="car-details-card">
-    <ion-card-header>
-      <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
-    </ion-card-header>
+<ion-card class="car-details-card">
+  <ion-card-header>
+    <ion-card-title>{{ carDetails.Brand }} {{ carDetails.Model }}</ion-card-title>
+  </ion-card-header>
 
-    <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showDetails }">
-      <div class="car-detail-item" *ngIf="showDetails">
-        <span class="detail-label">Тип на шасито:</span>
-        <span class="detail-value">{{ carDetails.Chassis_type }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Тип на двигателя:</span>
-        <span class="detail-value">{{ carDetails.Engine_type }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Скоростна кутия:</span>
-        <span class="detail-value">{{ carDetails.Transmission_type }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Цвят:</span>
-        <span class="detail-value">{{ carDetails.Color }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Задвижване:</span>
-        <span class="detail-value">{{ carDetails.Drive }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Обем на двигателя:</span>
-        <span class="detail-value">{{ carDetails.Volume }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Евро стандарт:</span>
-        <span class="detail-value">{{ carDetails.Euro }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Мощност:</span>
-        <span class="detail-value">{{ carDetails.Power }} HP</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Година:</span>
-        <span class="detail-value">{{ carDetails.Year }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Kилометраж:</span>
-        <span class="detail-value">{{ carDetails.Current_KM }}</span>
-      </div>
-      <div class="car-detail-item">
-        <span class="detail-label">Цена:</span>
-        <span class="detail-value">{{ carDetails.Price_of_buying }}</span>
-      </div>
-    </ion-card-content>
-
-    <div class="toggle-button-container">
-      <ion-button fill="clear" shape="round" (click)="toggleDetails()">
-        {{ showDetails ? 'Скрий детайлите' : 'Покажи детайлите' }}
-      </ion-button>
+  <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showDetails }">
+    <div class="car-detail-item" *ngIf="showDetails">
+      <span class="detail-label">Тип на шасито:</span>
+      <span class="detail-value">{{ carDetails.Chassis_type }}</span>
     </div>
-  </ion-card>
-
-  <!-- Expenses Section -->
-  <ion-card class="car-details-card">
-    <ion-card-header>
-      <ion-card-title>Разходи</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showSpendings }">
-      <div class="expense-item" *ngIf="showSpendings">
-        <span class="expense-label">Този месец:</span>
-        <span class="expense-value">{{ carDetails.spentThisMonth }}</span>
-      </div>
-      <div class="expense-item">
-        <span class="expense-label">Средно на месец:</span>
-        <span class="expense-value">{{ carDetails.averageSpentThisMonth }}</span>
-      </div>
-      <div class="expense-item">
-        <span class="expense-label">Тази година:</span>
-        <span class="expense-value">{{ carDetails.spentThisYear }}</span>
-      </div>
-      <div class="expense-item">
-        <span class="expense-label">Общо похарчени:</span>
-        <span class="expense-value total">{{ carDetails.totalSpent }}</span>
-      </div>
-      <div class="action-item" (click)="goToMonthlyExpenses()">
-        <ion-icon name="bar-chart-outline"></ion-icon>
-        <span>Месечни разходи</span>
-      </div>
-    </ion-card-content>
-
-    <div class="toggle-button-container">
-      <ion-button fill="clear" shape="round" (click)="toggleSpendings()">
-        {{ showSpendings ? 'Скрий разходите' : 'Покажи разходите' }}
-      </ion-button>
+    <div class="car-detail-item">
+      <span class="detail-label">Тип на двигателя:</span>
+      <span class="detail-value">{{ carDetails.Engine_type }}</span>
     </div>
-  </ion-card>
+    <div class="car-detail-item">
+      <span class="detail-label">Скоростна кутия:</span>
+      <span class="detail-value">{{ carDetails.Transmission_type }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Цвят:</span>
+      <span class="detail-value">{{ carDetails.Color }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Задвижване:</span>
+      <span class="detail-value">{{ carDetails.Drive }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Обем на двигателя:</span>
+      <span class="detail-value">{{ carDetails.Volume }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Евро стандарт:</span>
+      <span class="detail-value">{{ carDetails.Euro }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Мощност:</span>
+      <span class="detail-value">{{ carDetails.Power }} HP</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Година:</span>
+      <span class="detail-value">{{ carDetails.Year }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Kилометраж:</span>
+      <span class="detail-value">{{ carDetails.Current_KM }}</span>
+    </div>
+    <div class="car-detail-item">
+      <span class="detail-label">Цена:</span>
+      <span class="detail-value">{{ carDetails.Price_of_buying }}</span>
+    </div>
+  </ion-card-content>
+
+  <div class="toggle-button-container">
+    <ion-button fill="clear" shape="round" (click)="toggleDetails()">
+      {{ showDetails ? 'Скрий детайлите' : 'Покажи детайлите' }}
+    </ion-button>
+  </div>
+</ion-card>
+
+<!-- Expenses Section -->
+<ion-card class="car-details-card">
+  <ion-card-header>
+    <ion-card-title>Разходи</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content [ngClass]="{ 'collapsible-content': true, 'open': showSpendings }">
+    <div class="expense-item" *ngIf="showSpendings">
+      <span class="expense-label">Този месец:</span>
+      <span class="expense-value">{{ carDetails.spentThisMonth }}</span>
+    </div>
+    <div class="expense-item">
+      <span class="expense-label">Средно на месец:</span>
+      <span class="expense-value">{{ carDetails.averageSpentThisMonth }}</span>
+    </div>
+    <div class="expense-item">
+      <span class="expense-label">Тази година:</span>
+      <span class="expense-value">{{ carDetails.spentThisYear }}</span>
+    </div>
+    <div class="expense-item">
+      <span class="expense-label">Общо похарчени:</span>
+      <span class="expense-value total">{{ carDetails.totalSpent }}</span>
+    </div>
+    <div class="action-item" (click)="goToMonthlyExpenses()">
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      <span>Месечни разходи</span>
+    </div>
+  </ion-card-content>
+
+  <div class="toggle-button-container">
+    <ion-button fill="clear" shape="round" (click)="toggleSpendings()">
+      {{ showSpendings ? 'Скрий разходите' : 'Покажи разходите' }}
+    </ion-button>
+  </div>
+</ion-card>
 
   <!-- Action Buttons -->
 

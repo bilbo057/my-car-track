@@ -108,6 +108,11 @@ const routes: Routes = [
     path: 'diagnostic',
     loadChildren: () => import('./diagnostic/diagnostic.module').then( m => m.DiagnosticPageModule)
   },
+  {
+    path: 'ai-chat',
+    loadChildren: () => import('./chats/ai-chat/ai-chat.module').then( m => m.AiChatPageModule)
+  },
+
 
 ];
 

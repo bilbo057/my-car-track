@@ -1,0 +1,28 @@
+<ion-content [fullscreen]="true" class="ai-chat-content">
+  <ion-card class="chat-card">
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let message of messages">
+          <ion-label>
+            <p>
+              <strong>{{ message.role === 'user' ? 'Вие' : 'Асистент' }}</strong>: {{ message.content }}
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="chat-footer">
+  <ion-item lines="none">
+    <ion-input
+      [(ngModel)]="userInput"
+      placeholder="Напиши нещо..."
+      class="custom-input"
+    ></ion-input>
+    <ion-button shape="round" class="send-button" (click)="sendMessage()">
+      Изпрати
+    </ion-button>
+  </ion-item>
+</ion-footer>
