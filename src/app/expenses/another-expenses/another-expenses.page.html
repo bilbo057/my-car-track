@@ -5,8 +5,8 @@
   </ion-button>
 
   <!-- Expense Form -->
-  <div *ngIf="showExpenseForm">
-    <form (ngSubmit)="addExpenseRecord()">
+  <div class="collapsible-section" [class.open]="showExpenseForm">
+    <form *ngIf="showExpenseForm" (ngSubmit)="addExpenseRecord()">
       <ion-card-content>
         <!-- Cost -->
         <ion-item [class.invalid-item]="(!expenseData.cost || expenseData.cost < 0 || expenseData.cost > 1000000) && showValidation">

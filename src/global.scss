@@ -56,3 +56,15 @@ ion-modal::part(content) {
   max-height: 1000px; // Adjust this to the max height you expect
   opacity: 1;
 }
+
+.collapsible-section {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.collapsible-section.open {
+  max-height: 1000px; // adjust as needed for form height
+  opacity: 1;
+}
