@@ -9,7 +9,7 @@ import { sendEmailVerification, User } from 'firebase/auth';
 export class AuthService {
   private firestore = getFirestore(); // Firestore instance
 
-  constructor(private afAuth: AngularFireAuth) {}
+  constructor(public afAuth: AngularFireAuth) {}
 
   async register(email: string, password: string) {
     try {

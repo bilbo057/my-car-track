@@ -29,7 +29,14 @@ export class AppComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.loadUsername();
+    this.authService.afAuth.authState.subscribe(async (user) => {
+      if (user) {
+        await this.loadUsername(); // Refresh username on login
+      } else {
+        this.username = 'Unknown User'; // Clear on logout
+      }
+    });
+    
     this.setupRouteWatcher();
   }
 
