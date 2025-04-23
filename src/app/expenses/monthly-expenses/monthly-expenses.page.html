@@ -1,6 +1,4 @@
 <ion-content class="ion-padding" [fullscreen]="true">
-  <div class="section-title">Месечни разходи</div>
-
   <ion-card *ngFor="let expense of monthlyExpenses" class="custom-item">
     <ion-card-header>
       <ion-card-title class="section-title">Месец: {{ expense.id.split('_')[1] }}</ion-card-title>
