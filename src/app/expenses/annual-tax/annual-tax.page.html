@@ -4,20 +4,14 @@
     {{ showForm ? 'Скрий формата' : 'Добави годишен данък' }}
   </ion-button>
 
-  <!-- Annual Tax Form Section -->
-  <div *ngIf="showForm">
+  <!-- Annual Tax Form Section (Animated) -->
+  <div class="collapsible-section" [class.open]="showForm">
     <form (ngSubmit)="addAnnualTaxRecord()">
       <ion-card-content>
-
         <!-- Tax Year -->
         <ion-item [class.invalid-item]="(!taxYear || taxYear < 1900 || taxYear > 2100) && showValidation">
           <ion-label>Година</ion-label>
-          <ion-input
-            type="number"
-            [(ngModel)]="taxYear"
-            name="taxYear"
-            placeholder="Въведи година (напр. 2024)">
-          </ion-input>
+          <ion-input type="number" [(ngModel)]="taxYear" name="taxYear" placeholder="Въведи година (напр. 2024)"></ion-input>
         </ion-item>
         <div *ngIf="!taxYear && showValidation" class="error-text">Полето е задължително.</div>
         <div *ngIf="taxYear && (taxYear < 1900 || taxYear > 2100) && showValidation" class="error-text">
@@ -47,12 +41,7 @@
         <!-- Cost -->
         <ion-item [class.invalid-item]="(cost === null || cost < 0 || cost > 10000) && showValidation">
           <ion-label>Цена</ion-label>
-          <ion-input
-            type="number"
-            [(ngModel)]="cost"
-            name="cost"
-            placeholder="Въведи цена">
-          </ion-input>
+          <ion-input type="number" [(ngModel)]="cost" name="cost" placeholder="Въведи цена"></ion-input>
         </ion-item>
         <div *ngIf="cost === null && showValidation" class="error-text">Полето е задължително.</div>
         <div *ngIf="cost !== null && (cost < 0 || cost > 10000) && showValidation" class="error-text">
