@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-ai-chat',
@@ -18,39 +19,30 @@ export class AiChatPage {
 
     this.messages.push({ role: 'user', content });
     this.userInput = '';
-    this.queryAI();
+    this.queryGemini();
   }
 
-  async queryAI() {
-    const apiKey = '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';
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'http://localhost', // or your deployed domain
-      'X-Title': 'MyCarTrack AI',
-    });
-
+  async queryGemini() {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${environment.geminiApiKey}`;
+    
     const payload = {
-      model: 'openai/gpt-3.5-turbo', // ✅ use GPT-3.5 first for testing (always works)
-      messages: [
+      contents: [
         {
-          role: 'system',
-          content: 'Ти си помощник на български език и ако има въпрос свързан със закон ще отговаряш спрямо българските закони, ще помагаш с коли, разходи и поддръжка по колите, ще отговаряш с кратки отговори от 1 до 2 изречения',
-        },
-        ...this.messages,
-      ],
+          parts: [
+            {
+              text: `Ти си помощник на български език и ако има въпрос свързан със закон ще отговаряш спрямо българските закони. Ще помагаш с коли, разходи и поддръжка. Отговаряй с кратки отговори (1–2 изречения).\n\n${this.messages.map(m => `${m.role === 'user' ? 'Потребител' : 'Помощник'}: ${m.content}`).join('\n')}`
+            }
+          ]
+        }
+      ]
     };
 
     try {
-      const res: any = await this.http
-        .post('https://openrouter.ai/api/v1/chat/completions', payload, { headers })
-        .toPromise();
-
-      const reply = res?.choices?.[0]?.message?.content || 'Няма отговор.';
+      const res: any = await this.http.post(url, payload).toPromise();
+      const reply = res?.candidates?.[0]?.content?.parts?.[0]?.text || 'Няма отговор.';
       this.messages.push({ role: 'assistant', content: reply });
     } catch (error) {
-      console.error('AI API error:', error);
+      console.error('Gemini API error:', error);
       this.messages.push({
         role: 'assistant',
         content: '⚠️ Възникна грешка при заявката. Моля, опитайте отново.',
