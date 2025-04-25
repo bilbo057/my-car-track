@@ -29,6 +29,9 @@ export class AppComponent {
     private authService: AuthService,
     private router: Router
   ) {
+    // ✅ Always enable dark mode
+    document.body.classList.add('dark');
+
     this.authService.afAuth.authState.subscribe(async (user) => {
       if (user) {
         await this.loadUsername(); // Refresh username on login
@@ -36,18 +39,20 @@ export class AppComponent {
         this.username = 'Unknown User'; // Clear on logout
       }
     });
-    
+
     this.setupRouteWatcher();
   }
 
   private setupRouteWatcher() {
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: any) => {
-      const menuExcludedRoutes = ['/login', '/register', '/car-details', '/car-add', '/car-edit']; // Menu hidden for these pages
-      const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for these pages
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        const menuExcludedRoutes = ['/login', '/register', '/car-details', '/car-add', '/car-edit']; // Menu hidden for these pages
+        const headerExcludedRoutes = ['/login', '/register']; // Header hidden only for these pages
 
-      this.showMenu = !menuExcludedRoutes.includes(event.urlAfterRedirects);
-      this.showHeader = !headerExcludedRoutes.includes(event.urlAfterRedirects);
-    });
+        this.showMenu = !menuExcludedRoutes.includes(event.urlAfterRedirects);
+        this.showHeader = !headerExcludedRoutes.includes(event.urlAfterRedirects);
+      });
   }
 
   toggleMenu() {
@@ -71,7 +76,7 @@ export class AppComponent {
         this.username = 'Unknown User';
         return;
       }
-  
+
       // Fetch username from the Users collection
       const userDoc = await this.firestore.collection('Users').doc(userId).get().toPromise();
       if (userDoc && userDoc.exists) {

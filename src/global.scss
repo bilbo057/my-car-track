@@ -68,3 +68,14 @@ ion-modal::part(content) {
   max-height: 1000px; // adjust as needed for form height
   opacity: 1;
 }
+
+body.dark {
+  --ion-background-color: #272727;
+  --ion-text-color: #ffffff;
+  --ion-item-background: #272727;
+  --ion-toolbar-background: #272727;
+  --ion-toolbar-color: #ffffff;
+  --ion-card-background: #333333;
+
+  // Add more overrides as needed
+}
