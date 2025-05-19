@@ -149,7 +149,6 @@
     </ion-button>
   </div>
 
-  <div class="section-title"></div>
   <ion-card *ngFor="let offer of filteredOffers" class="offer-item" (click)="viewOfferDetails(offer.offerId)">
     <ion-card-content class="offer-content">
       <div class="offer-details">
@@ -161,4 +160,11 @@
       <img [src]="offer.photoUrl || '/assets/img/default-car.png'" alt="Car Image" class="offer-thumbnail"/>
     </ion-card-content>
   </ion-card>
+
+  <div *ngIf="filteredOffers.length === 0" class="no-offers-center-wrap">
+    <div class="no-offers-center">
+      Няма намерени оферти.
+    </div>
+  </div>
+
 </ion-content>
