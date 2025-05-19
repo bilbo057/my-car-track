@@ -1,33 +1,39 @@
 <ion-content [fullscreen]="true">
   <div class="section-title">Филтрирай офертите</div>
   <form (ngSubmit)="applyFilters()">
-    <!-- Brand (modal select style) -->
-    <ion-item button (click)="brandSelect.open()">
+    <!-- Brand (typeahead modal) -->
+    <ion-item button (click)="brandModal?.present()">
       <ion-label>Марка</ion-label>
-      <ion-text slot="end">{{ selectedBrand || 'Избери' }}</ion-text>
-      <ion-select #brandSelect interface="modal" [(ngModel)]="selectedBrand"
-                  name="Brand" [selectedText]="''" placeholder=""
-                  cancelText="" okText="" (ionChange)="onBrandSelect()"
-                  style="opacity: 0; height: 0; width: 0; position: center;">
-        <ion-select-option *ngFor="let brand of brands" [value]="brand">
-          {{ brand }}
-        </ion-select-option>
-      </ion-select>
+      <ion-text slot="end">{{ selectedBrand?.text || 'Избери марка' }}</ion-text>
     </ion-item>
+    <ion-modal #brandModal>
+      <ng-template>
+        <app-typeahead
+          class="ion-page"
+          title="Избери марка"
+          [items]="brandOptions"
+          [selectedItems]="selectedBrand ? [selectedBrand.value] : []"
+          (selectionChange)="brandSelectionChanged($event)">
+        </app-typeahead>
+      </ng-template>
+    </ion-modal>
 
-    <!-- Model (modal select style) -->
-    <ion-item button (click)="modelSelect.open()" [disabled]="!selectedBrand">
+    <!-- Model (typeahead modal) -->
+    <ion-item button (click)="modelModal?.present()" [disabled]="!selectedBrand">
       <ion-label>Модел</ion-label>
-      <ion-text slot="end">{{ selectedModel || 'Избери' }}</ion-text>
-      <ion-select #modelSelect interface="modal" [(ngModel)]="selectedModel"
-                  name="Model" [selectedText]="''" placeholder=""
-                  cancelText="" okText=""
-                  style="opacity: 0; height: 0; width: 0; position: center;">
-        <ion-select-option *ngFor="let model of models" [value]="model">
-          {{ model }}
-        </ion-select-option>
-      </ion-select>
+      <ion-text slot="end">{{ selectedModel?.text || 'Избери модел' }}</ion-text>
     </ion-item>
+    <ion-modal #modelModal>
+      <ng-template>
+        <app-typeahead
+          class="ion-page"
+          title="Избери модел"
+          [items]="modelOptions"
+          [selectedItems]="selectedModel ? [selectedModel.value] : []"
+          (selectionChange)="modelSelectionChanged($event)">
+        </app-typeahead>
+      </ng-template>
+    </ion-modal>
 
     <!-- Year -->
     <ion-item>

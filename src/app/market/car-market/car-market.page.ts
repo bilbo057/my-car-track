@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { IonSelect } from '@ionic/angular';
+import { IonModal } from '@ionic/angular';
 
 @Component({
   selector: 'app-car-market',
@@ -10,23 +10,24 @@ import { IonSelect } from '@ionic/angular';
   styleUrls: ['./car-market.page.scss'],
 })
 export class CarMarketPage implements OnInit {
-  @ViewChild('brandSelect', { static: false }) brandSelect!: IonSelect;
-  @ViewChild('modelSelect', { static: false }) modelSelect!: IonSelect;
-  @ViewChild('colorSelect', { static: false }) colorSelect!: IonSelect;
-  @ViewChild('driveSelect', { static: false }) driveSelect!: IonSelect;
-  @ViewChild('euroSelect', { static: false }) euroSelect!: IonSelect;
+  @ViewChild('brandModal', { static: false }) brandModal!: IonModal;
+  @ViewChild('modelModal', { static: false }) modelModal!: IonModal;
+  @ViewChild('colorSelect', { static: false }) colorSelect!: any;
+  @ViewChild('driveSelect', { static: false }) driveSelect!: any;
+  @ViewChild('euroSelect', { static: false }) euroSelect!: any;
 
   offers: any[] = [];
   filteredOffers: any[] = [];
 
-  brands: string[] = [];
-  models: string[] = [];
+  // Typeahead structure
+  brandOptions: { text: string; value: string; models: string[] }[] = [];
+  modelOptions: { text: string; value: string }[] = [];
+  selectedBrand: { text: string; value: string; models: string[] } | null = null;
+  selectedModel: { text: string; value: string } | null = null;
+
   colors: string[] = [];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
   driveTypes: string[] = ['Front', 'Rear', 'AWD'];
-
-  selectedBrand: string = '';
-  selectedModel: string = '';
   selectedColor: string = '';
   selectedEuro: number | null = null;
   selectedDrive: string = '';
@@ -92,24 +93,46 @@ export class CarMarketPage implements OnInit {
   }
 
   populateFilters() {
-    this.brands = [...new Set(this.offers.map(offer => offer.Brand).filter(Boolean))];
+    // Build unique brands/models for typeahead
+    const brandSet = new Map();
+    this.offers.forEach(offer => {
+      if (offer.Brand && !brandSet.has(offer.Brand)) {
+        brandSet.set(offer.Brand, []);
+      }
+      if (offer.Brand && offer.Model && !brandSet.get(offer.Brand).includes(offer.Model)) {
+        brandSet.get(offer.Brand).push(offer.Model);
+      }
+    });
+    this.brandOptions = Array.from(brandSet.entries()).map(([brand, models]) => ({
+      text: brand,
+      value: brand,
+      models,
+    }));
+
+    this.modelOptions = [];
     this.colors = [...new Set(this.offers.map(offer => offer.Color).filter(Boolean))];
-    // Initially, models are empty until a brand is chosen.
-    this.models = [];
   }
 
-  onBrandSelect() {
-    if (this.selectedBrand) {
-      this.models = [
-        ...new Set(this.offers
-          .filter(offer => offer.Brand === this.selectedBrand)
-          .map(offer => offer.Model)
-          .filter(Boolean))
-      ];
+  brandSelectionChanged(selectedValues: string[]) {
+    if (selectedValues.length > 0) {
+      this.selectedBrand = this.brandOptions.find(b => b.value === selectedValues[0]) || null;
+      this.selectedModel = null;
+      this.modelOptions = this.selectedBrand?.models?.map((m: string) => ({ text: m, value: m })) || [];
     } else {
-      this.models = [];
+      this.selectedBrand = null;
+      this.selectedModel = null;
+      this.modelOptions = [];
     }
-    this.selectedModel = '';
+    this.brandModal?.dismiss();
+  }
+
+  modelSelectionChanged(selectedValues: string[]) {
+    if (selectedValues.length > 0) {
+      this.selectedModel = this.modelOptions.find(m => m.value === selectedValues[0]) || null;
+    } else {
+      this.selectedModel = null;
+    }
+    this.modelModal?.dismiss();
   }
 
   validateField(field: string) {
@@ -209,8 +232,8 @@ export class CarMarketPage implements OnInit {
       const offerYear = this.extractYear(offer.Year);
 
       return (
-        (!this.selectedBrand || offer.Brand === this.selectedBrand) &&
-        (!this.selectedModel || offer.Model === this.selectedModel) &&
+        (!this.selectedBrand || offer.Brand === this.selectedBrand?.value) &&
+        (!this.selectedModel || offer.Model === this.selectedModel?.value) &&
         (!this.selectedColor || offer.Color === this.selectedColor) &&
         (!this.selectedEuro || offer.Euro === this.selectedEuro) &&
         (!this.selectedDrive || offer.Drive === this.selectedDrive) &&

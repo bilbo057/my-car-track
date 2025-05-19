@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CarMarketPageRoutingModule } from './car-market-routing.module';
+import { TypeaheadModule } from '../../typeahead/typeahead.module';
 import { CarMarketPage } from './car-market.page';
 
 @NgModule({
@@ -11,6 +12,7 @@ import { CarMarketPage } from './car-market.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    TypeaheadModule,
     CarMarketPageRoutingModule
   ],
   declarations: [CarMarketPage]
