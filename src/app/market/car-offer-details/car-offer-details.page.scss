@@ -1,5 +1,4 @@
 ion-content {
-    --background: #1D1D1D;
     animation: fadeIn 3s ease-in-out;
     --padding-top: var(--ion-safe-area-top, 2rem);
   }
@@ -19,7 +18,7 @@ ion-content {
   
   /* Card Styling */
   .car-details-card {
-    background: #141414;
+    background: #1d1d1d;
     color: #ffffff;
     border-radius: 1rem;
     margin: 1rem auto;

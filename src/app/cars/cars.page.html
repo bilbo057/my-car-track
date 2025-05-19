@@ -4,46 +4,47 @@
     ДОБАВИ КОЛА
   </ion-button>
 
-  <ion-list>
-    <ion-item *ngFor="let car of displayedCars" (click)="goToCarDetails(car.CarID)">
-      <ion-card>
-        <div class="car-container">
-          <!-- License Plate with Year Below -->
-          <div class="plate-year-container">
-            <div class="license-plate">
-              <span class="plate-char">
-                {{ car.License_plate.length === 8 ? car.License_plate.substring(0, 2) : car.License_plate.substring(0, 1) }}
-              </span>
-              <span class="plate-space"></span>
-              <span class="plate-number">
-                {{ car.License_plate.length === 8 ? car.License_plate.substring(2) : car.License_plate.substring(1) }}
-              </span>
+  <ng-container *ngIf="cars.length > 0; else noCars">
+    <ion-list>
+      <ion-item *ngFor="let car of displayedCars" (click)="goToCarDetails(car.CarID)">
+        <ion-card>
+          <div class="car-container">
+            <!-- License Plate with Year Below -->
+            <div class="plate-year-container">
+              <div class="license-plate">
+                <span class="plate-char">
+                  {{ car.License_plate.length === 8 ? car.License_plate.substring(0, 2) : car.License_plate.substring(0, 1) }}
+                </span>
+                <span class="plate-space"></span>
+                <span class="plate-number">
+                  {{ car.License_plate.length === 8 ? car.License_plate.substring(2) : car.License_plate.substring(1) }}
+                </span>
+              </div>
+              <div class="car-year">ГОДИНА:{{ car.Year }}</div>
             </div>
-            <div class="car-year">ГОДИНА:{{ car.Year }}</div>
+            <!-- Car Image -->
+            <img [src]="car.photoUrl" class="car-image"/>
           </div>
+          <!-- Centered Car Name -->
+          <div class="car-details">
+            <ion-card-title class="car-name">{{ car.Brand }} {{ car.Model }}</ion-card-title>
+          </div>
+        </ion-card>
+      </ion-item>
+    </ion-list>
 
-          <!-- Car Image -->
-          <img [src]="car.photoUrl" class="car-image"/>
-        </div>
+    <!-- Pagination Controls -->
+    <div class="pagination-buttons">
+      <ion-button *ngIf="currentPage > 1" shape="round" (click)="prevPage()">НАЗАД</ion-button>
+      <ion-button *ngIf="displayedCars.length >= 20 && (cars.length > currentPage * carsPerPage)" shape="round" (click)="nextPage()">НАПРЕД</ion-button>
+    </div>
+  </ng-container>
 
-        <!-- Centered Car Name -->
-        <div class="car-details">
-          <ion-card-title class="car-name">{{ car.Brand }} {{ car.Model }}</ion-card-title>
-        </div>
-      </ion-card>
-    </ion-item>
-  </ion-list>
-
-  <!-- Pagination Controls -->
-  <div class="pagination-buttons">
-    <ion-button *ngIf="currentPage > 1" shape="round" (click)="prevPage()">НАЗАД</ion-button>
-    <ion-button *ngIf="displayedCars.length >= 20 && (cars.length > currentPage * carsPerPage)" shape="round" (click)="nextPage()">НАПРЕД</ion-button>
-  </div>
-
-  <!-- No Cars Message -->
-  <ion-card *ngIf="cars.length === 0" class="no-cars-card">
-    <ion-card-content>
-      Нямаш автомобили, натисни "ДОБАВИ КОЛА", за да добавиш първата си кола.
-    </ion-card-content>
-  </ion-card>
+  <ng-template #noCars>
+    <ion-card class="no-cars-card">
+      <ion-card-content>
+        Нямаш автомобили, натисни "ДОБАВИ КОЛА", за да добавиш първата си кола.
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 </ion-content>

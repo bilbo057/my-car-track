@@ -1,5 +1,4 @@
 ion-content {
-  --background: #1D1D1D; /* Dark gray background */
   animation: fadeIn 3s ease-in-out;
   --padding-top: var(--ion-safe-area-top, 2rem);
 }
@@ -9,12 +8,11 @@ ion-content {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem;
-  width: 100%; /* Make the container responsive */
-  height: 6.5rem; /* Ensure all containers have the same height */
-  margin: 0 auto; /* Center the container horizontally */
+  width: 100%;
+  height: 6.5rem; 
+  margin: 0 auto; 
 }
 
-/* Container for the license plate and year */
 .plate-year-container {
   display: flex;
   flex-direction: column;
@@ -39,12 +37,12 @@ ion-content {
   font-size: 1.8rem;
   font-weight: bold;
   color: black;
-  margin-left: 1.5rem; /* Space between letters and numbers */
-  margin-right: 0.2rem; /* Space between letters and numbers */
+  margin-left: 1.5rem; 
+  margin-right: 0.2rem; 
 }
 
 .plate-space {
-  width: 0.2rem; /* Space to match the Bulgarian plate format */
+  width: 0.2rem; 
 }
 
 .plate-number {
@@ -57,7 +55,7 @@ ion-content {
 .car-year {
   font-size: 1.20rem;
   font-weight: bold;
-  color: #ffffff; /* Blue text */
+  color: #ffffff; 
 }
 
 /* Car Image */

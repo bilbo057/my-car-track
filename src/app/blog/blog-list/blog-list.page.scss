@@ -1,12 +1,11 @@
 ion-content {
-    --background: #1D1D1D;
     animation: fadeIn 1s ease-in-out;
     --padding-top: var(--ion-safe-area-top, 2rem);
   }
   
   .custom-search {
     padding: 1rem;
-    --background: #2a2a2a;
+    --background: #1d1d1d;
     --color: #ffffff;
     --placeholder-color: #aaaaaa;
     --icon-color: #ffffff;
@@ -14,12 +13,13 @@ ion-content {
   }
   
   .custom-item {
-    background: #141414;
+    background: #1d1d1d;
     color: #ffffff;
     border-radius: 1rem;
     margin: 0.7rem 1rem;
+    margin-bottom: 1rem;
     padding: 0.5rem 0.8rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px #141414;
     transition: transform 0.2s;
   }
   

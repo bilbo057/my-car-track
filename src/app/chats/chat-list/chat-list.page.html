@@ -16,7 +16,6 @@
   </ion-card>
 
   <!-- Existing Chats -->
-  <div class="section-title">Чатове</div>
   <ion-card *ngFor="let chat of chats" class="custom-item" (click)="openChat(chat.id)">
     <ion-card-content>
       <p class="chat-username">{{ '@' + chat.otherUsername }}</p>
