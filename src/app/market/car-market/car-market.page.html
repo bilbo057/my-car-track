@@ -1,5 +1,6 @@
 <ion-content [fullscreen]="true">
-  <div class="section-title">Филтрирай офертите</div>
+  <div class="page-title">Филтрирай офертите</div>
+   <ion-card-content [ngClass]="{'collapsible-content': true, 'open': showFilters}">
   <form (ngSubmit)="applyFilters()">
     <!-- Brand (typeahead modal) -->
     <ion-item button (click)="brandModal?.present()">
@@ -141,8 +142,14 @@
       Потърси
     </ion-button>
   </form>
+  </ion-card-content>
+  <div class="toggle-button-container">
+    <ion-button fill="clear" shape="round" (click)="toggleFilters()">
+      {{ showFilters ? 'Скрий филтрите' : 'Покажи филтрите' }}
+    </ion-button>
+  </div>
 
-  <div class="section-title">Намерени оферти</div>
+  <div class="section-title"></div>
   <ion-card *ngFor="let offer of filteredOffers" class="offer-item" (click)="viewOfferDetails(offer.offerId)">
     <ion-card-content class="offer-content">
       <div class="offer-details">

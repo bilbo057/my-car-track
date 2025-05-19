@@ -25,6 +25,7 @@ export class CarMarketPage implements OnInit {
   selectedBrand: { text: string; value: string; models: string[] } | null = null;
   selectedModel: { text: string; value: string } | null = null;
 
+  showFilters: boolean = false;
   colors: string[] = [];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
   driveTypes: string[] = ['Front', 'Rear', 'AWD'];
@@ -53,6 +54,10 @@ export class CarMarketPage implements OnInit {
 
   ngOnInit() {
     this.loadOffers();
+  }
+
+  toggleFilters() {
+  this.showFilters = !this.showFilters;
   }
 
   async loadOffers() {
