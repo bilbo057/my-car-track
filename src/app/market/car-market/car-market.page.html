@@ -1,123 +1,151 @@
 <ion-content [fullscreen]="true">
   <div class="section-title">Филтрирай офертите</div>
-
-  <!-- Filters Form -->
   <form (ngSubmit)="applyFilters()">
-    <!-- Brand -->
-    <ion-item>
+    <!-- Brand (modal select style) -->
+    <ion-item button (click)="brandSelect.open()">
       <ion-label>Марка</ion-label>
-      <ion-select [(ngModel)]="selectedBrand" name="Brand" (ionChange)="updateModels()">
-        <ion-select-option *ngFor="let brand of brands" [value]="brand">{{ brand }}</ion-select-option>
+      <ion-text slot="end">{{ selectedBrand || 'Избери' }}</ion-text>
+      <ion-select #brandSelect interface="modal" [(ngModel)]="selectedBrand"
+                  name="Brand" [selectedText]="''" placeholder=""
+                  cancelText="" okText="" (ionChange)="onBrandSelect()"
+                  style="opacity: 0; height: 0; width: 0; position: center;">
+        <ion-select-option *ngFor="let brand of brands" [value]="brand">
+          {{ brand }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <!-- Model -->
-    <ion-item>
+    <!-- Model (modal select style) -->
+    <ion-item button (click)="modelSelect.open()" [disabled]="!selectedBrand">
       <ion-label>Модел</ion-label>
-      <ion-select [(ngModel)]="selectedModel" name="Model">
-        <ion-select-option *ngFor="let model of models" [value]="model">{{ model }}</ion-select-option>
+      <ion-text slot="end">{{ selectedModel || 'Избери' }}</ion-text>
+      <ion-select #modelSelect interface="modal" [(ngModel)]="selectedModel"
+                  name="Model" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
+        <ion-select-option *ngFor="let model of models" [value]="model">
+          {{ model }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
     <!-- Year -->
     <ion-item>
       <ion-label>Мин. година</ion-label>
-      <ion-input type="number" [(ngModel)]="minYear" name="MinYear"></ion-input>
+      <ion-input type="number" [(ngModel)]="minYear" name="MinYear" (ionInput)="validateField('minYear')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['minYear']" class="field-error">{{ validationErrors['minYear'] }}</div>
     <ion-item>
       <ion-label>Макс. година</ion-label>
-      <ion-input type="number" [(ngModel)]="maxYear" name="MaxYear"></ion-input>
+      <ion-input type="number" [(ngModel)]="maxYear" name="MaxYear" (ionInput)="validateField('maxYear')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['maxYear']" class="field-error">{{ validationErrors['maxYear'] }}</div>
 
     <!-- Price -->
     <ion-item>
       <ion-label>Мин. цена</ion-label>
-      <ion-input type="number" [(ngModel)]="minPrice" name="MinPrice"></ion-input>
+      <ion-input type="number" [(ngModel)]="minPrice" name="MinPrice" (ionInput)="validateField('minPrice')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['minPrice']" class="field-error">{{ validationErrors['minPrice'] }}</div>
     <ion-item>
       <ion-label>Макс. цена</ion-label>
-      <ion-input type="number" [(ngModel)]="maxPrice" name="MaxPrice"></ion-input>
+      <ion-input type="number" [(ngModel)]="maxPrice" name="MaxPrice" (ionInput)="validateField('maxPrice')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['maxPrice']" class="field-error">{{ validationErrors['maxPrice'] }}</div>
 
     <!-- KM -->
     <ion-item>
       <ion-label>Мин. км</ion-label>
-      <ion-input type="number" [(ngModel)]="minKM" name="MinKM"></ion-input>
+      <ion-input type="number" [(ngModel)]="minKM" name="MinKM" (ionInput)="validateField('minKM')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['minKM']" class="field-error">{{ validationErrors['minKM'] }}</div>
     <ion-item>
       <ion-label>Макс. км</ion-label>
-      <ion-input type="number" [(ngModel)]="maxKM" name="MaxKM"></ion-input>
+      <ion-input type="number" [(ngModel)]="maxKM" name="MaxKM" (ionInput)="validateField('maxKM')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['maxKM']" class="field-error">{{ validationErrors['maxKM'] }}</div>
 
     <!-- Volume -->
     <ion-item>
       <ion-label>Мин. обем (cc)</ion-label>
-      <ion-input type="number" [(ngModel)]="minVolume" name="MinVolume"></ion-input>
+      <ion-input type="number" [(ngModel)]="minVolume" name="MinVolume" (ionInput)="validateField('minVolume')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['minVolume']" class="field-error">{{ validationErrors['minVolume'] }}</div>
     <ion-item>
       <ion-label>Макс. обем (cc)</ion-label>
-      <ion-input type="number" [(ngModel)]="maxVolume" name="MaxVolume"></ion-input>
+      <ion-input type="number" [(ngModel)]="maxVolume" name="MaxVolume" (ionInput)="validateField('maxVolume')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['maxVolume']" class="field-error">{{ validationErrors['maxVolume'] }}</div>
 
     <!-- Power -->
     <ion-item>
       <ion-label>Мин. мощност</ion-label>
-      <ion-input type="number" [(ngModel)]="minPower" name="MinPower"></ion-input>
+      <ion-input type="number" [(ngModel)]="minPower" name="MinPower" (ionInput)="validateField('minPower')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['minPower']" class="field-error">{{ validationErrors['minPower'] }}</div>
     <ion-item>
       <ion-label>Макс. мощност</ion-label>
-      <ion-input type="number" [(ngModel)]="maxPower" name="MaxPower"></ion-input>
+      <ion-input type="number" [(ngModel)]="maxPower" name="MaxPower" (ionInput)="validateField('maxPower')"></ion-input>
     </ion-item>
+    <div *ngIf="validationErrors['maxPower']" class="field-error">{{ validationErrors['maxPower'] }}</div>
 
     <!-- Color -->
-    <ion-item>
+    <ion-item button (click)="colorSelect.open()">
       <ion-label>Цвят</ion-label>
-      <ion-select [(ngModel)]="selectedColor" name="Color">
-        <ion-select-option *ngFor="let color of colors" [value]="color">{{ color }}</ion-select-option>
+      <ion-text slot="end">{{ selectedColor || 'Избери' }}</ion-text>
+      <ion-select #colorSelect interface="modal" [(ngModel)]="selectedColor"
+                  name="Color" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
+        <ion-select-option *ngFor="let color of colors" [value]="color">
+          {{ color }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
     <!-- Euro -->
-    <ion-item>
+    <ion-item button (click)="euroSelect.open()">
       <ion-label>Евро стандарт</ion-label>
-      <ion-select [(ngModel)]="selectedEuro" name="Euro">
-        <ion-select-option *ngFor="let euro of euroStandards" [value]="euro">{{ euro }}</ion-select-option>
+      <ion-text slot="end">{{ selectedEuro || 'Избери' }}</ion-text>
+      <ion-select #euroSelect interface="modal" [(ngModel)]="selectedEuro"
+                  name="Euro" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
+        <ion-select-option *ngFor="let euro of euroStandards" [value]="euro">
+          {{ euro }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
     <!-- Drive -->
-    <ion-item>
+    <ion-item button (click)="driveSelect.open()">
       <ion-label>Задвижване</ion-label>
-      <ion-select [(ngModel)]="selectedDrive" name="Drive">
-        <ion-select-option *ngFor="let drive of driveTypes" [value]="drive">{{ drive }}</ion-select-option>
+      <ion-text slot="end">{{ selectedDrive || 'Избери' }}</ion-text>
+      <ion-select #driveSelect interface="modal" [(ngModel)]="selectedDrive"
+                  name="Drive" [selectedText]="''" placeholder=""
+                  cancelText="" okText=""
+                  style="opacity: 0; height: 0; width: 0; position: center;">
+        <ion-select-option *ngFor="let drive of driveTypes" [value]="drive">
+          {{ drive }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
 
-    <!-- Submit -->
-    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">
+    <ion-button expand="full" type="submit" shape="round" class="add-car-btn" [disabled]="!isFormValid()">
       Потърси
     </ion-button>
   </form>
 
   <div class="section-title">Намерени оферти</div>
-
-  <!-- Car Offers -->
   <ion-card *ngFor="let offer of filteredOffers" class="offer-item" (click)="viewOfferDetails(offer.offerId)">
     <ion-card-content class="offer-content">
-      <!-- Car Info (Left) -->
       <div class="offer-details">
         <h3 class="offer-title">{{ offer.Brand }} {{ offer.Model }}</h3>
         <p><strong>Година:</strong> {{ offer.Year }}</p>
         <p><strong>Километраж:</strong> {{ offer.Current_KM }} км</p>
         <p><strong>Цена:</strong> {{ offer.Price_of_selling }} лв.</p>
       </div>
-
-      <!-- Car Image (Right) -->
-      <img
-        [src]="offer.photoUrl || '/assets/img/default-car.png'"
-        alt="Car Image"
-        class="offer-thumbnail"
-      />
+      <img [src]="offer.photoUrl || '/assets/img/default-car.png'" alt="Car Image" class="offer-thumbnail"/>
     </ion-card-content>
   </ion-card>
 </ion-content>

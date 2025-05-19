@@ -107,6 +107,14 @@ ion-content {
     margin-left: 1rem;
     flex-shrink: 0;
   }
+
+  .field-error {
+  color: #ff5252;
+  font-size: 1.08rem;
+  text-align: center;
+  margin-top: -0.6rem;
+  margin-bottom: 0.4rem;
+  }
   
   @keyframes fadeIn {
     from {

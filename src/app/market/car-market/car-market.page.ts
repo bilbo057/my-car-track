@@ -1,8 +1,8 @@
-// car-market.page.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { IonSelect } from '@ionic/angular';
 
 @Component({
   selector: 'app-car-market',
@@ -10,18 +10,27 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
   styleUrls: ['./car-market.page.scss'],
 })
 export class CarMarketPage implements OnInit {
+  @ViewChild('brandSelect', { static: false }) brandSelect!: IonSelect;
+  @ViewChild('modelSelect', { static: false }) modelSelect!: IonSelect;
+  @ViewChild('colorSelect', { static: false }) colorSelect!: IonSelect;
+  @ViewChild('driveSelect', { static: false }) driveSelect!: IonSelect;
+  @ViewChild('euroSelect', { static: false }) euroSelect!: IonSelect;
+
   offers: any[] = [];
   filteredOffers: any[] = [];
+
   brands: string[] = [];
   models: string[] = [];
   colors: string[] = [];
   euroStandards: number[] = [1, 2, 3, 4, 5, 6];
   driveTypes: string[] = ['Front', 'Rear', 'AWD'];
+
   selectedBrand: string = '';
   selectedModel: string = '';
   selectedColor: string = '';
   selectedEuro: number | null = null;
   selectedDrive: string = '';
+
   minPrice: number | null = null;
   maxPrice: number | null = null;
   minYear: number | null = null;
@@ -33,8 +42,11 @@ export class CarMarketPage implements OnInit {
   minPower: number | null = null;
   maxPower: number | null = null;
 
+  validationErrors: { [key: string]: string } = {};
+
   private firestore = getFirestore();
   private storage = getStorage();
+  private currentYear = new Date().getFullYear();
 
   constructor(private router: Router) {}
 
@@ -50,12 +62,10 @@ export class CarMarketPage implements OnInit {
       this.offers = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const offer = doc.data();
-          offer['offerId'] = doc.id; 
-
+          offer['offerId'] = doc.id;
           if (offer['photoNames'] && offer['photoNames'].length > 0) {
             offer['photoUrl'] = await this.getImageUrl(offer['photoNames'][0]);
           }
-
           return offer;
         })
       );
@@ -82,25 +92,122 @@ export class CarMarketPage implements OnInit {
   }
 
   populateFilters() {
-    this.brands = [...new Set(this.offers.map(offer => offer.Brand))];
-    this.colors = [...new Set(this.offers.map(offer => offer.Color))];
+    this.brands = [...new Set(this.offers.map(offer => offer.Brand).filter(Boolean))];
+    this.colors = [...new Set(this.offers.map(offer => offer.Color).filter(Boolean))];
+    // Initially, models are empty until a brand is chosen.
+    this.models = [];
   }
 
-  updateModels() {
+  onBrandSelect() {
     if (this.selectedBrand) {
-      this.models = [...new Set(this.offers
-        .filter(offer => offer.Brand === this.selectedBrand)
-        .map(offer => offer.Model))];
+      this.models = [
+        ...new Set(this.offers
+          .filter(offer => offer.Brand === this.selectedBrand)
+          .map(offer => offer.Model)
+          .filter(Boolean))
+      ];
     } else {
       this.models = [];
     }
     this.selectedModel = '';
   }
 
+  validateField(field: string) {
+    this.validationErrors[field] = '';
+
+    switch (field) {
+      case 'minYear':
+        if (this.minYear !== null && (this.minYear < 1900 || this.minYear > this.currentYear)) {
+          this.validationErrors['minYear'] = 'Годината трябва да е между 1900 и ' + this.currentYear;
+        }
+        if (this.minYear && this.minYear.toString().length > 4) {
+          this.validationErrors['minYear'] = 'Годината трябва да е до 4 цифри';
+        }
+        break;
+      case 'maxYear':
+        if (this.maxYear !== null && (this.maxYear < 1900 || this.maxYear > this.currentYear)) {
+          this.validationErrors['maxYear'] = 'Годината трябва да е между 1900 и ' + this.currentYear;
+        }
+        if (this.maxYear && this.maxYear.toString().length > 4) {
+          this.validationErrors['maxYear'] = 'Годината трябва да е до 4 цифри';
+        }
+        break;
+      case 'minPrice':
+        if (this.minPrice !== null && (this.minPrice < 0 || this.minPrice > 10000000)) {
+          this.validationErrors['minPrice'] = 'Цената трябва да е между 0 и 10 000 000';
+        }
+        if (this.minPrice && this.minPrice.toString().length > 10) {
+          this.validationErrors['minPrice'] = 'Цената трябва да е до 10 цифри';
+        }
+        break;
+      case 'maxPrice':
+        if (this.maxPrice !== null && (this.maxPrice < 0 || this.maxPrice > 10000000)) {
+          this.validationErrors['maxPrice'] = 'Цената трябва да е между 0 и 10 000 000';
+        }
+        if (this.maxPrice && this.maxPrice.toString().length > 10) {
+          this.validationErrors['maxPrice'] = 'Цената трябва да е до 10 цифри';
+        }
+        break;
+      case 'minKM':
+        if (this.minKM !== null && (this.minKM < 0 || this.minKM > 5000000)) {
+          this.validationErrors['minKM'] = 'Километрите трябва да са между 0 и 5 000 000';
+        }
+        break;
+      case 'maxKM':
+        if (this.maxKM !== null && (this.maxKM < 0 || this.maxKM > 5000000)) {
+          this.validationErrors['maxKM'] = 'Километрите трябва да са между 0 и 5 000 000';
+        }
+        break;
+      case 'minVolume':
+        if (this.minVolume !== null && (this.minVolume < 250 || this.minVolume > 10000)) {
+          this.validationErrors['minVolume'] = 'Обемът трябва да е между 250 и 10 000';
+        }
+        break;
+      case 'maxVolume':
+        if (this.maxVolume !== null && (this.maxVolume < 250 || this.maxVolume > 10000)) {
+          this.validationErrors['maxVolume'] = 'Обемът трябва да е между 250 и 10 000';
+        }
+        break;
+      case 'minPower':
+        if (this.minPower !== null && (this.minPower < 30 || this.minPower > 5000)) {
+          this.validationErrors['minPower'] = 'Мощността трябва да е между 30 и 5 000';
+        }
+        break;
+      case 'maxPower':
+        if (this.maxPower !== null && (this.maxPower < 30 || this.maxPower > 5000)) {
+          this.validationErrors['maxPower'] = 'Мощността трябва да е между 30 и 5 000';
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  isFormValid(): boolean {
+    for (const errorKey in this.validationErrors) {
+      if (this.validationErrors[errorKey]) {
+        return false;
+      }
+    }
+    if (
+      (this.minYear && this.maxYear && this.minYear > this.maxYear) ||
+      (this.minPrice && this.maxPrice && this.minPrice > this.maxPrice) ||
+      (this.minKM && this.maxKM && this.minKM > this.maxKM) ||
+      (this.minVolume && this.maxVolume && this.minVolume > this.maxVolume) ||
+      (this.minPower && this.maxPower && this.minPower > this.maxPower)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   applyFilters() {
+    if (!this.isFormValid()) {
+      return;
+    }
     this.filteredOffers = this.offers.filter(offer => {
       const offerYear = this.extractYear(offer.Year);
-  
+
       return (
         (!this.selectedBrand || offer.Brand === this.selectedBrand) &&
         (!this.selectedModel || offer.Model === this.selectedModel) &&
@@ -119,13 +226,13 @@ export class CarMarketPage implements OnInit {
         (this.maxPower === null || offer.Power !== undefined && offer.Power <= this.maxPower)
       );
     });
-  }  
+  }
 
   extractYear(dateString: string | undefined): number {
     if (!dateString || typeof dateString !== 'string' || !dateString.includes('-')) {
-      return 0; // Return 0 if the date is missing or incorrectly formatted
+      return 0;
     }
-    const parts = dateString.split('-'); // Split "DD-MM-YYYY"
-    return parseInt(parts[2], 10) || 0; // Extract and return the year, default to 0 if NaN
+    const parts = dateString.split('-');
+    return parseInt(parts[2], 10) || 0;
   }
 }
