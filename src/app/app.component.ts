@@ -68,6 +68,11 @@ export class AppComponent {
     }
   }
 
+  closeMenu() {
+  this.menuCtrl.close('main-menu');
+}
+
+
   async loadUsername() {
     try {
       const userId = await this.authService.getUserId(); // Fetch the current user's ID
