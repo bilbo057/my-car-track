@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { AlertController, IonModal } from '@ionic/angular';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import { AuthService } from '../services/auth.service';
-import { Item } from '../typeahead/types';
+import { AuthService } from '../../services/auth.service';
+import { Item } from '../../typeahead/types';
 
 @Component({
   selector: 'app-car-add',

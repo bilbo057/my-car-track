@@ -18,19 +18,19 @@ const routes: Routes = [
   },
   {
     path: 'cars',
-    loadChildren: () => import('./cars/cars.module').then((m) => m.CarsPageModule),
+    loadChildren: () => import('./car/cars/cars.module').then((m) => m.CarsPageModule),
   },
   {
     path: 'car-add',
-    loadChildren: () => import('./car-add/car-add.module').then((m) => m.CarAddPageModule),
+    loadChildren: () => import('./car/car-add/car-add.module').then((m) => m.CarAddPageModule),
   },
   {
     path: 'car-details/:id',
-    loadChildren: () => import('./car-details/car-details.module').then((m) => m.CarDetailsPageModule),
+    loadChildren: () => import('./car/car-details/car-details.module').then((m) => m.CarDetailsPageModule),
   },
   {
     path: 'car-edit/:id',
-    loadChildren: () => import('./car-edit/car-edit.module').then((m) => m.CarEditPageModule),
+    loadChildren: () => import('./car/car-edit/car-edit.module').then((m) => m.CarEditPageModule),
   },
   {
     path: 'refueling',

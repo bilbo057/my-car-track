@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { CarEditPageRoutingModule } from './car-edit-routing.module';
 import { CarEditPage } from './car-edit.page';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { DatetimePickerModule } from "../datetime-picker/datetime-picker.module";
+import { DatetimePickerModule } from "../../datetime-picker/datetime-picker.module";
 
 @NgModule({
   imports: [

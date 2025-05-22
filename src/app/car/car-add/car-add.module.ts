@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { CarAddPageRoutingModule } from './car-add-routing.module';
 import { CarAddPage } from './car-add.page';
-import { TypeaheadModule } from '../typeahead/typeahead.module'; 
-import { DatetimePickerModule } from '../datetime-picker/datetime-picker.module';
+import { TypeaheadModule } from '../../typeahead/typeahead.module'; 
+import { DatetimePickerModule } from '../../datetime-picker/datetime-picker.module';
 
 @NgModule({
   imports: [

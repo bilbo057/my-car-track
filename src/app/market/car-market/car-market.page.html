@@ -161,10 +161,16 @@
     </ion-card-content>
   </ion-card>
 
-  <div *ngIf="filteredOffers.length === 0" class="no-offers-center-wrap">
-    <div class="no-offers-center">
-      Няма намерени оферти.
-    </div>
+  <div *ngIf="offers.length === 0" class="no-offers-center-wrap">
+  <div class="no-offers-center">
+    В момента няма публикувани оферти.
   </div>
+</div>
+<div *ngIf="offers.length > 0 && filteredOffers.length === 0" class="no-offers-center-wrap">
+  <div class="no-offers-center">
+    Няма оферти, отговарящи на тези филтри.
+  </div>
+</div>
+
 
 </ion-content>
