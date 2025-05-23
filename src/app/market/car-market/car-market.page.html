@@ -1,5 +1,10 @@
 <ion-content [fullscreen]="true">
   <div class="page-title">Филтрирай офертите</div>
+  <div class="toggle-button-container">
+    <ion-button fill="clear" shape="round" (click)="toggleFilters()">
+      {{ showFilters ? 'Скрий филтрите' : 'Покажи филтрите' }}
+    </ion-button>
+  </div>
    <ion-card-content [ngClass]="{'collapsible-content': true, 'open': showFilters}">
   <form (ngSubmit)="applyFilters()">
     <!-- Brand (typeahead modal) -->
@@ -41,60 +46,60 @@
       <ion-label>Мин. година</ion-label>
       <ion-input type="number" [(ngModel)]="minYear" name="MinYear" (ionInput)="validateField('minYear')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['minYear']" class="field-error">{{ validationErrors['minYear'] }}</div>
+    <div *ngIf="validationErrors['minYear']" class="field-error">{{ validationErrors['minYear'] }}г.</div>
     <ion-item>
       <ion-label>Макс. година</ion-label>
       <ion-input type="number" [(ngModel)]="maxYear" name="MaxYear" (ionInput)="validateField('maxYear')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['maxYear']" class="field-error">{{ validationErrors['maxYear'] }}</div>
+    <div *ngIf="validationErrors['maxYear']" class="field-error">{{ validationErrors['maxYear'] }}г.</div>
 
     <!-- Price -->
     <ion-item>
       <ion-label>Мин. цена</ion-label>
       <ion-input type="number" [(ngModel)]="minPrice" name="MinPrice" (ionInput)="validateField('minPrice')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['minPrice']" class="field-error">{{ validationErrors['minPrice'] }}</div>
+    <div *ngIf="validationErrors['minPrice']" class="field-error">{{ validationErrors['minPrice'] }}лв.</div>
     <ion-item>
       <ion-label>Макс. цена</ion-label>
       <ion-input type="number" [(ngModel)]="maxPrice" name="MaxPrice" (ionInput)="validateField('maxPrice')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['maxPrice']" class="field-error">{{ validationErrors['maxPrice'] }}</div>
+    <div *ngIf="validationErrors['maxPrice']" class="field-error">{{ validationErrors['maxPrice'] }}лв.</div>
 
     <!-- KM -->
     <ion-item>
-      <ion-label>Мин. км</ion-label>
+      <ion-label>Мин. пробег</ion-label>
       <ion-input type="number" [(ngModel)]="minKM" name="MinKM" (ionInput)="validateField('minKM')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['minKM']" class="field-error">{{ validationErrors['minKM'] }}</div>
+    <div *ngIf="validationErrors['minKM']" class="field-error">{{ validationErrors['minKM'] }}км.</div>
     <ion-item>
-      <ion-label>Макс. км</ion-label>
+      <ion-label>Макс. пробег</ion-label>
       <ion-input type="number" [(ngModel)]="maxKM" name="MaxKM" (ionInput)="validateField('maxKM')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['maxKM']" class="field-error">{{ validationErrors['maxKM'] }}</div>
+    <div *ngIf="validationErrors['maxKM']" class="field-error">{{ validationErrors['maxKM'] }}км.</div>
 
     <!-- Volume -->
     <ion-item>
-      <ion-label>Мин. обем (cc)</ion-label>
+      <ion-label>Мин. обем </ion-label>
       <ion-input type="number" [(ngModel)]="minVolume" name="MinVolume" (ionInput)="validateField('minVolume')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['minVolume']" class="field-error">{{ validationErrors['minVolume'] }}</div>
+    <div *ngIf="validationErrors['minVolume']" class="field-error">{{ validationErrors['minVolume'] }}CC</div>
     <ion-item>
-      <ion-label>Макс. обем (cc)</ion-label>
+      <ion-label>Макс. обем </ion-label>
       <ion-input type="number" [(ngModel)]="maxVolume" name="MaxVolume" (ionInput)="validateField('maxVolume')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['maxVolume']" class="field-error">{{ validationErrors['maxVolume'] }}</div>
+    <div *ngIf="validationErrors['maxVolume']" class="field-error">{{ validationErrors['maxVolume'] }}CC</div>
 
     <!-- Power -->
     <ion-item>
       <ion-label>Мин. мощност</ion-label>
       <ion-input type="number" [(ngModel)]="minPower" name="MinPower" (ionInput)="validateField('minPower')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['minPower']" class="field-error">{{ validationErrors['minPower'] }}</div>
+    <div *ngIf="validationErrors['minPower']" class="field-error">{{ validationErrors['minPower'] }}к.с.</div>
     <ion-item>
       <ion-label>Макс. мощност</ion-label>
       <ion-input type="number" [(ngModel)]="maxPower" name="MaxPower" (ionInput)="validateField('maxPower')"></ion-input>
     </ion-item>
-    <div *ngIf="validationErrors['maxPower']" class="field-error">{{ validationErrors['maxPower'] }}</div>
+    <div *ngIf="validationErrors['maxPower']" class="field-error">{{ validationErrors['maxPower'] }}к.с.</div>
 
     <!-- Color -->
     <ion-item button (click)="colorSelect.open()">
@@ -143,11 +148,6 @@
     </ion-button>
   </form>
   </ion-card-content>
-  <div class="toggle-button-container">
-    <ion-button fill="clear" shape="round" (click)="toggleFilters()">
-      {{ showFilters ? 'Скрий филтрите' : 'Покажи филтрите' }}
-    </ion-button>
-  </div>
 
   <ion-card *ngFor="let offer of filteredOffers" class="offer-item" (click)="viewOfferDetails(offer.offerId)">
     <ion-card-content class="offer-content">
