@@ -21,7 +21,7 @@ export class MaintainingPage implements OnInit {
     { label: 'Смяна на масло', value: 'Смяна на масло' },
     { label: 'Гуми', value: 'Гуми' },
     { label: 'Спирачки', value: 'Спирачки' },
-    { label: 'Акумолатор', value: 'Акумолатор' },
+    { label: 'Акумулатор', value: 'Акумулатор' },
     { label: 'Окачване', value: 'Окачване' },
     { label: 'Скоростна кутия', value: 'Скоростна кутия' },
     { label: 'Климатик', value: 'Климатик' },
