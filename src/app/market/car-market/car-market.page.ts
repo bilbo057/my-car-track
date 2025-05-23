@@ -140,76 +140,51 @@ export class CarMarketPage implements OnInit {
     this.modelModal?.dismiss();
   }
 
-  validateField(field: string) {
-    this.validationErrors[field] = '';
+validateField(field: string) {
+  const constraints: any = {
+    Year: { min: 1900, max: this.currentYear, label: 'Годината трябва да е между 1900 и ' + this.currentYear},
+    Price: { min: 0, max: 10000000, label: 'Цената трябва да е между 0 и 10 000 000'},
+    KM: { min: 0, max: 5000000, label: 'Километрите трябва да са между 0 и 5 000 000' },
+    Volume: { min: 250, max: 10000, label: 'Обемът трябва да е между 250 и 10 000' },
+    Power: { min: 30, max: 5000, label: 'Мощността трябва да е между 30 и 5 000' }
+  };
 
-    switch (field) {
-      case 'minYear':
-        if (this.minYear !== null && (this.minYear < 1900 || this.minYear > this.currentYear)) {
-          this.validationErrors['minYear'] = 'Годината трябва да е между 1900 и ' + this.currentYear;
-        }
-        if (this.minYear && this.minYear.toString().length > 4) {
-          this.validationErrors['minYear'] = 'Годината трябва да е до 4 цифри';
-        }
-        break;
-      case 'maxYear':
-        if (this.maxYear !== null && (this.maxYear < 1900 || this.maxYear > this.currentYear)) {
-          this.validationErrors['maxYear'] = 'Годината трябва да е между 1900 и ' + this.currentYear;
-        }
-        if (this.maxYear && this.maxYear.toString().length > 4) {
-          this.validationErrors['maxYear'] = 'Годината трябва да е до 4 цифри';
-        }
-        break;
-      case 'minPrice':
-        if (this.minPrice !== null && (this.minPrice < 0 || this.minPrice > 10000000)) {
-          this.validationErrors['minPrice'] = 'Цената трябва да е между 0 и 10 000 000';
-        }
-        if (this.minPrice && this.minPrice.toString().length > 10) {
-          this.validationErrors['minPrice'] = 'Цената трябва да е до 10 цифри';
-        }
-        break;
-      case 'maxPrice':
-        if (this.maxPrice !== null && (this.maxPrice < 0 || this.maxPrice > 10000000)) {
-          this.validationErrors['maxPrice'] = 'Цената трябва да е между 0 и 10 000 000';
-        }
-        if (this.maxPrice && this.maxPrice.toString().length > 10) {
-          this.validationErrors['maxPrice'] = 'Цената трябва да е до 10 цифри';
-        }
-        break;
-      case 'minKM':
-        if (this.minKM !== null && (this.minKM < 0 || this.minKM > 5000000)) {
-          this.validationErrors['minKM'] = 'Километрите трябва да са между 0 и 5 000 000';
-        }
-        break;
-      case 'maxKM':
-        if (this.maxKM !== null && (this.maxKM < 0 || this.maxKM > 5000000)) {
-          this.validationErrors['maxKM'] = 'Километрите трябва да са между 0 и 5 000 000';
-        }
-        break;
-      case 'minVolume':
-        if (this.minVolume !== null && (this.minVolume < 250 || this.minVolume > 10000)) {
-          this.validationErrors['minVolume'] = 'Обемът трябва да е между 250 и 10 000';
-        }
-        break;
-      case 'maxVolume':
-        if (this.maxVolume !== null && (this.maxVolume < 250 || this.maxVolume > 10000)) {
-          this.validationErrors['maxVolume'] = 'Обемът трябва да е между 250 и 10 000';
-        }
-        break;
-      case 'minPower':
-        if (this.minPower !== null && (this.minPower < 30 || this.minPower > 5000)) {
-          this.validationErrors['minPower'] = 'Мощността трябва да е между 30 и 5 000';
-        }
-        break;
-      case 'maxPower':
-        if (this.maxPower !== null && (this.maxPower < 30 || this.maxPower > 5000)) {
-          this.validationErrors['maxPower'] = 'Мощността трябва да е между 30 и 5 000';
-        }
-        break;
-      default:
-        break;
+  const base = field.replace(/^(min|max)/, '');
+  const val = this[field as keyof this] as number | null;
+  const minField = 'min' + base;
+  const maxField = 'max' + base;
+  const minVal = this[minField as keyof this] as number | null;
+  const maxVal = this[maxField as keyof this] as number | null;
+
+  this.validationErrors[minField] = '';
+  this.validationErrors[maxField] = '';
+
+  if (constraints[base]) {
+    // Range logic
+    if (minVal !== null && (minVal < constraints[base].min || minVal > constraints[base].max)) {
+      this.validationErrors[minField] = constraints[base].label;
+    }
+    if (maxVal !== null && (maxVal < constraints[base].min || maxVal > constraints[base].max)) {
+      this.validationErrors[maxField] = constraints[base].label;
+    }
+
+    // Digits check (Year, Price only)
+    if (constraints[base].digits) {
+      if (minVal && minVal.toString().length > constraints[base].digits) {
+        this.validationErrors[minField] = constraints[base].digitsLabel;
+      }
+      if (maxVal && maxVal.toString().length > constraints[base].digits) {
+        this.validationErrors[maxField] = constraints[base].digitsLabel;
+      }
+    }
+
+    // Cross-check
+    if (minVal && maxVal && minVal > maxVal) {
+      this.validationErrors[minField] = 'Минималната стойност не може да е по-голяма от максималната';
+      this.validationErrors[maxField] = 'Максималната стойност не може да е по-малка от минималната';
     }
   }
+}
 
   isFormValid(): boolean {
     for (const errorKey in this.validationErrors) {
