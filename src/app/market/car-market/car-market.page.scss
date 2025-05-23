@@ -18,16 +18,21 @@ ion-content {
     border-radius: 1rem;
   }
   
-  ion-label {
-    font-weight: bold;
-    color: #ffffff;
-  }
-  
-  ion-input,
-  ion-select {
-    color: #ffffff;
-    text-align: right;
-  }
+ ion-label {
+  flex: 0 0 auto;
+  white-space: nowrap;         // Prevent line break in label
+  margin-right: 1.1rem;
+  min-width: 7.2rem;           // Adjust as needed for alignment
+  font-weight: bold;
+  color: #fff;
+}
+
+ion-input, ion-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  --padding-end: 0;
+}
   
   .add-car-btn {
     --background: #256976;
