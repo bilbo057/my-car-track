@@ -2,7 +2,6 @@ ion-content {
     animation: fadeIn 3s ease-in-out;
     --padding-top: var(--ion-safe-area-top, 2rem);
 }
-  
 .section-title {
     font-size: 1.4rem;
     font-weight: bold;
@@ -11,25 +10,15 @@ ion-content {
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
     height: 100%;
 }
-  
-.custom-item {
-    background: #141414;
-    color: #ffffff;
-    border-radius: 1rem;
-    margin: 0.5rem auto;
-    width: 90%;
-}
-  
 .image-preview-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin: 1rem 1;
 }
-  
 .image-preview img {
     width: 7.5rem;
     height: 7.5rem;
@@ -38,11 +27,9 @@ ion-content {
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
 }
-  
 .image-preview img:hover {
     transform: scale(1.1);
 }
-  
 .add-car-btn {
     --background: #256976;
     --color: #ffffff;
@@ -53,44 +40,49 @@ ion-content {
     display: block;
     margin: 2rem auto;
 }
-
-::ng-deep ion-item ion-text {
-    font-weight: bold;
-    color: #ffffff;     
+ion-item {
+    --background: transparent;
+    --color: white;
+    --highlight-color-focused: #256976;
+    margin: 0.5rem 1rem;
+    border-radius: 1rem;
+    align-items: right;
+    min-height: 2rem;
 }
-
-::ng-deep ion-select::part(text) {
-    text-align: right;
-    display: block;
+ion-label {
     font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap;
+}
+ion-text[slot="end"] {
+    color: #fff;
+    font-weight: bold;
+    text-align: right;
+}
+.field-error {
+    color: #ff5252;
+    font-size: 1.08rem;
+    text-align: left;
+    margin: -0.5rem 1.5rem 0.5rem 1.5rem;
+    font-weight: 600;
+    background: transparent;
+    border-radius: 0.25rem;
+}
+ion-select {
+    min-width: 100px;
+}
+ion-input.invalid-input {
+    --highlight-color-invalid: #ff4d4d;
+    --color-invalid: #ff4d4d;
+    --border-color: #ff4d4d;
 }
 
 ::ng-deep ion-input {
     text-align: right;
     color: #ffffff;
 }
-
-    ::ng-deep ion-item {
-        padding: 0.5rem;
-    }
-
-  ion-select::part(icon) {
-    display: none;
-    width: 90%;
-  }
-
-  ion-input.invalid-input {
-    --highlight-color-invalid: #ff4d4d;
-    --color-invalid: #ff4d4d;
-    --border-color: #ff4d4d;
-  }  
-  
 /* Animations */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

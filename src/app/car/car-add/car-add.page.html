@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true">
-  <!-- Add Car Title -->
   <form (ngSubmit)="addCar()">
     <div class="section-title">Качи снимки</div>
     <ion-item>
@@ -12,14 +11,14 @@
       </div>
     </div>
 
-    <!-- Car Details Form -->
     <div class="section-title">Детайли на колата</div>
 
+    <!-- Brand -->
     <ion-item button (click)="brandModal?.present()">
       <ion-label>Марка</ion-label>
       <ion-text slot="end">{{ selectedBrand?.text || "Избери марка" }}</ion-text>
     </ion-item>
-
+    <div *ngIf="showError.brand && errors.brand" class="field-error">{{ errors.brand }}</div>
     <ion-modal #brandModal>
       <ng-template>
         <app-typeahead
@@ -27,17 +26,17 @@
           title="Избери марка"
           [items]="carBrands"
           [selectedItems]="selectedBrand ? [selectedBrand.value] : []"
-          (selectionChange)="brandSelectionChanged($event)"
-        ></app-typeahead>
+          (selectionChange)="brandSelectionChanged($event)">
+        </app-typeahead>
       </ng-template>
     </ion-modal>
 
-    <!-- Model Selection -->
+    <!-- Model -->
     <ion-item button (click)="modelModal?.present()" [disabled]="!selectedBrand">
       <ion-label>Модел</ion-label>
       <ion-text slot="end">{{ selectedModel?.text || "Избери модел" }}</ion-text>
     </ion-item>
-
+    <div *ngIf="showError.model && errors.model" class="field-error">{{ errors.model }}</div>
     <ion-modal #modelModal>
       <ng-template>
         <app-typeahead
@@ -45,8 +44,8 @@
           title="Избери модел"
           [items]="carModels"
           [selectedItems]="selectedModel ? [selectedModel.value] : []"
-          (selectionChange)="modelSelectionChanged($event)"
-        ></app-typeahead>
+          (selectionChange)="modelSelectionChanged($event)">
+        </app-typeahead>
       </ng-template>
     </ion-modal>
 
@@ -148,46 +147,57 @@
 
     <!-- Volume Input -->
     <ion-item>
-      <ion-label>Обем на двигателя (cc)</ion-label>
-      <ion-input [(ngModel)]="carData.Volume" name="Volume" type="number" min="250" max="10000" required></ion-input>
+      <ion-label>Обем на двигателя (CC)</ion-label>
+      <ion-input [(ngModel)]="carData.Volume" name="Volume" type="number" min="250" max="10000"
+        required (ionInput)="onInputChange('volume')"></ion-input>
     </ion-item>
+    <div *ngIf="showError.volume && errors.volume" class="field-error">{{ errors.volume }}</div>
 
     <!-- Power Input -->
     <ion-item>
-      <ion-label>Мощност (HP)</ion-label>
-      <ion-input [(ngModel)]="carData.Power" name="Power" type="number" min="30" max="5000" required></ion-input>
+      <ion-label>Мощност (к.с.)</ion-label>
+      <ion-input [(ngModel)]="carData.Power" name="Power" type="number" min="30" max="5000"
+        required (ionInput)="onInputChange('power')"></ion-input>
     </ion-item>
+    <div *ngIf="showError.power && errors.power" class="field-error">{{ errors.power }}</div>
 
     <!-- Current KM Input -->
     <ion-item>
-      <ion-label>Текущ километраж</ion-label>
-      <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number" min="0" max="5000000" required></ion-input>
+      <ion-label>Текущ пробег (км)</ion-label>
+      <ion-input [(ngModel)]="carData.Current_KM" name="Current_KM" type="number" min="0" max="5000000"
+        required (ionInput)="onInputChange('current_km')"></ion-input>
     </ion-item>
+    <div *ngIf="showError.current_km && errors.current_km" class="field-error">{{ errors.current_km }}</div>
 
     <!-- Price of Buying Input -->
     <ion-item>
       <ion-label>Цена на покупка</ion-label>
-      <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number" min="0" max="10000000" required></ion-input>
+      <ion-input [(ngModel)]="carData.Price_of_buying" name="Price_of_buying" type="number" min="0" max="10000000"
+        required (ionInput)="onInputChange('price')"></ion-input>
     </ion-item>
+    <div *ngIf="showError.price && errors.price" class="field-error">{{ errors.price }}</div>
 
     <!-- License Plate Input -->
     <ion-item>
       <ion-label>Регистрационен номер</ion-label>
-      <ion-input [(ngModel)]="carData.License_plate"
-                name="License_plate"
-                (ionInput)="formatLicensePlate()"
-                placeholder=""
-                required>
+      <ion-input [(ngModel)]="carData.License_plate" name="License_plate"
+        (ionInput)="onInputChange('plate'); formatLicensePlate()" placeholder="" required>
       </ion-input>
     </ion-item>
+    <div *ngIf="showError.plate && errors.plate" class="field-error">{{ errors.plate }}</div>
 
     <!-- Date Picker -->
     <ion-item>
       <ion-label>Дата</ion-label>
       <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
     </ion-item>
+    <div *ngIf="showError.year && errors.year" class="field-error">{{ errors.year }}</div>
 
     <!-- Submit Button -->
-    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">Добави кола</ion-button>
+    <ion-button expand="full" type="submit" shape="round" class="add-car-btn"
+      [disabled]="isSubmitting || !isFormValid()">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <span *ngIf="!isSubmitting">Добави кола</span>
+    </ion-button>
   </form>
 </ion-content>
