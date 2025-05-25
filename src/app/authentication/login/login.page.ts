@@ -46,6 +46,7 @@ export class LoginPage implements OnInit {
         if (userCredential.user) {
           await this.updateLastLogin(userCredential.user.uid);
           this.router.navigate(['/cars']); // Navigate to the cars page
+          setTimeout(() => {window.location.reload();}, 10);
         } else {
           this.errorMessage = 'Invalid user data.';
         }

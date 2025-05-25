@@ -1,8 +1,7 @@
-// user-settings.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { getFirestore, doc, updateDoc, deleteDoc } from '@firebase/firestore'; // Correct import for updateDoc and deleteDoc
+import { getFirestore, doc, updateDoc, deleteDoc } from '@firebase/firestore';
 import { AlertController, ToastController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
@@ -14,6 +13,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 export class UserSettingsPage implements OnInit {
   userId: string = '';
   username: string = '';
+  originalUsername: string = '';
+  isUpdating: boolean = false;
 
   private firestore = getFirestore();
 
@@ -29,55 +30,66 @@ export class UserSettingsPage implements OnInit {
     this.userId = await this.authService.getUserId();
     if (this.userId) {
       this.username = (await this.authService.getUsername()) || '';
+      this.originalUsername = this.username;
     }
   }
 
   async updateUsername() {
-    if (!this.username.trim()) {
-      this.showToast('Username cannot be empty');
+    if (!this.username.trim() || this.username === this.originalUsername) {
       return;
     }
-
+    this.isUpdating = true;
     try {
       const userDocRef = doc(this.firestore, 'Users', this.userId);
       await updateDoc(userDocRef, { username: this.username });
 
-      this.showToast('Username updated successfully');
+      setTimeout(() => {
+        window.location.reload();
+        this.showToast('Потребителското име е обновено успешно.');
+      }, 1000);
     } catch (error) {
-      console.error('Error updating username:', error);
-      this.showToast('Error updating username');
+      this.showToast('Грешка при обновяване на потребителското име.');
+      this.isUpdating = false;
     }
   }
 
   async deleteAccount() {
-    const alert = await this.alertController.create({
-      header: 'Delete Account',
-      message: 'Are you sure you want to delete your account? This action is irreversible.',
+   const alert = await this.alertController.create({
+      header: 'Изтриване на акаунт',
+      message: 'Сигурни ли сте, че искате да изтриете акаунта си? Това действие е необратимо.',
+      cssClass: 'custom-delete-alert',
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
         {
-          text: 'Delete',
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
           handler: async () => {
             try {
               await deleteDoc(doc(this.firestore, 'Users', this.userId));
               const user = await this.afAuth.currentUser;
               if (user) {
                 await user.delete();
+              } else {
+                throw new Error('Firebase authentication user not found.');
               }
-
               await this.authService.logout();
               this.router.navigate(['/login']);
-
-              this.showToast('Account deleted successfully');
-            } catch (error) {
-              console.error('Error deleting account:', error);
-              this.showToast('Error deleting account');
+              this.showToast('Акаунтът беше изтрит успешно.');
+            } catch (error: any) {
+              if (error && error.code === 'auth/requires-recent-login') {
+                this.showToast('Моля, влезте отново преди да изтриете акаунта си.');
+              } else {
+                this.showToast('Грешка при изтриване на акаунта.');
+              }
             }
           },
         },
       ],
     });
-
     await alert.present();
   }
 

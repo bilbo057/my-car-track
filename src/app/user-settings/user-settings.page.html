@@ -1,19 +1,38 @@
 <ion-content [fullscreen]="true">
-  <!-- Section Title -->
   <div class="section-title">Настройки на профила</div>
 
-  <!-- Username Input + Button -->
   <div class="inline-setting">
     <ion-label>Потребителско име:</ion-label>
-    <ion-input [(ngModel)]="username" type="text" class="settings-input"></ion-input>
+    <ion-input
+      [(ngModel)]="username"
+      type="text"
+      class="settings-input"
+      [disabled]="isUpdating"
+      style="font-size: 1.1rem;"
+    ></ion-input>
   </div>
 
-  <ion-button expand="full" shape="round" class="add-btn" (click)="updateUsername()">
-    Обнови
+  <ion-button
+    expand="full"
+    shape="round"
+    class="add-btn"
+    (click)="updateUsername()"
+    [disabled]="isUpdating || !username.trim() || username === originalUsername"
+  >
+    <ng-container *ngIf="!isUpdating; else updatingTpl">Обнови</ng-container>
+    <ng-template #updatingTpl>
+      <ion-spinner name="crescent" style="width:24px;height:24px"></ion-spinner>
+    </ng-template>
   </ion-button>
 
-
-  <ion-button expand="full" shape="round" color="danger" class="danger-btn" (click)="deleteAccount()">
+  <ion-button
+    expand="full"
+    shape="round"
+    color="danger"
+    class="danger-btn"
+    (click)="deleteAccount()"
+    [disabled]="isUpdating"
+  >
     Изтрий aкаунта
   </ion-button>
 </ion-content>
