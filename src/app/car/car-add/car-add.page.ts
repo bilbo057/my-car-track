@@ -194,19 +194,19 @@ export class CarAddPage implements OnInit {
         break;
       case 'volume':
         const v = Number(this.carData.Volume);
-        this.errors.volume = (!v || v < 250 || v > 10000) ? "Обемът трябва да е между 250 и 10 000 cc." : null;
+        this.errors.volume = (!v || v < 250 || v > 10000) ? "Обемът трябва да е от 250 до 10 000 CC." : null;
         break;
       case 'power':
         const p = Number(this.carData.Power);
-        this.errors.power = (!p || p < 30 || p > 5000) ? "Мощността трябва да е между 30 и 5 000 к.с.." : null;
+        this.errors.power = (!p || p < 30 || p > 5000) ? "Мощността трябва да е от 30 до 5 000 к.с." : null;
         break;
       case 'current_km':
         const km = Number(this.carData.Current_KM);
-        this.errors.current_km = (isNaN(km) || km < 0 || km > 5000000) ? "Километрите трябва да са между 0 и 5 000 000 км." : null;
+        this.errors.current_km = (isNaN(km) || km < 0 || km > 5000000) ? "Километрите трябва да са от 0 до 5 000 000." : null;
         break;
       case 'price':
         const pr = Number(this.carData.Price_of_buying);
-        this.errors.price = (isNaN(pr) || pr < 0 || pr > 10000000) ? "Цената трябва да бъде между 0 и 10 000 000 лв." : null;
+        this.errors.price = (isNaN(pr) || pr < 0 || pr > 10000000) ? "Цената трябва да бъде от 0 до 10 000 000 лв." : null;
         break;
       case 'plate':
         const platePattern = /^[ABEKMHOPTXCY]{1,2}\d{4}[ABEKMHOPTXCY]{1,2}$/;

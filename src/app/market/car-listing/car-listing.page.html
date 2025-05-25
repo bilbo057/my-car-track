@@ -8,8 +8,6 @@
       <button *ngIf="currentPhotoIndex > 0" (click)="previousPhoto()" class="image-nav left">❮</button>
       <button *ngIf="currentPhotoIndex < photoUrls.length - 1" (click)="nextPhoto()" class="image-nav right">❯</button>
     </div>
-
-    <!-- License Plate -->
     <div class="license-plate">
       <span class="plate-char">
         {{ carDetails.License_plate.length === 8 ? carDetails.License_plate.substring(0, 2) : carDetails.License_plate.substring(0, 1) }}
@@ -70,33 +68,47 @@
     </ion-card-content>
   </ion-card>
 
-    <!-- Price -->
-    <ion-item [class.invalid-item]="(sellingPrice === null || sellingPrice < 0 || sellingPrice > 1000000) && showValidation">
-      <ion-label>Цена</ion-label>
-      <ion-input
-        type="number"
-        [(ngModel)]="sellingPrice"
-        name="sellingPrice"
-        placeholder="Въведи цена">
-      </ion-input>
-    </ion-item>
-    <div *ngIf="sellingPrice === null && showValidation" class="error-text">Полето е задължително.</div>
-    <div *ngIf="sellingPrice !== null && (sellingPrice < 0 || sellingPrice > 1000000) && showValidation" class="error-text">
-      Стойността трябва да е между 0 и 1 000 000.
-    </div>
+  <!-- Price -->
+  <ion-item [class.invalid-item]="!isPriceValid && sellingPrice !== null">
+    <ion-label>Цена</ion-label>
+    <ion-input
+      type="number"
+      [(ngModel)]="sellingPrice"
+      name="sellingPrice"
+      placeholder="Въведи цена"
+      [disabled]="loading"
+      (ngModelChange)="validatePrice()">
+    </ion-input>
+  </ion-item>
+  <div *ngIf="sellingPrice === null && showValidation" class="error-text">Полето е задължително.</div>
+  <div *ngIf="sellingPrice !== null && !isPriceValid" class="error-text">
+    Стойността трябва да е между 0 и 10 000 000.
+  </div>
 
-    <!-- Bonus Description -->
-    <ion-item class="form-item">
-      <ion-label class="no-wrap-label">Oписание</ion-label>
-      <ion-input
+  <!-- Bonus Description -->
+  <ion-item class="form-item">
+    <ion-label class="no-wrap-label">Oписание</ion-label>
+    <ion-input
       [(ngModel)]="description"
       name="description"
-      placeholder="Въведи описание">
-      </ion-input>
-    </ion-item>
+      placeholder="Въведи описание"
+      [disabled]="loading">
+    </ion-input>
+  </ion-item>
 
-    <!-- Submit -->
-    <ion-button expand="full" shape="round" class="add-btn" (click)="confirmListing()">Потвърди</ion-button>    
+  <!-- Submit -->
+  <ion-button expand="full" shape="round" class="add-btn"
+    (click)="confirmListing()"
+    [disabled]="loading || !isPriceValid || sellingPrice === null">
+    <ng-container *ngIf="!loading; else loadingTpl">Потвърди</ng-container>
+    <ng-template #loadingTpl>
+      <ion-spinner name="crescent" style="width: 2rem; height: 2rem;"></ion-spinner>
+    </ng-template>
+  </ion-button>
+
+  <div *ngIf="listingError" class="error-text" style="text-align:center;margin-top:1rem;">
+    {{ listingError }}
+  </div>
 </ion-content>
 
 <ion-content *ngIf="!carDetails">
