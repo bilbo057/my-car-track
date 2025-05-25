@@ -1,27 +1,23 @@
 <ion-content [fullscreen]="true">
   <form (ngSubmit)="saveCar()">
+
     <!-- Section: Upload Images -->
     <div class="section-title">Качи снимки</div>
     <ion-item>
       <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
     </ion-item>
-
     <div class="image-preview-container" *ngIf="imagePreviews.length > 0">
       <div *ngFor="let preview of imagePreviews; let i = index" class="image-preview">
         <img [src]="preview" (click)="deletePhoto(i)">
       </div>
     </div>
 
-    <!-- Section: Car Details -->
-    <div class="section-title">Детайли на колата</div>
-
-    <ion-item button (click)="brandSelect.open()" [class.invalid-item]="!carDetails.Brand && showValidation">
+    <!-- Brand -->
+    <ion-item button (click)="brandSelect.open()">
       <ion-label>Марка</ion-label>
-      <ion-text slot="end">
-        {{ getBrandName(carDetails.Brand) || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ getBrandName(carDetails.Brand) || "Избери" }}</ion-text>
       <ion-select #brandSelect interface="modal" [(ngModel)]="carDetails.Brand"
-                  (ionChange)="loadModels(carDetails.Brand)"
+                  (ionChange)="loadModels(carDetails.Brand); onInputChange('brand')"
                   name="Brand" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -30,14 +26,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
-    <div *ngIf="!carDetails.Brand && showValidation" class="error-text">Полето е задължително.</div>    
+    <div *ngIf="showError.brand && errors.brand" class="error-text">{{ errors.brand }}</div>
 
-    <ion-item button (click)="modelSelect.open()" [class.invalid-item]="!carDetails.Model && showValidation">
+    <!-- Model -->
+    <ion-item button (click)="modelSelect.open()" [disabled]="!carDetails.Brand">
       <ion-label>Модел</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Model || "Избери модел" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Model || "Избери модел" }}</ion-text>
       <ion-select #modelSelect interface="modal" [(ngModel)]="carDetails.Model"
+                  (ionChange)="onInputChange('model')"
                   name="Model" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -46,15 +42,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
-    <div *ngIf="!carDetails.Model && showValidation" class="error-text">Полето е задължително.</div>    
+    <div *ngIf="showError.model && errors.model" class="error-text">{{ errors.model }}</div>
 
     <!-- Chassis Type -->
     <ion-item button (click)="chassisSelect.open()">
       <ion-label>Тип на шасито</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Chassis_type || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Chassis_type || "Избери" }}</ion-text>
       <ion-select #chassisSelect interface="modal" [(ngModel)]="carDetails.Chassis_type"
+                  (ionChange)="onInputChange('chassis')"
                   name="Chassis_type" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -63,14 +58,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.chassis && errors.chassis" class="error-text">{{ errors.chassis }}</div>
 
     <!-- Engine Type -->
     <ion-item button (click)="engineSelect.open()">
       <ion-label>Тип двигател</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Engine_type || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Engine_type || "Избери" }}</ion-text>
       <ion-select #engineSelect interface="modal" [(ngModel)]="carDetails.Engine_type"
+                  (ionChange)="onInputChange('engine')"
                   name="Engine_type" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -79,14 +74,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.engine && errors.engine" class="error-text">{{ errors.engine }}</div>
 
     <!-- Transmission Type -->
     <ion-item button (click)="transmissionSelect.open()">
       <ion-label>Скоростна кутия</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Transmission_type || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Transmission_type || "Избери" }}</ion-text>
       <ion-select #transmissionSelect interface="modal" [(ngModel)]="carDetails.Transmission_type"
+                  (ionChange)="onInputChange('transmission')"
                   name="Transmission_type" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -95,14 +90,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.transmission && errors.transmission" class="error-text">{{ errors.transmission }}</div>
 
     <!-- Color -->
     <ion-item button (click)="colorSelect.open()">
       <ion-label>Цвят</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Color || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Color || "Избери" }}</ion-text>
       <ion-select #colorSelect interface="modal" [(ngModel)]="carDetails.Color"
+                  (ionChange)="onInputChange('color')"
                   name="Color" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -111,14 +106,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.color && errors.color" class="error-text">{{ errors.color }}</div>
 
     <!-- Drive -->
     <ion-item button (click)="driveSelect.open()">
       <ion-label>Задвижване</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Drive || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Drive || "Избери" }}</ion-text>
       <ion-select #driveSelect interface="modal" [(ngModel)]="carDetails.Drive"
+                  (ionChange)="onInputChange('drive')"
                   name="Drive" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -127,14 +122,14 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.drive && errors.drive" class="error-text">{{ errors.drive }}</div>
 
     <!-- Euro Standard -->
     <ion-item button (click)="euroSelect.open()">
       <ion-label>Евро стандарт</ion-label>
-      <ion-text slot="end">
-        {{ carDetails.Euro || "Избери" }}
-      </ion-text>
+      <ion-text slot="end">{{ carDetails.Euro || "Избери" }}</ion-text>
       <ion-select #euroSelect interface="modal" [(ngModel)]="carDetails.Euro"
+                  (ionChange)="onInputChange('euro')"
                   name="Euro" [selectedText]="''" placeholder=""
                   cancelText="" okText=""
                   style="opacity: 0; height: 0; width: 0; position: center;">
@@ -143,48 +138,55 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <div *ngIf="showError.euro && errors.euro" class="error-text">{{ errors.euro }}</div>
 
     <!-- Volume -->
-    <ion-item [class.invalid-item]="(carDetails.Volume < 250 || carDetails.Volume > 10000) && showValidation">
+    <ion-item>
       <ion-label>Обем (cc)</ion-label>
-      <ion-input [(ngModel)]="carDetails.Volume" name="Volume" type="number"></ion-input>
+      <ion-input [(ngModel)]="carDetails.Volume" name="Volume" type="number" (ionInput)="onInputChange('volume')"></ion-input>
     </ion-item>
-    <div *ngIf="carDetails.Volume && (carDetails.Volume < 250 || carDetails.Volume > 10000) && showValidation" class="error-text">
-      Стойността трябва да е между 250 и 10000.
-    </div>
+    <div *ngIf="showError.volume && errors.volume" class="field-error">{{ errors.volume }}</div>
 
     <!-- Power -->
-    <ion-item [class.invalid-item]="(carDetails.Power < 30 || carDetails.Power > 5000) && showValidation">
-      <ion-label>Мощност (HP)</ion-label>
-      <ion-input [(ngModel)]="carDetails.Power" name="Power" type="number"></ion-input>
+    <ion-item>
+      <ion-label>Мощност (к.с.)</ion-label>
+      <ion-input [(ngModel)]="carDetails.Power" name="Power" type="number" (ionInput)="onInputChange('power')"></ion-input>
     </ion-item>
-    <div *ngIf="carDetails.Power && (carDetails.Power < 30 || carDetails.Power > 5000) && showValidation" class="error-text">
-      Стойността трябва да е между 30 и 5000.
-    </div>
+    <div *ngIf="showError.power && errors.power" class="field-error">{{ errors.power }}</div>
 
-    <!-- KM -->
-    <ion-item [class.invalid-item]="(carDetails.Current_KM < 0 || carDetails.Current_KM > 5000000) && showValidation">
-      <ion-label>Текущ километраж</ion-label>
-      <ion-input [(ngModel)]="carDetails.Current_KM" name="Current_KM" type="number"></ion-input>
+    <!-- Current KM -->
+    <ion-item>
+      <ion-label>Текущ пробег (км)</ion-label>
+      <ion-input [(ngModel)]="carDetails.Current_KM" name="Current_KM" type="number" (ionInput)="onInputChange('current_km')"></ion-input>
     </ion-item>
-    <div *ngIf="carDetails.Current_KM && (carDetails.Current_KM < 0 || carDetails.Current_KM > 5000000) && showValidation" class="error-text">
-      Стойността трябва да е между 0 и 5 000 000.
-    </div>
+    <div *ngIf="showError.current_km && errors.current_km" class="field-error">{{ errors.current_km }}</div>
+
+    <!-- Price of Buying -->
+    <ion-item>
+      <ion-label>Цена на покупка</ion-label>
+      <ion-input [(ngModel)]="carDetails.Price_of_buying" name="Price_of_buying" type="number" (ionInput)="onInputChange('price')"></ion-input>
+    </ion-item>
+    <div *ngIf="showError.price && errors.price" class="field-error">{{ errors.price }}</div>
 
     <!-- License Plate -->
-    <ion-item [class.invalid-item]="!carDetails.License_plate && showValidation">
+    <ion-item>
       <ion-label>Регистрационен номер</ion-label>
-      <ion-input [(ngModel)]="carDetails.License_plate" name="License_plate"></ion-input>
+      <ion-input [(ngModel)]="carDetails.License_plate" name="License_plate" (ionInput)="onInputChange('plate')" placeholder=""></ion-input>
     </ion-item>
-    <div *ngIf="!carDetails.License_plate && showValidation" class="error-text">Полето е задължително.</div>
+    <div *ngIf="showError.plate && errors.plate" class="field-error">{{ errors.plate }}</div>
 
     <!-- Date -->
     <ion-item>
       <ion-label>Дата</ion-label>
       <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
     </ion-item>
+    <div *ngIf="showError.year && errors.year" class="field-error">{{ errors.year }}</div>
 
     <!-- Save Button -->
-    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">Запази промените</ion-button>
+    <ion-button expand="full" type="submit" shape="round" class="add-car-btn"
+      [disabled]="isSubmitting || !isFormValid()">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <span *ngIf="!isSubmitting">Запази</span>
+    </ion-button>
   </form>
 </ion-content>
