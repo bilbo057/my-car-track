@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getFirestore, collection, doc, getDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { IonSelect } from '@ionic/angular';
+import { IonSelect, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-car-edit',
@@ -41,7 +41,9 @@ export class CarEditPage implements OnInit {
   private firestore = getFirestore();
   private storage = getStorage();
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  photosToDelete: string[] = [];
+
+  constructor(private route: ActivatedRoute, private router: Router, private alertController: AlertController) {}
 
   async ngOnInit() {
     this.route.paramMap.subscribe(async (params) => {
@@ -82,6 +84,7 @@ export class CarEditPage implements OnInit {
     if (carSnapshot.exists()) {
       this.carDetails = carSnapshot.data();
       if (this.carDetails.photoNames) {
+        this.imagePreviews = [];
         this.existingImages = [];
         for (const name of this.carDetails.photoNames) {
           const url = await getDownloadURL(ref(this.storage, `car_images/${name}`));
@@ -167,16 +170,30 @@ export class CarEditPage implements OnInit {
   }
 
   async deletePhoto(index: number) {
-    const fileName = this.existingImages[index];
-    const imageRef = ref(this.storage, `car_images/${fileName}`);
-    try {
-      await deleteObject(imageRef);
-      this.existingImages.splice(index, 1);
-      this.imagePreviews.splice(index, 1);
-      await updateDoc(doc(this.firestore, 'Cars', this.carId), {
-        photoNames: this.existingImages
-      });
-    } catch {}
+    const alert = await this.alertController.create({
+      header: 'Изтриване на снимка',
+      message: 'Сигурни ли сте, че искате да премахнете тази снимка? Тя ще бъде изтрита завинаги при запазване на промените.',
+      cssClass: 'custom-car-delete-alert',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
+          handler: () => {
+            const fileName = this.existingImages[index];
+            this.photosToDelete.push(fileName);
+            this.existingImages.splice(index, 1);
+            this.imagePreviews.splice(index, 1);
+            this.carDetails.photoNames = this.existingImages;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   onDateChange(event: string) {
@@ -282,6 +299,7 @@ export class CarEditPage implements OnInit {
         ...this.carDetails,
         photoNames: this.existingImages
       });
+      await this.deleteStackedPhotos();
       this.isSubmitting = false;
       this.router.navigate(['/car-details', this.carId]);
     }, 2000);
@@ -297,6 +315,18 @@ export class CarEditPage implements OnInit {
       this.imagePreviews.push(await getDownloadURL(fileRef));
     }
     await updateDoc(doc(this.firestore, 'Cars', this.carId), { photoNames: this.existingImages });
+  }
+
+  private async deleteStackedPhotos() {
+    for (const fileName of this.photosToDelete) {
+      try {
+        const imageRef = ref(this.storage, `car_images/${fileName}`);
+        await deleteObject(imageRef);
+      } catch (e) {
+        // log or ignore errors if photo is already deleted
+      }
+    }
+    this.photosToDelete = [];
   }
 
   // --- Date format helpers ---
