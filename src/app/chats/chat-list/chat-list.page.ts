@@ -9,7 +9,7 @@ import {
   getDocs,
   doc,
   getDoc,
-  setDoc // ✅ IMPORTED
+  setDoc 
 } from 'firebase/firestore';
 
 @Component({
@@ -90,7 +90,7 @@ export class ChatListPage implements OnInit {
     if (existingChat) {
       this.router.navigate(['/chat', existingChat.id]);
     } else {
-      const newChatRef = doc(chatsRef); // ✅ generate new doc ref
+      const newChatRef = doc(chatsRef);
       await setDoc(newChatRef, {
         participants: [this.currentUserId, userId],
         lastMessage: '',

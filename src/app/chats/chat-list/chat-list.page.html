@@ -16,10 +16,12 @@
   </ion-card>
 
   <!-- Existing Chats -->
-  <ion-card *ngFor="let chat of chats" class="custom-item" (click)="openChat(chat.id)">
-    <ion-card-content>
-      <p class="chat-username">{{ '@' + chat.otherUsername }}</p>
-      <p class="chat-time">{{ chat.lastMessageTimestamp?.toDate() | date: 'short' }}</p>
-    </ion-card-content>
-  </ion-card>
-</ion-content>
+  <ng-container *ngIf="!searchQuery.trim()">
+    <ion-card *ngFor="let chat of chats" class="custom-item" (click)="openChat(chat.id)">
+      <ion-card-content>
+        <p class="chat-username">{{ '@' + chat.otherUsername }}</p>
+        <p class="chat-time">{{ chat.lastMessageTimestamp?.toDate() | date: 'short' }}</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+
