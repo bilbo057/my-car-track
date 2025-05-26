@@ -283,7 +283,7 @@ export class CarEditPage implements OnInit {
         photoNames: this.existingImages
       });
       this.isSubmitting = false;
-      this.router.navigate(['/cars']);
+      this.router.navigate(['/car-details', this.carId]);
     }, 2000);
   }
 
