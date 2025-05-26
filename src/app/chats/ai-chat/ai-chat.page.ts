@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -8,7 +8,12 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./ai-chat.page.scss'],
 })
 export class AiChatPage {
-  messages: { role: 'user' | 'assistant'; content: string }[] = [];
+  messages: { role: 'user' | 'assistant'; content: string }[] = [
+    {
+      role: 'assistant',
+      content: 'Това е вашият асистент с изкуствен интелект. Можете да задавате въпроси, свързани с коли, разходи, поддръжка, или българско законодателство.'
+    }
+  ];
   userInput: string = '';
 
   constructor(private http: HttpClient) {}
@@ -24,7 +29,6 @@ export class AiChatPage {
 
   async queryGemini() {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${environment.geminiApiKey}`;
-    
     const payload = {
       contents: [
         {
@@ -45,7 +49,7 @@ export class AiChatPage {
       console.error('Gemini API error:', error);
       this.messages.push({
         role: 'assistant',
-        content: '⚠️ Възникна грешка при заявката. Моля, опитайте отново.',
+        content: 'Възникна грешка при заявката. Моля, опитайте отново.',
       });
     }
   }
