@@ -1,9 +1,8 @@
-// car-details.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
-import { getStorage, ref, getDownloadURL, deleteObject  } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL, deleteObject } from 'firebase/storage';
 
 interface User {
   UID: string;
@@ -61,14 +60,12 @@ export class CarDetailsPage implements OnInit {
       const carDoc = await this.firestore.collection('Cars').doc(this.carId).get().toPromise();
       if (carDoc && carDoc.exists) {
         this.carDetails = carDoc.data();
-        
         if (this.carDetails.photoNames && this.carDetails.photoNames.length > 0) {
           const firstPhotoName = this.carDetails.photoNames[0];
           this.carDetails.photoUrl = await this.getImageUrl(firstPhotoName);
         } else {
           this.carDetails.photoUrl = 'assets/img/default-car.png'; 
         }
-
         if (this.carDetails.Date_added) {
           const rawDate = this.carDetails.Date_added;
           const formattedDate = this.formatDate(rawDate);
@@ -117,11 +114,9 @@ export class CarDetailsPage implements OnInit {
     if (isNaN(parsedDate.getTime())) {
       return 'Invalid Date'; 
     }
-
     const day = parsedDate.getDate().toString().padStart(2, '0');
     const month = (parsedDate.getMonth() + 1).toString().padStart(2, '0'); 
     const year = parsedDate.getFullYear();
-  
     return `${day}-${month}-${year}`;
   }
  
@@ -130,7 +125,6 @@ export class CarDetailsPage implements OnInit {
       await this.loadMonthlySpending();
       await this.loadYearlySpending();
       await this.loadAllTimeSpending();
-  
       this.carDetails.spentThisMonth = this.spentThisMonth;
       this.carDetails.averageSpentThisMonth = this.averageSpentPerMonth;
       this.carDetails.spentThisYear = this.spentThisYear;
@@ -145,31 +139,25 @@ export class CarDetailsPage implements OnInit {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
       const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-  
       const monthlySpendingSnapshot = await this.firestore
         .collection('Monthly_Spending', (ref) => ref.where('carID', '==', this.carId))
         .get()
         .toPromise();
-  
       if (monthlySpendingSnapshot && !monthlySpendingSnapshot.empty) {
         let monthlySpendingValues: number[] = [];
-  
         monthlySpendingSnapshot.docs.forEach((doc) => {
           const data = doc.data() as SpendingData;
           if (data?.spentsThisPeriod !== undefined) {
             monthlySpendingValues.push(data.spentsThisPeriod);
           }
         });
-  
         this.averageSpentPerMonth =
           monthlySpendingValues.length > 0
             ? monthlySpendingValues.reduce((sum, value) => sum + value, 0) / monthlySpendingValues.length
             : 0;
-  
         const currentMonthDoc = monthlySpendingSnapshot.docs.find((doc) =>
           doc.id.includes(`${currentYear}-${currentMonth}`)
         );
-  
         this.spentThisMonth = currentMonthDoc
           ? (currentMonthDoc.data() as SpendingData)?.spentsThisPeriod ?? 0
           : 0;
@@ -185,13 +173,11 @@ export class CarDetailsPage implements OnInit {
   private async loadYearlySpending() {
     try {
       const currentYear = new Date().getFullYear();
-  
       const yearlyDocSnap = await this.firestore
         .collection('Yearly_Spending')
         .doc(`${this.carId}_${currentYear}`)
         .get()
         .toPromise();
-  
       this.spentThisYear = yearlyDocSnap?.exists
         ? (yearlyDocSnap.data() as SpendingData)?.spentsThisPeriod ?? 0
         : 0;
@@ -207,7 +193,6 @@ export class CarDetailsPage implements OnInit {
         .doc(this.carId)
         .get()
         .toPromise();
-  
       this.totalSpent = allTimeDocSnap?.exists
         ? (allTimeDocSnap.data() as SpendingData)?.spentsThisPeriod ?? 0
         : 0;
@@ -285,7 +270,8 @@ export class CarDetailsPage implements OnInit {
     } else {
       console.error('Car ID is missing. Unable to navigate to the refueling page.');
     }
-  }goToCarListing() {
+  }
+  goToCarListing() {
     if (this.carId) {
       this.router.navigate([`/car-listing`, { carId: this.carId }]);
     } else {
@@ -293,130 +279,11 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
-  async showAddUserPopup() {
-    const alert = await this.alertController.create({
-      header: 'Add User',
-      inputs: [
-        {
-          name: 'Поре',
-          type: 'text',
-          placeholder: 'Потребителско име',
-        },
-      ],
-      buttons: [
-        {
-          text: 'Отказ',
-          role: 'cancel',
-        },
-        {
-          text: 'Добави',
-          handler: async (data) => {
-            if (data.username) {
-              await this.addUserToCar(data.username);
-            }
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  async addUserToCar(username: string) {
-    try {
-      const userSnapshot = await this.firestore.collection('Users', (ref) =>
-        ref.where('username', '==', username)
-      ).get().toPromise();
-
-      if (userSnapshot && !userSnapshot.empty) {
-        const userDoc = userSnapshot.docs[0].data() as User;
-
-        const userCarCollectionRef = this.firestore.collection('User_car');
-        await userCarCollectionRef.add({
-          UserID: userDoc.UID,
-          CarID: this.carId,
-        });
-        console.log('User added to car successfully');
-      } else {
-        console.error('User not found');
-      }
-    } catch (error) {
-      console.error('Error adding user to car:', error);
-    }
-  }
-
-  async transferOwnership() {
-    const alert = await this.alertController.create({
-      header: 'Прехвърли собствеността',
-      inputs: [
-        {
-          name: 'username',
-          type: 'text',
-          placeholder: 'Въведи потребителско име на новия собственик',
-        },
-        {
-          name: 'licensePlate',
-          type: 'text',
-          placeholder: 'Потвърдете регистрационния номер',
-        },
-      ],
-      buttons: [
-        {
-          text: 'Отказ',
-          role: 'cancel',
-        },
-        {
-          text: 'Прехвърли',
-          handler: async (data) => {
-            if (data.username && data.licensePlate === this.carDetails.License_plate) {
-              await this.executeTransferOwnership(data.username);
-            } else {
-              console.error('License plate verification failed');
-            }
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  async executeTransferOwnership(username: string) {
-    try {
-      const userSnapshot = await this.firestore.collection('Users', (ref) =>
-        ref.where('username', '==', username)
-      ).get().toPromise();
-
-      if (userSnapshot && !userSnapshot.empty) {
-        const newOwnerDoc = userSnapshot.docs[0].data() as User;
-
-        const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
-          ref.where('CarID', '==', this.carId)
-        ).get().toPromise();
-
-        if (userCarSnapshot && !userCarSnapshot.empty) {
-          const batch = this.firestore.firestore.batch();
-
-          userCarSnapshot.docs.forEach((doc) => {
-            batch.delete(doc.ref);
-          });
-
-          const userCarCollectionRef = this.firestore.collection('User_car').ref;
-          batch.set(userCarCollectionRef.doc(), {
-            UserID: newOwnerDoc.UID,
-            CarID: this.carId,
-          });
-
-          const carRef = this.firestore.collection('Cars').doc(this.carId).ref;
-          batch.update(carRef, { UserID: newOwnerDoc.UID });
-
-          await batch.commit();
-          console.log('Ownership transferred successfully');
-          this.router.navigate(['/cars']);
-        }
-      } else {
-        console.error('New owner not found');
-      }
-    } catch (error) {
-      console.error('Error transferring ownership:', error);
+  goToAccessOwnership() {
+    if (this.carId) {
+      this.router.navigate(['/access-ownership', this.carId]);
+    } else {
+      console.error('Car ID is missing. Unable to navigate.');
     }
   }
 
@@ -456,7 +323,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const offersCollection = this.firestore.collection('Offers');
       const offersQuerySnapshot = await offersCollection.ref.where('CarID', '==', this.carId).get();
-  
       if (!offersQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         offersQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -473,13 +339,11 @@ export class CarDetailsPage implements OnInit {
         if (!this.carDetails.photoNames || this.carDetails.photoNames.length === 0) {
             return;
         }
-
         const storage = getStorage();
         const deletePromises = this.carDetails.photoNames.map(async (fileName: string) => {
             const imageRef = ref(storage, `car_images/${fileName}`);
             await deleteObject(imageRef);
         });
-
         await Promise.all(deletePromises);
         console.log('All car images deleted successfully.');
     } catch (error) {
@@ -491,7 +355,6 @@ export class CarDetailsPage implements OnInit {
     try {
         const monthlySpendingCollection = this.firestore.collection('Monthly_Spending');
         const querySnapshot = await monthlySpendingCollection.ref.where('carID', '==', this.carId).get();
-
         if (!querySnapshot.empty) {
             const batch = this.firestore.firestore.batch();
             querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -507,7 +370,6 @@ export class CarDetailsPage implements OnInit {
       try {
           const yearlySpendingCollection = this.firestore.collection('Yearly_Spending');
           const querySnapshot = await yearlySpendingCollection.ref.where('carID', '==', this.carId).get();
-
           if (!querySnapshot.empty) {
               const batch = this.firestore.firestore.batch();
               querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -523,7 +385,6 @@ export class CarDetailsPage implements OnInit {
       try {
           const allTimeSpendingCollection = this.firestore.collection('All_Time_Spending');
           const querySnapshot = await allTimeSpendingCollection.ref.where('carID', '==', this.carId).get();
-
           if (!querySnapshot.empty) {
               const batch = this.firestore.firestore.batch();
               querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -539,7 +400,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const checksCollection = this.firestore.collection('YearlyVehicleCheck');
       const checksQuerySnapshot = await checksCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!checksQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         checksQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -555,7 +415,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const insuranceCollection = this.firestore.collection('VehicleInsurance');
       const insuranceQuerySnapshot = await insuranceCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!insuranceQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         insuranceQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -571,7 +430,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const tollTaxCollection = this.firestore.collection('TollTax');
       const tollTaxQuerySnapshot = await tollTaxCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!tollTaxQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         tollTaxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -587,7 +445,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const expensesCollection = this.firestore.collection('AnotherExpenses');
       const expensesQuerySnapshot = await expensesCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!expensesQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         expensesQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -603,7 +460,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const refuelingCollection = this.firestore.collection('Refueling');
       const refuelingQuerySnapshot = await refuelingCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!refuelingQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         refuelingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -619,7 +475,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const mechanicalBillsCollection = this.firestore.collection('MechanicalBills');
       const mechanicalBillsQuerySnapshot = await mechanicalBillsCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!mechanicalBillsQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         mechanicalBillsQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -635,7 +490,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const maintainingCollection = this.firestore.collection('Maintaining');
       const maintainingQuerySnapshot = await maintainingCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!maintainingQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         maintainingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -652,7 +506,6 @@ export class CarDetailsPage implements OnInit {
       const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
         ref.where('CarID', '==', this.carId)
       ).get().toPromise();
-
       if (userCarSnapshot?.empty === false) {
         const batch = this.firestore.firestore.batch();
         userCarSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
@@ -668,7 +521,6 @@ export class CarDetailsPage implements OnInit {
     try {
       const taxCollection = this.firestore.collection('AnnualTax');
       const taxQuerySnapshot = await taxCollection.ref.where('carId', '==', this.carId).get();
-  
       if (!taxQuerySnapshot.empty) {
         const batch = this.firestore.firestore.batch();
         taxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));

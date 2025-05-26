@@ -1,0 +1,288 @@
+ion-content {
+  animation: fadeIn 0.5s ease-in-out;
+  background: #141414;
+  padding: 2rem 1rem;
+}
+
+.custom-item {
+  background: #141414;
+  color: #ffffff;
+  border-radius: 1rem;
+  margin: 1rem auto;
+  width: 90%;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+.centered-email {
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 1.2rem 0 1.2rem 0;
+  color: #fff;
+  font-weight: 500;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+}
+
+ion-card-content p {
+  margin: 0.5rem 0;
+}
+
+ion-button[color="danger"] {
+  --background: #ff4d4d;
+  --color: #fff;
+  border-radius: 2rem;
+  margin-top: 1rem;
+}
+
+.ownership-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  width: 85%;
+  max-width: 32rem;
+  margin: 0 auto 2.5rem auto;
+}
+
+.car-details-mini {
+  background: #1d1d1d;
+  border-radius: 1rem;
+  padding: 1.3rem 1.5rem;
+  width: 90%;
+  margin: 2rem auto 1.5rem auto;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.car-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.car-info-row .label {
+  font-weight: bold;
+  color: #aaa;
+  margin-right: 1rem;
+}
+
+.car-info-row .value {
+  color: #fff;
+  font-weight: bold;
+}
+
+.ownership-actions {
+  width: 90%;
+  margin: 0 auto 1.7rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  margin: 2.2rem 0 1.1rem 0;
+}
+
+.add-btn,
+.danger-btn {
+  height: 3.5rem;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: block;
+  text-transform: uppercase;
+  border-radius: 2rem;
+}
+
+.add-btn {
+  --background: #256976;
+  --color: #ffffff;
+}
+
+.danger-btn {
+  --background: #ff4d4d;
+  --color: #ffffff;
+}
+
+.car-details-mini {
+  background: #1d1d1d;
+  border-radius: 1.2rem;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  color: #fff;
+  width: 85%;
+  max-width: 32rem;
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+}
+
+.car-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  font-size: 1.18rem;
+}
+
+.label {
+  color: #aaa;
+  font-weight: 600;
+}
+
+.value {
+  color: #fff;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Custom alert styles for popups (use .custom-delete-alert for consistency) */
+::ng-deep .custom-delete-alert .alert-wrapper {
+  background: #141414 !important;
+  color: #fff !important;
+  border-radius: 1.2rem !important;
+  box-shadow: 0 0.13rem 1.5rem 0 rgba(0,0,0,0.88) !important;
+  padding: 2.2rem 1.5rem 2.7rem 1.5rem !important;
+  min-width: 25rem !important;
+  max-width: 25rem !important;
+  width: 25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+::ng-deep .custom-delete-alert .alert-title,
+::ng-deep .custom-delete-alert .alert-head {
+  width: 100%;
+  font-size: 1.8rem !important;
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto 0.5rem auto !important;
+  display: flex !important;
+}
+
+::ng-deep .custom-delete-alert .alert-message {
+  color: #fff !important;
+  font-size: 1.13rem !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  margin: 1.2rem auto 1.3rem auto !important;
+  line-height: 1.44;
+  width: 100%;
+  display: block;
+}
+
+::ng-deep .custom-delete-alert .alert-button-group {
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2rem !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  display: flex !important;
+}
+
+::ng-deep .custom-delete-alert .alert-button,
+::ng-deep .custom-delete-alert .alert-cancel-btn,
+::ng-deep .custom-delete-alert .alert-delete-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border-radius: 2rem !important;
+  overflow: hidden !important;
+  width: 10rem !important;
+  height: 3.5rem !important;
+  font-size: 1.15rem !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04rem !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+::ng-deep .custom-delete-alert .alert-cancel-btn {
+  background: #256976 !important;
+  color: #fff !important;
+  --background: #256976 !important;
+  --color: #fff !important;
+}
+::ng-deep .custom-delete-alert .alert-delete-btn {
+  background: #ff4d4d !important;
+  color: #fff !important;
+  --background: #ff4d4d !important;
+  --color: #fff !important;
+}
+
+/* Universal span/text centering inside the buttons */
+::ng-deep .custom-delete-alert .alert-button * ,
+::ng-deep .custom-delete-alert .alert-cancel-btn * ,
+::ng-deep .custom-delete-alert .alert-delete-btn * {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+::ng-deep .custom-delete-alert .alert-button .button-inner,
+::ng-deep .custom-delete-alert .alert-cancel-btn .button-inner,
+::ng-deep .custom-delete-alert .alert-delete-btn .button-inner {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 3.5rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+::ng-deep .custom-delete-alert .alert-button .button-inner > span,
+::ng-deep .custom-delete-alert .alert-cancel-btn .button-inner > span,
+::ng-deep .custom-delete-alert .alert-delete-btn .button-inner > span {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+::ng-deep .custom-delete-alert .alert-input-group {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+::ng-deep .custom-delete-alert .alert-message {
+  margin-bottom: 0.6rem !important; /* reduce from 1.3rem */
+}
+
+::ng-deep .custom-delete-alert .alert-input {
+  margin-bottom: 0.5rem !important;
+  font-size: 1.13rem !important;
+  text-align: center !important;
+}

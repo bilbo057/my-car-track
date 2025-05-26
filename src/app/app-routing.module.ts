@@ -112,8 +112,10 @@ const routes: Routes = [
     path: 'ai-chat',
     loadChildren: () => import('./chats/ai-chat/ai-chat.module').then( m => m.AiChatPageModule)
   },
-
-
+  {
+    path: 'access-ownership/:carId',
+    loadChildren: () => import('./car/access-ownership/access-ownership.module').then(m => m.AccessOwnershipPageModule)
+  },
 ];
 
 @NgModule({
