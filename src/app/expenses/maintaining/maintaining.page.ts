@@ -1,7 +1,18 @@
-//maintaining.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  getDoc,
+  updateDoc
+} from 'firebase/firestore';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-maintaining',
@@ -11,11 +22,11 @@ import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc
 export class MaintainingPage implements OnInit {
   carId: string = '';
   maintainingDocuments: any[] = [];
-  maintainingData: any = { type: '', cost: '', date: '', description: '' };
+  maintainingData: any = { type: '', cost: null, date: '', description: '' };
   showForm: boolean = false;
-  showValidation: boolean = false;
-
-  private firestore = getFirestore();
+  showError: any = { type: false, cost: false };
+  isAdding: boolean = false;
+  disableSaveBtn: boolean = false;
 
   maintainingOptions = [
     { label: 'Смяна на масло', value: 'Смяна на масло' },
@@ -28,26 +39,77 @@ export class MaintainingPage implements OnInit {
     { label: 'Разширено обслужване', value: 'Разширено обслужване' }
   ];
 
-  constructor(private route: ActivatedRoute) {}
+  private firestore = getFirestore();
+
+  constructor(
+    private route: ActivatedRoute,
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
+  ) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
+    this.initValidation();
     if (this.carId) {
       await this.loadMaintainingRecords();
     }
+    this.setTodayIfNoDate();
   }
 
-  validateForm(): boolean {
-    this.showValidation = true;
-  
-    const { type, cost, date } = this.maintainingData;
-  
-    const isTypeValid = !!type;
-    const isCostValid = cost !== null && cost !== '' && +cost >= 0 && +cost <= 5000;
-    const isDateValid = !!date;
-  
-    return isTypeValid && isCostValid && isDateValid;
-  }  
+  setTodayIfNoDate() {
+    if (!this.maintainingData.date) {
+      this.maintainingData.date = this.formatDateToInput(new Date());
+    }
+  }
+
+  formatDateToInput(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dd = date.getDate().toString().padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  onInputChange(field: string) {
+    this.showError[field] = !this.isFieldValid(field);
+  }
+
+  isFieldValid(field: string): boolean {
+    switch (field) {
+      case 'type':
+        return !!this.maintainingData.type;
+      case 'cost':
+        return this.maintainingData.cost !== null && this.maintainingData.cost !== '' && +this.maintainingData.cost >= 0 && +this.maintainingData.cost <= 100000;
+      case 'date':
+        return !!this.maintainingData.date;
+      default:
+        return true;
+    }
+  }
+
+  isFormValid(): boolean {
+    return (
+      this.isFieldValid('type') &&
+      this.isFieldValid('cost')
+      // Date is optional for locking the button!
+    );
+  }
+
+  getSelectedTypeLabel(): string {
+    const found = this.maintainingOptions.find(option => option.value === this.maintainingData.type);
+    return found ? found.label : 'Избери';
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (this.showForm && !this.maintainingData.date) {
+      this.setTodayIfNoDate();
+    }
+    this.initValidation();
+  }
+
+  initValidation() {
+    this.showError = { type: false, cost: false };
+  }
 
   private async loadMaintainingRecords() {
     try {
@@ -64,53 +126,73 @@ export class MaintainingPage implements OnInit {
   }
 
   async addMaintainingRecord() {
-    if (!this.validateForm()) return;
-  
+    Object.keys(this.showError).forEach(k => this.showError[k] = !this.isFieldValid(k));
+    if (!this.isFormValid()) return;
+
+    this.isAdding = true;
+    this.disableSaveBtn = true;
     try {
-      const formattedDate = this.formatDate(this.maintainingData.date);
-  
+      const formattedDate = this.maintainingData.date ? this.maintainingData.date : this.formatDateToInput(new Date());
+
       const maintainingCollection = collection(this.firestore, 'Maintaining');
       await addDoc(maintainingCollection, {
         carId: this.carId,
         type: this.maintainingData.type,
         cost: +this.maintainingData.cost,
         date: formattedDate,
-        description: this.maintainingData.bonusDescription || ''
+        description: this.maintainingData.description || ''
       });
-  
+
       await this.updateSpending(+this.maintainingData.cost);
-  
-      this.maintainingData = { type: '', cost: '', date: '', description: '' };
+
+      this.maintainingData = { type: '', cost: null, date: this.formatDateToInput(new Date()), description: '' };
       this.showForm = false;
-      this.showValidation = false;
+      this.initValidation();
       await this.loadMaintainingRecords();
     } catch (error) {
       console.error('Error adding maintaining record:', error);
-    }
-  }  
-
-  async deleteMaintainingRecord(recordId: string) {
-    try {
-      const record = this.maintainingDocuments.find((r) => r.id === recordId);
-      if (record) {
-        await this.updateSpending(-record.cost);
-      }
-  
-      const maintainingDoc = doc(this.firestore, 'Maintaining', recordId);
-      await deleteDoc(maintainingDoc);
-  
-      // Remove from the local list
-      this.maintainingDocuments = this.maintainingDocuments.filter((record) => record.id !== recordId);
-      console.log('Maintaining record deleted:', recordId);
-    } catch (error) {
-      console.error('Error deleting maintaining record:', error);
+    } finally {
+      setTimeout(() => {
+        this.disableSaveBtn = false;
+      }, 1500);
+      this.isAdding = false;
     }
   }
 
-  getSelectedTypeLabel(): string {
-    const found = this.maintainingOptions.find(option => option.value === this.maintainingData.type);
-    return found ? found.label : 'Избери';
-  }  
+  async deleteMaintainingRecord(recordId: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Потвърди изтриване',
+      message: 'Сигурни ли сте, че искате да изтриете тази поддръжка?',
+      cssClass: 'custom-delete-alert',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
+          handler: async () => {
+            try {
+              const record = this.maintainingDocuments.find((r) => r.id === recordId);
+              if (record) {
+                await this.updateSpending(-record.cost);
+              }
+
+              const maintainingDoc = doc(this.firestore, 'Maintaining', recordId);
+              await deleteDoc(maintainingDoc);
+
+              this.maintainingDocuments = this.maintainingDocuments.filter((record) => record.id !== recordId);
+            } catch (error) {
+              console.error('Error deleting maintaining record:', error);
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
   private formatDate(date: string): string {
     const parsedDate = new Date(date);
@@ -118,10 +200,6 @@ export class MaintainingPage implements OnInit {
       .getDate()
       .toString()
       .padStart(2, '0')}`;
-  }
-
-  toggleForm() {
-    this.showForm = !this.showForm;
   }
 
   private async updateSpending(amount: number) {

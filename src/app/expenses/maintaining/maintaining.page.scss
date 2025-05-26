@@ -1,78 +1,213 @@
 ion-content {
-    --background: #1D1D1D;
-    animation: fadeIn 3s ease-in-out;
-    --padding-top: var(--ion-safe-area-top, 2rem);
+  animation: fadeIn 3s ease-in-out;
+  --padding-top: var(--ion-safe-area-top, 2rem);
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 1rem 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.custom-item {
+  background: #141414;
+  color: #ffffff;
+  border-radius: 1rem;
+  margin: 0.5rem auto;
+  width: 90%;
+}
+
+ion-item {
+  --background: transparent;
+  --color: white;
+  --highlight-color-focused: #256976;
+  --highlight-color: #256976;
+  margin-bottom: 1rem;
+}
+
+ion-input,
+ion-datetime,
+ion-select,
+ion-textarea {
+  text-align: right;
+  color: #ffffff;
+}
+
+.add-btn {
+  --background: #256976;
+  --color: #ffffff;
+  height: 4rem;
+  font-size: large;
+  font-weight: bold;
+  width: 70%;
+  display: block;
+  margin: 2rem auto;
+  border-radius: 2rem;
+}
+
+ion-button[color="danger"] {
+  --background: #ff4d4d;
+}
+
+.error-text {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  text-align: right;
+  margin: 0 1.2rem 0.5rem auto;
+}
+
+.invalid-item {
+  --highlight-color-invalid: #ff4d4d;
+  --color: #ff4d4d;
+}
+
+.collapsible-section {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.collapsible-section.open {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+::ng-deep .custom-delete-alert .alert-wrapper {
+    background: #141414 !important;
+    color: #fff !important;
+    border-radius: 1.2rem !important;
+    box-shadow: 0 2px 24px 0 rgba(0,0,0,0.88) !important;
+    padding: 2.2rem 1.5rem 2.7rem 1.5rem !important;
+    min-width: 25rem !important;
+    max-width: 25rem !important;
+    width: 25rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
-  
-  .section-title {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #ffffff;
-    margin: 1rem 0;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+
+  ::ng-deep .custom-delete-alert .alert-head,
+  ::ng-deep .custom-delete-alert .alert-title {
+    width: 100%;
+    font-size: 1.8rem;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
-  
-  .custom-item {
-    background: #141414;
-    color: #ffffff;
-    border-radius: 1rem;
-    margin: 0.5rem auto;
-    width: 90%;
-  }
-  
-  ion-item {
-    --background: transparent;
-    --color: white;
-    --highlight-color-focused: #256976;
-    --highlight-color: #256976;
-    margin-bottom: 1rem;
-  }
-  
-  ion-input,
-  ion-datetime,
-  ion-select,
-  ion-textarea {
-    text-align: right;
-    color: #ffffff;
-  }
-  
-  .add-btn {
-    --background: #256976;
-    --color: #ffffff;
-    height: 4rem;
-    font-size: large;
-    font-weight: bold;
-    width: 70%;
+
+  ::ng-deep .custom-delete-alert .alert-message {
+    color: #fff !important;
+    font-size: 1.13rem !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    margin: 1.2rem auto 1.3rem auto !important;
+    line-height: 1.44;
+    width: 100%;
     display: block;
-    margin: 2rem auto;
   }
-  
-  ion-button[color="danger"] {
-    --background: #ff4d4d;
+
+  ::ng-deep .custom-delete-alert .alert-button-group {
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2rem !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
   }
-  
-  .error-text {
-    color: #ff4d4d;
-    font-size: 0.9rem;
-    text-align: right;
-    margin: 0 1.2rem 0.5rem auto;
-  }
-  
-  .invalid-item {
-    --highlight-color-invalid: #ff4d4d;
-    --color: #ff4d4d;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
+
+  ::ng-deep .custom-delete-alert .alert-button,
+::ng-deep .custom-delete-alert .alert-cancel-btn,
+::ng-deep .custom-delete-alert .alert-delete-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border-radius: 2rem !important;
+  overflow: hidden !important;
+  width: 10rem !important;
+  height: 3.5rem !important;
+  font-size: 1.15rem !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04rem !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+::ng-deep .custom-delete-alert .alert-cancel-btn {
+  background: #256976 !important;
+  color: #fff !important;
+  --background: #256976 !important;
+  --color: #fff !important;
+}
+
+::ng-deep .custom-delete-alert .alert-delete-btn {
+  background: #ff4d4d !important;
+  color: #fff !important;
+  --background: #ff4d4d !important;
+  --color: #fff !important;
+}
+
+/* The actual magic: target ALL spans inside the button, direct or nested */
+::ng-deep .custom-delete-alert .alert-button * ,
+::ng-deep .custom-delete-alert .alert-cancel-btn *,
+::ng-deep .custom-delete-alert .alert-delete-btn * {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+/* Center direct and nested span content */
+::ng-deep .custom-delete-alert .alert-button .button-inner,
+::ng-deep .custom-delete-alert .alert-cancel-btn .button-inner,
+::ng-deep .custom-delete-alert .alert-delete-btn .button-inner {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 3.5rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+::ng-deep .custom-delete-alert .alert-button .button-inner > span,
+::ng-deep .custom-delete-alert .alert-cancel-btn .button-inner > span,
+::ng-deep .custom-delete-alert .alert-delete-btn .button-inner > span {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+::ng-deep .custom-delete-alert .alert-delete-btn {
+  background: #ff4d4d !important;
+  color: #fff !important;
+  --background: #ff4d4d !important;
+  --color: #fff !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

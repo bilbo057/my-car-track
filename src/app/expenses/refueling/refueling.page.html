@@ -1,91 +1,88 @@
 <ion-content [fullscreen]="true">
-  <!-- Toggle Form Button -->
   <ion-button expand="full" shape="round" (click)="toggleForm()" class="add-btn">
     {{ showForm ? 'Скрий формата' : 'Добави зареждане' }}
   </ion-button>
 
-  <!-- Refueling Form Section -->
   <div *ngIf="showForm">
     <form (ngSubmit)="addRefuelingRecord()">
-        <ion-card-content>
+      <ion-card-content>
+        <!-- Fuel Quantity -->
+        <ion-item [class.invalid-item]="showError.fuelQuantity">
+          <ion-label>Литри гориво</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="refuelingData.fuelQuantity"
+            name="fuelQuantity"
+            placeholder="Въведи количество"
+            (ngModelChange)="onFuelQuantityChange()"
+          ></ion-input>
+        </ion-item>
+        <div *ngIf="showError.fuelQuantity" class="error-text">
+          Полето е задължително и трябва да е между 0 и 200.
+        </div>
 
-          <!-- Fuel Quantity -->
-          <ion-item [class.invalid-item]="(!refuelingData.fuelQuantity || refuelingData.fuelQuantity < 0 || refuelingData.fuelQuantity > 200) && showValidation">
-            <ion-label>Литри гориво</ion-label>
-            <ion-input
-              type="number"
-              [(ngModel)]="refuelingData.fuelQuantity"
-              name="fuelQuantity"
-              placeholder="Въведи количество">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="!refuelingData.fuelQuantity && showValidation" class="error-text">
-            Полето е задължително.
-          </div>
-          <div *ngIf="refuelingData.fuelQuantity && (refuelingData.fuelQuantity < 0 || refuelingData.fuelQuantity > 200) && showValidation" class="error-text">
-            Стойността трябва да е между 0 и 200.
-          </div>          
+        <!-- Price per Liter -->
+        <ion-item [class.invalid-item]="showError.price">
+          <ion-label>Цена за литър</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="refuelingData.price"
+            name="price"
+            placeholder="Въведи цена на литър"
+            (ngModelChange)="onPriceChange()"
+          ></ion-input>
+        </ion-item>
+        <div *ngIf="showError.price" class="error-text">
+          Полето е задължително и трябва да е между 0 и 10.
+        </div>
 
-          <!-- Cost -->
-          <ion-item [class.invalid-item]="(!refuelingData.cost || refuelingData.cost < 0 || refuelingData.cost > 600) && showValidation">
-            <ion-label>Цена</ion-label>
-            <ion-input
-              type="number"
-              [(ngModel)]="refuelingData.cost"
-              name="cost"
-              placeholder="Въведи цена">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="!refuelingData.cost && showValidation" class="error-text">
-            Полето е задължително.
-          </div>
-          <div *ngIf="refuelingData.cost && (refuelingData.cost < 0 || refuelingData.cost > 600) && showValidation" class="error-text">
-            Стойността трябва да е между 0 и 600.
-          </div>          
+        <!-- Odometer -->
+        <ion-item [class.invalid-item]="showError.odometer">
+          <ion-label>Километраж</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="refuelingData.odometer"
+            name="odometer"
+            placeholder="Въведи километраж"
+            (ngModelChange)="onOdometerChange()"
+          ></ion-input>
+        </ion-item>
+        <div *ngIf="showError.odometer" class="error-text">
+          Стойността трябва да е между {{minOdometer}} и 5&nbsp;000&nbsp;000.
+        </div>
 
-          <!-- Odometer -->
-          <ion-item [class.invalid-item]="(!refuelingData.odometer || refuelingData.odometer < 0 || refuelingData.odometer > 10000000) && showValidation">
-            <ion-label>Километраж</ion-label>
-            <ion-input
-              type="number"
-              [(ngModel)]="refuelingData.odometer"
-              name="odometer"
-              placeholder="Въведи километраж">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="!refuelingData.odometer && showValidation" class="error-text">
-            Полето е задължително.
-          </div>
-          <div *ngIf="refuelingData.odometer && (refuelingData.odometer < 0 || refuelingData.odometer > 10000000) && showValidation" class="error-text">
-            Стойността трябва да е между 0 и 10000000.
-          </div>
-          
+        <!-- Date -->
+        <ion-item [class.invalid-item]="showError.date">
+          <ion-label>Дата</ion-label>
+          <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
+        </ion-item>
+        <div *ngIf="showError.date" class="error-text">
+          Полето е задължително.
+        </div>
 
-          <!-- Date -->
-          <ion-item [class.invalid-item]="!refuelingData.date && showValidation">
-            <ion-label>Дата</ion-label>
-            <app-datetime-picker (dateSelected)="onDateChange($event)"></app-datetime-picker>
-          </ion-item>
-          <div *ngIf="!refuelingData.date && showValidation" class="error-text">
-            Полето е задължително.
-          </div>
-
-          <!-- Submit Button -->
-          <ion-button expand="full" type="submit" shape="round" class="add-btn">
-            Запази
-          </ion-button>
-        </ion-card-content>
+        <!-- Submit Button -->
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!isFormValid() || disableSaveBtn"
+        >
+          <ion-spinner *ngIf="isAdding" name="crescent"></ion-spinner>
+          <span *ngIf="!isAdding">Запази</span>
+        </ion-button>
+      </ion-card-content>
     </form>
   </div>
 
-  <!-- List of Refueling Records -->
   <ion-card *ngFor="let refuel of refuelingDocuments" class="custom-item">
     <ion-card-header>
       <ion-card-title class="section-title">Дата: {{ refuel.date }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p><strong>Количество:</strong> {{ refuel.fuelQuantity }} литра</p>
-      <p><strong>Цена:</strong> {{ refuel.cost }} лева</p>
+      <p><strong>Цена на литър:</strong> {{ refuel.price }} лева</p>
+      <p><strong>Обща цена:</strong> {{ refuel.cost }} лева</p>
       <p><strong>Километраж:</strong> {{ refuel.odometer }} км</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteRefuelingRecord(refuel.id)">
         Изтрий

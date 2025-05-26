@@ -10,29 +10,33 @@
       <ion-card-content>
 
         <!-- Cost -->
-        <ion-item [class.invalid-item]="(insuranceData.cost === null || insuranceData.cost < 0 || insuranceData.cost > 10000) && showValidation">
+        <ion-item [class.invalid-item]="showError.cost">
           <ion-label>Цена</ion-label>
-          <ion-input type="number" [(ngModel)]="insuranceData.cost" name="cost" placeholder="Въведи цена"></ion-input>
+          <ion-input type="number" [(ngModel)]="insuranceData.cost" name="cost" placeholder="Въведи цена" (ngModelChange)="onCostChange()"></ion-input>
         </ion-item>
-        <div *ngIf="insuranceData.cost === null && showValidation" class="error-text">
-          Полето е задължително.
-        </div>
-        <div *ngIf="insuranceData.cost !== null && (insuranceData.cost < 0 || insuranceData.cost > 10000) && showValidation" class="error-text">
-          Стойността трябва да е между 0 и 10000.
+        <div *ngIf="showError.cost" class="error-text">
+          Стойността трябва да е между 0 и 10000 лв.
         </div>
 
         <!-- Start Date -->
-        <ion-item [class.invalid-item]="!insuranceData.startDate && showValidation">
+        <ion-item [class.invalid-item]="showError.startDate">
           <ion-label>Начална дата</ion-label>
-          <app-datetime-picker (dateSelected)="insuranceData.startDate = $event"></app-datetime-picker>
+          <app-datetime-picker (dateSelected)="onStartDateChange($event)"></app-datetime-picker>
         </ion-item>
-        <div *ngIf="!insuranceData.startDate && showValidation" class="error-text">
+        <div *ngIf="showError.startDate" class="error-text">
           Полето е задължително.
         </div>
 
         <!-- Submit Button -->
-        <ion-button expand="full" type="submit" shape="round" class="add-btn">
-          Запази
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!isFormValid() || disableSaveBtn"
+        >
+          <ion-spinner *ngIf="isAdding" name="crescent"></ion-spinner>
+          <span *ngIf="!isAdding">Запази</span>
         </ion-button>
       </ion-card-content>
     </form>

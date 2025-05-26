@@ -1,8 +1,18 @@
-// yearly-vehicle-check.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  doc,
+  deleteDoc,
+  getDoc
+} from 'firebase/firestore';
 import { SpendingService } from '../../services/spending.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-yearly-vehicle-check',
@@ -12,19 +22,29 @@ import { SpendingService } from '../../services/spending.service';
 export class YearlyVehicleCheckPage implements OnInit {
   carId: string = '';
   vehicleCheckRecords: any[] = [];
-  checkData: any = { startDate: '', endDate: '', cost: null };
+  checkData: { startDate: string, endDate: string, cost: any } = { startDate: '', endDate: '', cost: null };
   showCheckForm: boolean = false;
-  showValidation: boolean = false;
+  showError: any = {
+    cost: false,
+    description: false,
+  };
+  disableSaveBtn = false;
+  isAdding = false;
 
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute, private spendingService: SpendingService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private spendingService: SpendingService,
+    private alertCtrl: AlertController
+  ) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
     if (this.carId) {
       await this.loadVehicleCheckRecords();
     }
+    this.initValidation();
   }
 
   private async loadVehicleCheckRecords() {
@@ -36,32 +56,76 @@ export class YearlyVehicleCheckPage implements OnInit {
         id: doc.id,
         ...doc.data(),
       }));
-    } catch (error) {
-      console.error('Error loading vehicle check records:', error);
+    } catch {}
+  }
+
+  async addVehicleCheckRecord() {
+    if (!this.isFormValid()) {
+      Object.keys(this.showError).forEach(k => this.showError[k] = true);
+      return;
+    }
+    this.isAdding = true;
+    this.disableSaveBtn = true;
+
+    this.checkData.startDate = this.checkData.startDate ? this.checkData.startDate : this.formatDateToInput(new Date());
+    this.checkData.endDate = this.calculateEndDate(this.checkData.startDate);
+
+    try {
+      const checksCollection = collection(this.firestore, 'YearlyVehicleCheck');
+      await addDoc(checksCollection, {
+        carId: this.carId,
+        ...this.checkData,
+      });
+
+      await this.spendingService.addExpense(this.carId, this.checkData.cost);
+
+      this.checkData = { startDate: this.formatDateToInput(new Date()), endDate: '', cost: null };
+      this.showCheckForm = false;
+      this.initValidation();
+      await this.loadVehicleCheckRecords();
+    } catch {}
+    finally {
+      setTimeout(() => {
+        this.disableSaveBtn = false;
+      }, 1500);
+      this.isAdding = false;
     }
   }
 
   async deleteVehicleCheck(recordId: string) {
-    try {
-      const checkDocRef = doc(this.firestore, 'YearlyVehicleCheck', recordId);
-      const checkDocSnap = await getDoc(checkDocRef);
+    const alert = await this.alertCtrl.create({
+      header: 'Потвърди изтриване',
+      message: 'Сигурни ли сте, че искате да изтриете този преглед?',
+      cssClass: 'custom-delete-alert',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
+          handler: async () => {
+            try {
+              const checkDocRef = doc(this.firestore, 'YearlyVehicleCheck', recordId);
+              const checkDocSnap = await getDoc(checkDocRef);
 
-      if (checkDocSnap.exists()) {
-        const checkData = checkDocSnap.data() as { cost?: number };
-        const cost = checkData.cost || 0;
+              if (checkDocSnap.exists()) {
+                const checkData = checkDocSnap.data() as { cost?: number };
+                const cost = checkData.cost || 0;
 
-        await deleteDoc(checkDocRef);
-        this.vehicleCheckRecords = this.vehicleCheckRecords.filter((record) => record.id !== recordId);
+                await deleteDoc(checkDocRef);
+                this.vehicleCheckRecords = this.vehicleCheckRecords.filter((record) => record.id !== recordId);
 
-        await this.spendingService.subtractExpense(this.carId, cost);
-
-        console.log(`Vehicle check record deleted: ${recordId}, cost subtracted: ${cost}`);
-      } else {
-        console.error('Vehicle check record not found.');
-      }
-    } catch (error) {
-      console.error('Error deleting vehicle check record:', error);
-    }
+                await this.spendingService.subtractExpense(this.carId, cost);
+              }
+            } catch {}
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private calculateEndDate(startDate: string): string {
@@ -78,40 +142,51 @@ export class YearlyVehicleCheckPage implements OnInit {
       .toString()
       .padStart(2, '0')}`;
   }
-
-  async addVehicleCheckRecord() {
-    this.showValidation = true;
-  
-    const cost = this.checkData.cost;
-  
-    const isValidCost = cost !== null && cost >= 0 && cost <= 10000;
-  
-    if (this.checkData.startDate && isValidCost) {
-      this.checkData.startDate = this.formatDate(new Date(this.checkData.startDate));
-      this.checkData.endDate = this.calculateEndDate(this.checkData.startDate);
-  
-      try {
-        const checksCollection = collection(this.firestore, 'YearlyVehicleCheck');
-        await addDoc(checksCollection, {
-          carId: this.carId,
-          ...this.checkData,
-        });
-  
-        await this.spendingService.addExpense(this.carId, cost);
-  
-        this.checkData = { startDate: '', endDate: '', cost: null };
-        this.showCheckForm = false;
-        this.showValidation = false;
-        await this.loadVehicleCheckRecords();
-      } catch (error) {
-        console.error('Error adding vehicle check record:', error);
-      }
-    } else {
-      console.error('Start date and valid cost are required.');
-    }
+  formatDateToInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   toggleCheckForm() {
     this.showCheckForm = !this.showCheckForm;
+    if (this.showCheckForm && !this.checkData.startDate) {
+      this.checkData.startDate = this.formatDateToInput(new Date());
+    }
+    this.initValidation();
+  }
+
+  onStartDateChange(date: string) {
+    this.checkData.startDate = date;
+    this.liveValidate();
+  }
+  onCostChange() {
+    this.liveValidate();
+  }
+
+  liveValidate() {
+    this.showError.startDate = !this.checkData.startDate;
+    this.showError.cost =
+      this.checkData.cost === null ||
+      this.checkData.cost === undefined ||
+      isNaN(this.checkData.cost) ||
+      +this.checkData.cost < 0 ||
+      +this.checkData.cost > 1000;
+  }
+
+  isFormValid(): boolean {
+    return (
+      !!this.checkData.startDate &&
+      this.checkData.cost !== null &&
+      this.checkData.cost !== undefined &&
+      !isNaN(this.checkData.cost) &&
+      +this.checkData.cost >= 0 &&
+      +this.checkData.cost <= 1000
+    );
+  }
+
+  initValidation() {
+    this.showError = { startDate: false, cost: false };
   }
 }

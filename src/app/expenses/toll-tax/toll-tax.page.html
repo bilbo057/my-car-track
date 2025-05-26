@@ -10,34 +10,38 @@
       <ion-card-content>
 
         <!-- Amount Paid -->
-        <ion-item [class.invalid-item]="(!tollTaxData.amount || tollTaxData.amount < 0 || tollTaxData.amount > 10000) && showValidation">
+        <ion-item [class.invalid-item]="showError.amount">
           <ion-label>Платена сума</ion-label>
           <ion-input
             type="number"
             [(ngModel)]="tollTaxData.amount"
             name="amount"
-            placeholder="Въведи сума">
+            placeholder="Въведи сума"
+            (ngModelChange)="onAmountChange()">
           </ion-input>
         </ion-item>
-        <div *ngIf="!tollTaxData.amount && showValidation" class="error-text">
-          Полето е задължително.
-        </div>
-        <div *ngIf="tollTaxData.amount && (tollTaxData.amount < 0 || tollTaxData.amount > 10000) && showValidation" class="error-text">
-          Стойността трябва да е между 0 и 10000.
+        <div *ngIf="showError.amount" class="error-text">
+          Стойността трябва да е между 0 и 10000 лв.
         </div>
 
         <!-- Start Date -->
-        <ion-item [class.invalid-item]="!tollTaxData.startDate && showValidation">
+        <ion-item [class.invalid-item]="showError.startDate">
           <ion-label>Начална дата</ion-label>
           <app-datetime-picker (dateSelected)="onStartDateChange($event)"></app-datetime-picker>
         </ion-item>
-        <div *ngIf="!tollTaxData.startDate && showValidation" class="error-text">
+        <div *ngIf="showError.startDate" class="error-text">
           Полето е задължително.
         </div>
 
         <!-- Submit Button -->
-        <ion-button expand="full" type="submit" shape="round" class="add-btn">
-          Запази
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!isFormValid() || disableSaveBtn">
+          <ion-spinner *ngIf="isAdding" name="crescent"></ion-spinner>
+          <span *ngIf="!isAdding">Запази</span>
         </ion-button>
       </ion-card-content>
     </form>

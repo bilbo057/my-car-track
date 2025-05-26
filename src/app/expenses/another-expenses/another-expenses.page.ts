@@ -10,8 +10,9 @@ import {
   deleteDoc,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
 } from 'firebase/firestore';
+import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-another-expenses',
@@ -21,20 +22,31 @@ import {
 export class AnotherExpensesPage implements OnInit {
   carId: string = '';
   expensesRecords: any[] = [];
-  expenseData: any = {
+  expenseData: { date: string; cost: number | null; description: string } = {
     date: '',
     cost: null,
-    description: ''
+    description: '',
   };
-  showExpenseForm: boolean = false;
-  showValidation: boolean = false;
+  showExpenseForm = false;
+  isAdding = false;
+  disableSaveBtn = false;
+  showError: any = {
+    cost: false,
+    description: false,
+  };
 
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
+  ) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
+    this.expenseData.date = this.formatDateToInput(new Date());
     if (this.carId) {
       await this.loadExpensesRecords();
     }
@@ -42,7 +54,10 @@ export class AnotherExpensesPage implements OnInit {
 
   toggleExpenseForm() {
     this.showExpenseForm = !this.showExpenseForm;
-    this.showValidation = false;
+    if (this.showExpenseForm) {
+      this.initValidation();
+      this.expenseData.date = this.formatDateToInput(new Date());
+    }
   }
 
   private async loadExpensesRecords() {
@@ -59,55 +74,120 @@ export class AnotherExpensesPage implements OnInit {
     }
   }
 
+  // ---- Live validation
+  get isCostValid() {
+    const cost = this.expenseData.cost;
+    return cost != null && cost >= 0 && cost <= 1000000;
+  }
+
+  get isDescriptionValid() {
+    return !!this.expenseData.description && this.expenseData.description.trim().length > 0;
+  }
+
+  get canSave() {
+    // Do NOT lock button for date
+    return this.isCostValid && this.isDescriptionValid;
+  }
+
+  onCostChange() {
+    this.showError.cost = !this.isCostValid;
+  }
+
+  onDescriptionChange() {
+    this.showError.description = !this.isDescriptionValid;
+  }
+
+  initValidation() {
+    this.showError = {
+      cost: false,
+      description: false,
+    };
+  }
+
+  // ---- Add record
   async addExpenseRecord() {
-    this.showValidation = true;
-
-    const { date, cost, description } = this.expenseData;
-    const isValid =
-      date &&
-      cost != null &&
-      cost >= 0 &&
-      cost <= 1000000 &&
-      description;
-
-    if (!isValid) return;
-
-    this.expenseData.date = this.formatDate(new Date(this.expenseData.date));
+    if (!this.canSave) {
+      this.showError.cost = !this.isCostValid;
+      this.showError.description = !this.isDescriptionValid;
+      return;
+    }
+    this.isAdding = true;
+    this.disableSaveBtn = true;
 
     try {
+      // Date is auto-set to today if missing
+      if (!this.expenseData.date) {
+        this.expenseData.date = this.formatDateToInput(new Date());
+      }
+
       const expensesCollection = collection(this.firestore, 'AnotherExpenses');
       await addDoc(expensesCollection, {
         carId: this.carId,
         ...this.expenseData,
       });
 
-      await this.updateSpending(this.expenseData.cost);
+      await this.updateSpending(this.expenseData.cost!);
 
-      this.expenseData = { date: '', cost: null, description: '' };
+      this.expenseData = {
+        date: this.formatDateToInput(new Date()),
+        cost: null,
+        description: '',
+      };
       this.showExpenseForm = false;
-      this.showValidation = false;
+      this.initValidation();
       await this.loadExpensesRecords();
+      this.showToast('Разходът е добавен успешно.');
     } catch (error) {
       console.error('Error adding expense record:', error);
+      this.showToast('Възникна грешка при добавянето.');
+    } finally {
+      setTimeout(() => {
+        this.disableSaveBtn = false;
+        this.isAdding = false;
+      }, 1500);
     }
+  }
+
+  async confirmDeleteExpenseRecord(recordId: string) {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'custom-delete-alert',
+      header: 'Изтриване',
+      message: 'Сигурни ли сте, че искате да изтриете този разход?',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn',
+        },
+        {
+          text: 'Изтрий',
+          role: 'destructive',
+          cssClass: 'alert-delete-btn',
+          handler: () => this.deleteExpenseRecord(recordId),
+        },
+      ],
+    });
+    await alert.present();
   }
 
   async deleteExpenseRecord(recordId: string) {
     try {
       const record = this.expensesRecords.find((r) => r.id === recordId);
       if (record) {
-        await this.updateSpending(-record.cost);
+        await this.updateSpending(-record['cost']);
       }
-
       const expenseDoc = doc(this.firestore, 'AnotherExpenses', recordId);
       await deleteDoc(expenseDoc);
       this.expensesRecords = this.expensesRecords.filter((r) => r.id !== recordId);
+      this.showToast('Разходът е изтрит успешно.');
     } catch (error) {
       console.error('Error deleting expense record:', error);
+      this.showToast('Грешка при изтриване.');
     }
   }
 
-  private formatDate(date: Date): string {
+  private formatDateToInput(date: Date): string {
+    // YYYY-MM-DD
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -119,11 +199,9 @@ export class AnotherExpensesPage implements OnInit {
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
-
       const monthlyDocRef = doc(this.firestore, 'Monthly_Spending', `${this.carId}_${year}-${month}`);
       const yearlyDocRef = doc(this.firestore, 'Yearly_Spending', `${this.carId}`);
       const allTimeDocRef = doc(this.firestore, 'All_Time_Spending', `${this.carId}`);
-
       await this.modifySpending(monthlyDocRef, amount);
       await this.modifySpending(yearlyDocRef, amount);
       await this.modifySpending(allTimeDocRef, amount);
@@ -153,5 +231,15 @@ export class AnotherExpensesPage implements OnInit {
     } catch (error) {
       console.error('Error modifying spending:', error);
     }
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2000,
+      color: 'dark',
+      position: 'top',
+    });
+    await toast.present();
   }
 }

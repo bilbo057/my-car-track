@@ -1,7 +1,7 @@
-// annual-tax.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-annual-tax',
@@ -11,20 +11,34 @@ import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc
 export class AnnualTaxPage implements OnInit {
   carId: string = '';
   licensePlate: string = ''; 
-  annualTaxDocuments: any[] = []; // List of annual tax records
+  annualTaxDocuments: any[] = [];
+
   taxYear: number | null = null;
-  paymentHalf: string = ''; // Selected half
-  paymentDate: string = ''; // Payment date in YYYY-MM-DD format
-  cost: number | null = null; // Cost of the tax payment
-  showForm: boolean = false; // Toggle form visibility
-  showValidation: boolean = false; // Show validation errors
+  paymentHalf: string = '';
+  paymentDate: string = '';
+  cost: number | null = null;
+  showForm: boolean = false;
+
+  errors: any = {};
+  showError: any = {};
+
+  today: Date = new Date();
+
+  isAdding: boolean = false;
+  disableSaveBtn: boolean = false;
 
   private firestore = getFirestore();
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private alertController: AlertController,
+    private loadingController: LoadingController
+  ) {}
 
   async ngOnInit() {
     this.carId = this.route.snapshot.paramMap.get('carId') || '';
+    this.paymentDate = this.formatDateToInput(new Date());
+    this.initValidation();
     if (this.carId) {
       await this.loadCarDetails();
       await this.loadAnnualTaxDocuments();
@@ -53,22 +67,57 @@ export class AnnualTaxPage implements OnInit {
     }
   }
 
-  validateForm(): boolean {
-    this.showValidation = true;
-  
-    const isTaxYearValid = this.taxYear !== null && this.taxYear >= 1900 && this.taxYear <= 2100;
-    const isHalfValid = !!this.paymentHalf;
-    const isCostValid = this.cost !== null && this.cost >= 0 && this.cost <= 5000;
-    const isDateValid = !!this.paymentDate;
-  
-    return isTaxYearValid && isHalfValid && isCostValid && isDateValid;
-  }  
+  initValidation() {
+    this.errors = {};
+    this.showError = {};
+    ['taxYear', 'paymentHalf', 'cost', 'paymentDate'].forEach(f => {
+      this.errors[f] = null;
+      this.showError[f] = false;
+    });
+  }
+
+  onInputChange(field: string) {
+    this.showError[field] = true;
+    this.validateField(field);
+    if (!this.errors[field]) this.showError[field] = false;
+  }
+
+  validateField(field: string) {
+    switch (field) {
+      case 'taxYear':
+        this.errors.taxYear = (!this.taxYear) ? 'Полето е задължително.' :
+          (this.taxYear < 1900 || this.taxYear > 2100) ? 'Стойността трябва да е между 1900 и 2100.' : null;
+        break;
+      case 'paymentHalf':
+        this.errors.paymentHalf = this.paymentHalf ? null : 'Моля, избери период.';
+        break;
+      case 'cost':
+        this.errors.cost = (this.cost === null) ? 'Полето е задължително.' :
+          (this.cost < 0 || this.cost > 10000) ? 'Стойността трябва да е между 0 и 10000 лв.' : null;
+        break;
+      case 'paymentDate':
+        this.errors.paymentDate = this.paymentDate ? null : 'Полето е задължително.';
+        break;
+    }
+  }
+
+  isFormValid(): boolean {
+    this.validateField('taxYear');
+    this.validateField('paymentHalf');
+    this.validateField('cost');
+    return !this.errors.taxYear && !this.errors.paymentHalf && !this.errors.cost;
+  }
 
   async addAnnualTaxRecord() {
-    if (!this.validateForm()) return;
-    if (this.taxYear && this.paymentHalf && this.paymentDate && this.cost !== null) {
+    if (!this.isFormValid()) {
+      Object.keys(this.showError).forEach(k => this.showError[k] = true);
+      return;
+    }
+    if (this.taxYear && this.paymentHalf && this.cost !== null) {
+      this.isAdding = true;
+      this.disableSaveBtn = true;
       try {
-        const formattedDate = this.formatDate(this.paymentDate); // Ensure YYYY-MM-DD format
+        const formattedDate = this.paymentDate ? this.paymentDate : this.formatDateToInput(new Date());
 
         const taxCollection = collection(this.firestore, 'AnnualTax');
         await addDoc(taxCollection, {
@@ -80,20 +129,44 @@ export class AnnualTaxPage implements OnInit {
           cost: this.cost,
         });
 
-        // Update spending records
         await this.updateSpending(this.cost);
         this.taxYear = null;
         this.paymentHalf = '';
-        this.paymentDate = '';
+        this.paymentDate = this.formatDateToInput(new Date());
         this.cost = null;
         this.showForm = false;
+        this.initValidation();
         await this.loadAnnualTaxDocuments();
       } catch (error) {
         console.error('Error adding annual tax document:', error);
+      } finally {
+        setTimeout(async () => {
+          this.disableSaveBtn = false;
+        }, 1500);
+        this.isAdding = false;
       }
-    } else {
-      console.error('All fields are required.');
     }
+  }
+
+  async confirmDeleteAnnualTaxRecord(recordId: string) {
+    const alert = await this.alertController.create({
+      header: 'Изтриване на запис',
+      message: 'Сигурни ли сте, че искате да изтриете този запис? Това действие е необратимо.',
+      cssClass: 'custom-delete-alert',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
+          handler: () => this.deleteAnnualTaxRecord(recordId)
+        }
+      ]
+    });
+    await alert.present();
   }
 
   async deleteAnnualTaxRecord(recordId: string) {
@@ -112,16 +185,15 @@ export class AnnualTaxPage implements OnInit {
     }
   }
 
-  private formatDate(date: string): string {
-    const parsedDate = new Date(date);
-    return `${parsedDate.getFullYear()}-${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}-${parsedDate
-      .getDate()
-      .toString()
-      .padStart(2, '0')}`;
+  formatDateToInput(date: Date): string {
+    return `${('0'+date.getDate()).slice(-2)}-${('0'+(date.getMonth()+1)).slice(-2)}-${date.getFullYear()}`;
   }
 
   toggleForm() {
     this.showForm = !this.showForm;
+    if (this.showForm && !this.paymentDate) {
+      this.paymentDate = this.formatDateToInput(new Date());
+    }
   }
 
   private async updateSpending(amount: number) {

@@ -4,46 +4,50 @@
   </ion-button>
 
   <!-- Maintaining Form Section -->
-  <div *ngIf="showForm">
+  <div class="collapsible-section" [class.open]="showForm">
     <form (ngSubmit)="addMaintainingRecord()">
       <ion-card-content>
-        <ion-item button (click)="typeSelect.open()" [class.invalid-item]="!maintainingData.type && showValidation">
+        <!-- Type -->
+        <ion-item button (click)="typeSelect.open()" [class.invalid-item]="showError['type']">
           <ion-label>Тип поддръжка</ion-label>
           <ion-text slot="end">{{ getSelectedTypeLabel() }}</ion-text>
-        
           <ion-select #typeSelect interface="modal"
-                      [(ngModel)]="maintainingData.type"
-                      name="type"
-                      [selectedText]="''"
-                      placeholder=""
-                      cancelText=""
-                      okText=""
-                      style="opacity: 0; height: 0; width: 0; position: center;">
+            [(ngModel)]="maintainingData.type"
+            (ionChange)="onInputChange('type')"
+            name="type"
+            [selectedText]="''"
+            placeholder=""
+            cancelText=""
+            okText=""
+            style="opacity: 0; height: 0; width: 0;">
             <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
               {{ option.label }}
             </ion-select-option>
           </ion-select>
         </ion-item>
-        <div *ngIf="!maintainingData.type && showValidation" class="error-text">
+        <div *ngIf="showError['type']" class="error-text">
           Полето е задължително.
         </div>
-        
+
         <!-- Cost -->
-        <ion-item [class.invalid-item]="(maintainingData.cost === null || maintainingData.cost < 0 || maintainingData.cost > 10000) && showValidation">
+        <ion-item [class.invalid-item]="showError['cost']">
           <ion-label>Цена</ion-label>
           <ion-input
             type="number"
             [(ngModel)]="maintainingData.cost"
             name="cost"
+            (ionInput)="onInputChange('cost')"
             placeholder="Въведи цена">
           </ion-input>
         </ion-item>
-        <div *ngIf="maintainingData.cost === null && showValidation" class="error-text">Полето е задължително.</div>
-        <div *ngIf="maintainingData.cost !== null && (maintainingData.cost < 0 || maintainingData.cost > 10000) && showValidation" class="error-text">
-          Стойността трябва да е между 0 и 10000.
+        <div *ngIf="showError['cost'] && (maintainingData.cost == null)" class="error-text">
+          Полето е задължително.
+        </div>
+        <div *ngIf="showError['cost'] && maintainingData.cost != null && (+maintainingData.cost < 0 || +maintainingData.cost > 10000)" class="error-text">
+          Стойността трябва да е между 0 и 10000 лв.
         </div>
 
-        <!-- Bonus Description -->
+        <!-- Description -->
         <ion-item class="form-item">
           <ion-label class="no-wrap-label">Oписание</ion-label>
           <ion-input
@@ -54,17 +58,21 @@
         </ion-item>
 
         <!-- Date -->
-        <ion-item [class.invalid-item]="!maintainingData.date && showValidation">
+        <ion-item>
           <ion-label>Дата</ion-label>
           <app-datetime-picker (dateSelected)="maintainingData.date = $event"></app-datetime-picker>
         </ion-item>
-        <div *ngIf="!maintainingData.date && showValidation" class="error-text">
-          Полето е задължително.
-        </div>
 
-        <!-- Submit Button -->
-        <ion-button expand="full" type="submit" shape="round" class="add-btn">
-          Запази
+        <!-- Save Button -->
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!isFormValid() || disableSaveBtn"
+        >
+          <ion-spinner *ngIf="isAdding" name="crescent"></ion-spinner>
+          <span *ngIf="!isAdding">Запази</span>
         </ion-button>
       </ion-card-content>
     </form>
@@ -78,8 +86,7 @@
     <ion-card-content>
       <p><strong>Дата:</strong> {{ record.date }}</p>
       <p><strong>Цена:</strong> {{ record.cost }} лева</p>
-      <p><strong>Цена:</strong> {{ record.cost }} лева</p>
-      <p *ngIf="record.bonusDescription"><strong>Описание:</strong> {{ record.bonusDescription }}</p>
+      <p *ngIf="record.description"><strong>Описание:</strong> {{ record.description }}</p>
       <ion-button color="danger" expand="full" shape="round" (click)="deleteMaintainingRecord(record.id)">
         Изтрий
       </ion-button>

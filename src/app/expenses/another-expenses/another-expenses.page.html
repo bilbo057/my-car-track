@@ -9,49 +9,57 @@
     <form *ngIf="showExpenseForm" (ngSubmit)="addExpenseRecord()">
       <ion-card-content>
         <!-- Cost -->
-        <ion-item [class.invalid-item]="(!expenseData.cost || expenseData.cost < 0 || expenseData.cost > 1000000) && showValidation">
+        <ion-item [class.invalid-item]="showError['cost']">
           <ion-label>Цена</ion-label>
           <ion-input
             type="number"
             [(ngModel)]="expenseData.cost"
             name="cost"
-            placeholder="Въведи цена">
+            placeholder="Въведи цена"
+            (ngModelChange)="onCostChange()"
+            (blur)="onCostChange()"
+            required>
           </ion-input>
         </ion-item>
-        <div *ngIf="!expenseData.cost && showValidation" class="error-text">
+        <div *ngIf="showError['cost'] && (expenseData.cost == null)" class="error-text">
           Полето е задължително.
         </div>
-        <div *ngIf="expenseData.cost && (expenseData.cost < 0 || expenseData.cost > 1000000) && showValidation" class="error-text">
-          Стойността трябва да е между 0 и 1 000 000.
+        <div *ngIf="showError['cost'] && expenseData.cost !== null && (expenseData.cost < 0 || expenseData.cost > 1000000)" class="error-text">
+          Стойността трябва да е между 0 и 1 000 000 лв.
         </div>
 
         <!-- Description -->
-        <ion-item [class.invalid-item]="!expenseData.description && showValidation">
+        <ion-item [class.invalid-item]="showError['description']">
           <ion-label>Описание</ion-label>
           <ion-textarea
             [(ngModel)]="expenseData.description"
             name="description"
-            placeholder="Въведи описание">
+            placeholder="Въведи описание"
+            (ngModelChange)="onDescriptionChange()"
+            (blur)="onDescriptionChange()"
+            required>
           </ion-textarea>
         </ion-item>
-        <div *ngIf="!expenseData.description && showValidation" class="error-text">
+        <div *ngIf="showError['description'] && (!expenseData.description || expenseData.description.trim() === '')" class="error-text">
           Полето е задължително.
         </div>
 
-         <!-- Date -->
-         <ion-item [class.invalid-item]="!expenseData.date && showValidation">
+        <!-- Date -->
+        <ion-item>
           <ion-label>Дата</ion-label>
           <app-datetime-picker (dateSelected)="expenseData.date = $event"></app-datetime-picker>
         </ion-item>
-        <div *ngIf="!expenseData.date && showValidation" class="error-text">
-          Полето е задължително.
-        </div>
 
         <!-- Save Button -->
-        <ion-button expand="full" type="submit" shape="round" class="add-btn">
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!canSave || disableSaveBtn">
+          <ion-spinner *ngIf="isAdding" name="crescent" style="margin-right:0.7rem;"></ion-spinner>
           Запази
         </ion-button>
-
       </ion-card-content>
     </form>
   </div>
@@ -64,7 +72,7 @@
     <ion-card-content>
       <p><strong>Цена:</strong> {{ expense.cost }} лв.</p>
       <p><strong>Описание:</strong> {{ expense.description }}</p>
-      <ion-button color="danger" expand="full" shape="round" (click)="deleteExpenseRecord(expense.id)">
+      <ion-button color="danger" expand="full" shape="round" (click)="confirmDeleteExpenseRecord(expense.id)">
         Изтрий
       </ion-button>
     </ion-card-content>

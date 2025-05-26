@@ -1,43 +1,49 @@
 <ion-content [fullscreen]="true">
-  <!-- Toggle Form Button -->
   <ion-button expand="full" shape="round" (click)="toggleBillForm()" class="add-btn">
     {{ showBillForm ? 'Скрий формата' : 'Добави сметка' }}
   </ion-button>
 
   <!-- Mechanical Bill Form -->
-  <div *ngIf="showBillForm">
+  <div class="collapsible-section" [class.open]="showBillForm">
     <form (ngSubmit)="addMechanicalBill()">
       <ion-card-content>
 
         <!-- Type Select -->
-        <ion-item button (click)="typeSelect.open()" [class.invalid-item]="!billData.type && showValidation">
+        <ion-item button (click)="typeSelect.open()" [class.invalid-item]="showError['type']">
           <ion-label>Тип сметка</ion-label>
           <ion-text slot="end">
             {{ getTypeLabel(billData.type) || 'Избери' }}
           </ion-text>
           <ion-select #typeSelect interface="modal"
-                      [(ngModel)]="billData.type"
-                      name="type"
-                      [selectedText]="''"
-                      placeholder=""
-                      cancelText=""
-                      okText=""
-                      style="opacity: 0; height: 0; width: 0; position: absolute;">
+            [(ngModel)]="billData.type"
+            (ionChange)="onInputChange('type')"
+            name="type"
+            [selectedText]="''"
+            placeholder=""
+            cancelText=""
+            okText=""
+            style="opacity: 0; height: 0; width: 0; position: absolute;">
             <ion-select-option *ngFor="let option of maintainingOptions" [value]="option.value">
               {{ option.label }}
             </ion-select-option>
           </ion-select>
         </ion-item>
-        <div *ngIf="!billData.type && showValidation" class="error-text">Полето е задължително.</div>
+        <div *ngIf="showError['type']" class="error-text">Полето е задължително.</div>
 
         <!-- Cost -->
-        <ion-item class="form-item" [class.invalid-item]="(!billData.cost || billData.cost < 0 || billData.cost > 1000000) && showValidation">
+        <ion-item class="form-item" [class.invalid-item]="showError['cost']">
           <ion-label>Цена</ion-label>
-          <ion-input type="number" [(ngModel)]="billData.cost" name="cost" placeholder="Въведи цена"></ion-input>
+          <ion-input
+            type="number"
+            [(ngModel)]="billData.cost"
+            name="cost"
+            (ionInput)="onInputChange('cost')"
+            placeholder="Въведи цена">
+          </ion-input>
         </ion-item>
-        <div *ngIf="!billData.cost && showValidation" class="error-text">Полето е задължително.</div>
-        <div *ngIf="billData.cost && (billData.cost < 0 || billData.cost > 1000000) && showValidation" class="error-text">
-          Стойността трябва да е между 0 и 1 000 000.
+        <div *ngIf="showError['cost'] && (billData.cost == null)" class="error-text">Полето е задължително.</div>
+        <div *ngIf="showError['cost'] && billData.cost != null && (+billData.cost < 0 || +billData.cost > 1000000)" class="error-text">
+          Стойността трябва да е между 0 и 1 000 000 лв.
         </div>
 
         <!-- Description -->
@@ -49,17 +55,24 @@
             placeholder="Въведи описание">
           </ion-input>
         </ion-item>
-        
 
         <!-- Date -->
-        <ion-item [class.invalid-item]="!billData.date && showValidation">
+        <ion-item>
           <ion-label>Дата</ion-label>
           <app-datetime-picker (dateSelected)="billData.date = $event"></app-datetime-picker>
         </ion-item>
-        <div *ngIf="!billData.date && showValidation" class="error-text">Полето е задължително.</div>
-        
+
         <!-- Save Button -->
-        <ion-button expand="full" type="submit" shape="round" class="add-btn">Запази</ion-button>
+        <ion-button
+          expand="full"
+          type="submit"
+          shape="round"
+          class="add-btn"
+          [disabled]="!isFormValid() || disableSaveBtn"
+        >
+          <ion-spinner *ngIf="isAdding" name="crescent"></ion-spinner>
+          <span *ngIf="!isAdding">Запази</span>
+        </ion-button>
       </ion-card-content>
     </form>
   </div>
