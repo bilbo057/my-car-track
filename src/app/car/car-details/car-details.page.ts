@@ -2,12 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AlertController } from '@ionic/angular';
-import { getStorage, ref, getDownloadURL, deleteObject } from 'firebase/storage';
-
-interface User {
-  UID: string;
-  username: string;
-}
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { CarDeleteService } from '../../services/car-delete.service'; // <-- Correct relative path
 
 interface SpendingData {
   spentsThisPeriod?: number;
@@ -34,7 +30,8 @@ export class CarDetailsPage implements OnInit {
     private route: ActivatedRoute,
     private firestore: AngularFirestore,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private carDeleteService: CarDeleteService
   ) {}
 
   async ngOnInit() {
@@ -201,6 +198,35 @@ export class CarDetailsPage implements OnInit {
     }
   }
 
+  async deleteCar() {
+    const alert = await this.alertController.create({
+      header: 'Изтриване на кола',
+      message: 'Сигурни ли сте, че искате да изтриете тази кола? Това действие е необратимо.',
+      cssClass: 'custom-car-delete-alert',
+      buttons: [
+        {
+          text: 'Отказ',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Изтрий',
+          cssClass: 'alert-delete-btn',
+          handler: async () => {
+            try {
+              await this.carDeleteService.deleteCarAndRelated(this.carId, this.carDetails);
+              this.router.navigate(['/cars']);
+            } catch (err) {
+              // Optionally show an error toast or alert here
+              console.error('Грешка при изтриване на колата:', err);
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   editCar() {
     if (this.carId) {
       this.router.navigate(['/car-edit', this.carId]);
@@ -284,251 +310,6 @@ export class CarDetailsPage implements OnInit {
       this.router.navigate(['/access-ownership', this.carId]);
     } else {
       console.error('Car ID is missing. Unable to navigate.');
-    }
-  }
-
-  async deleteCar() {
-    if (this.carId) {
-        try {
-            await this.deleteCarPhotos(); 
-            await this.firestore.collection('Cars').doc(this.carId).delete();
-            console.log('Car deleted successfully');
-            await this.deleteRelatedDocuments();
-            this.router.navigate(['/cars']);
-        } catch (error) {
-            console.error('Error deleting car:', error);
-        }
-    }
-  }
-
-  private async deleteRelatedDocuments() {
-    await Promise.all([
-      this.deleteUserCarDocument(),
-      this.deleteCarOffers(),
-      this.deleteMonthlySpending(),
-      this.deleteYearlySpending(),
-      this.deleteAllTimeSpending(),
-      this.deleteAnnualTaxRecords(), 
-      this.deleteAnotherExpensesRecords(),
-      this.deleteMaintainingRecords(),
-      this.deleteMechanicalBills(),
-      this.deleteRefuelingRecords(),
-      this.deleteTollTaxRecords(),
-      this.deleteVehicleInsuranceRecords(),
-      this.deleteYearlyVehicleCheckRecords(),
-    ]);
-  }
-
-  private async deleteCarOffers() {
-    try {
-      const offersCollection = this.firestore.collection('Offers');
-      const offersQuerySnapshot = await offersCollection.ref.where('CarID', '==', this.carId).get();
-      if (!offersQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        offersQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Offers associated with the car deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting offers:', error);
-    }
-  }  
-
-  private async deleteCarPhotos() {
-    try {
-        if (!this.carDetails.photoNames || this.carDetails.photoNames.length === 0) {
-            return;
-        }
-        const storage = getStorage();
-        const deletePromises = this.carDetails.photoNames.map(async (fileName: string) => {
-            const imageRef = ref(storage, `car_images/${fileName}`);
-            await deleteObject(imageRef);
-        });
-        await Promise.all(deletePromises);
-        console.log('All car images deleted successfully.');
-    } catch (error) {
-        console.error('Error deleting car images:', error);
-    }
-  }
-
-  private async deleteMonthlySpending() {
-    try {
-        const monthlySpendingCollection = this.firestore.collection('Monthly_Spending');
-        const querySnapshot = await monthlySpendingCollection.ref.where('carID', '==', this.carId).get();
-        if (!querySnapshot.empty) {
-            const batch = this.firestore.firestore.batch();
-            querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-            await batch.commit();
-            console.log('Monthly spending records deleted successfully.');
-        }
-    } catch (error) {
-        console.error('Error deleting Monthly_Spending records:', error);
-    }
-  }
-
-  private async deleteYearlySpending() {
-      try {
-          const yearlySpendingCollection = this.firestore.collection('Yearly_Spending');
-          const querySnapshot = await yearlySpendingCollection.ref.where('carID', '==', this.carId).get();
-          if (!querySnapshot.empty) {
-              const batch = this.firestore.firestore.batch();
-              querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-              await batch.commit();
-              console.log('Yearly spending records deleted successfully.');
-          }
-      } catch (error) {
-          console.error('Error deleting Yearly_Spending records:', error);
-      }
-  }
-
-  private async deleteAllTimeSpending() {
-      try {
-          const allTimeSpendingCollection = this.firestore.collection('All_Time_Spending');
-          const querySnapshot = await allTimeSpendingCollection.ref.where('carID', '==', this.carId).get();
-          if (!querySnapshot.empty) {
-              const batch = this.firestore.firestore.batch();
-              querySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-              await batch.commit();
-              console.log('All-time spending records deleted successfully.');
-          }
-      } catch (error) {
-          console.error('Error deleting All_Time_Spending records:', error);
-      }
-  }
-
-  private async deleteYearlyVehicleCheckRecords() {
-    try {
-      const checksCollection = this.firestore.collection('YearlyVehicleCheck');
-      const checksQuerySnapshot = await checksCollection.ref.where('carId', '==', this.carId).get();
-      if (!checksQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        checksQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Yearly vehicle check records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting yearly vehicle check records:', error);
-    }
-  }  
-
-  private async deleteVehicleInsuranceRecords() {
-    try {
-      const insuranceCollection = this.firestore.collection('VehicleInsurance');
-      const insuranceQuerySnapshot = await insuranceCollection.ref.where('carId', '==', this.carId).get();
-      if (!insuranceQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        insuranceQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Vehicle insurance records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting vehicle insurance records:', error);
-    }
-  }
-
-  private async deleteTollTaxRecords() {
-    try {
-      const tollTaxCollection = this.firestore.collection('TollTax');
-      const tollTaxQuerySnapshot = await tollTaxCollection.ref.where('carId', '==', this.carId).get();
-      if (!tollTaxQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        tollTaxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Toll tax records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting toll tax records:', error);
-    }
-  }  
-
-  private async deleteAnotherExpensesRecords() {
-    try {
-      const expensesCollection = this.firestore.collection('AnotherExpenses');
-      const expensesQuerySnapshot = await expensesCollection.ref.where('carId', '==', this.carId).get();
-      if (!expensesQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        expensesQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Another Expenses records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting Another Expenses records:', error);
-    }
-  }
-
-  private async deleteRefuelingRecords() {
-    try {
-      const refuelingCollection = this.firestore.collection('Refueling');
-      const refuelingQuerySnapshot = await refuelingCollection.ref.where('carId', '==', this.carId).get();
-      if (!refuelingQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        refuelingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Refueling records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting Refueling records:', error);
-    }
-  }  
-
-  private async deleteMechanicalBills() {
-    try {
-      const mechanicalBillsCollection = this.firestore.collection('MechanicalBills');
-      const mechanicalBillsQuerySnapshot = await mechanicalBillsCollection.ref.where('carId', '==', this.carId).get();
-      if (!mechanicalBillsQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        mechanicalBillsQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Mechanical bills deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting Mechanical Bills:', error);
-    }
-  }  
-  
-  private async deleteMaintainingRecords() {
-    try {
-      const maintainingCollection = this.firestore.collection('Maintaining');
-      const maintainingQuerySnapshot = await maintainingCollection.ref.where('carId', '==', this.carId).get();
-      if (!maintainingQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        maintainingQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Maintaining records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting Maintaining records:', error);
-    }
-  }  
-
-  private async deleteUserCarDocument() {
-    try {
-      const userCarSnapshot = await this.firestore.collection('User_car', (ref) =>
-        ref.where('CarID', '==', this.carId)
-      ).get().toPromise();
-      if (userCarSnapshot?.empty === false) {
-        const batch = this.firestore.firestore.batch();
-        userCarSnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('User_car documents deleted successfully');
-      }
-    } catch (error) {
-      console.error('Error deleting User_car documents:', error);
-    }
-  }
-
-  private async deleteAnnualTaxRecords() {
-    try {
-      const taxCollection = this.firestore.collection('AnnualTax');
-      const taxQuerySnapshot = await taxCollection.ref.where('carId', '==', this.carId).get();
-      if (!taxQuerySnapshot.empty) {
-        const batch = this.firestore.firestore.batch();
-        taxQuerySnapshot.docs.forEach((doc) => batch.delete(doc.ref));
-        await batch.commit();
-        console.log('Annual tax records deleted successfully.');
-      }
-    } catch (error) {
-      console.error('Error deleting annual tax records:', error);
     }
   }
 }
