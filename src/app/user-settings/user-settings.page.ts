@@ -54,7 +54,7 @@ export class UserSettingsPage implements OnInit {
   }
 
   async deleteAccount() {
-   const alert = await this.alertController.create({
+    const alert = await this.alertController.create({
       header: 'Изтриване на акаунт',
       message: 'Сигурни ли сте, че искате да изтриете акаунта си? Това действие е необратимо.',
       cssClass: 'custom-delete-alert',
@@ -81,7 +81,7 @@ export class UserSettingsPage implements OnInit {
               this.showToast('Акаунтът беше изтрит успешно.');
             } catch (error: any) {
               if (error && error.code === 'auth/requires-recent-login') {
-                this.showToast('Моля, влезте отново преди да изтриете акаунта си.');
+                this.showToast('Моля, влезте отново, за да изтриете акаунта си.');
               } else {
                 this.showToast('Грешка при изтриване на акаунта.');
               }
