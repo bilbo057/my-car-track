@@ -66,11 +66,10 @@ export class RegisterPage implements OnInit {
         // Navigate to login page after sending verification email
         this.router.navigate(['/login']);
       } else {
-        this.errorMessage = 'Регистрацията не бе успешна. Моля, опитайте отново.';
+        this.router.navigate(['/login']);
       }
     } catch (error) {
-      this.errorMessage = 'Регистрацията не бе успешна. Моля, опитайте отново.';
-      console.error("Registration failed", error);
+      this.router.navigate(['/login']);
     }
   }
 
