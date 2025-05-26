@@ -21,21 +21,15 @@ export class BlogService {
     return blogDoc.exists() ? { id: blogDoc.id, ...blogDoc.data() } : null;
   }
 
-  async addBlog(title: string, content: string) {
-    const userId = await this.authService.getUserId();
-    const username = await this.authService.getUsername();
-
-    if (!userId || !username) return;
-
-    await addDoc(collection(this.firestore, 'Blogs'), {
-      title,
-      content,
-      authorId: userId,
-      authorName: username,
-      timestamp: serverTimestamp(),
-      comments: [] // Ensure comments field exists as an empty array initially
-    });
-  }
+  async addBlog(title: string, content: string, uid: string) {
+  await addDoc(collection(this.firestore, 'Blogs'), {
+    title,
+    content,
+    authorId: uid,
+    timestamp: serverTimestamp(),
+    comments: []
+  });
+}
 
   async addComment(blogId: string, text: string) {
     const userId = await this.authService.getUserId();

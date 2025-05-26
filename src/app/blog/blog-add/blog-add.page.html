@@ -3,40 +3,69 @@
     <div class="section-title">Създай публикация</div>
 
     <!-- Title -->
-    <ion-item [class.invalid-item]="!title && showValidation">
-      <ion-label>Заглавие</ion-label>
-      <ion-input
-        [(ngModel)]="title"
-        name="title"
-        placeholder="Въведи заглавие"
-        required>
-      </ion-input>
-    </ion-item>
-    <div *ngIf="!title && showValidation" class="error-text">
-      Полето е задължително.
+    <div class="title-section">
+      <div class="title-label-row">
+        <label class="title-label">Заглавие</label>
+        <span class="length-note" [class.length-error]="titleLength > TITLE_MAX">
+          {{ titleLength }}/{{ TITLE_MAX }}
+        </span>
+      </div>
+      <ion-item
+        lines="none"
+        class="title-item"
+        [class.invalid-item]="(!isTitleValid && showValidation) || titleLength > TITLE_MAX"
+      >
+        <ion-input
+          [(ngModel)]="title"
+          name="title"
+          maxlength="{{ TITLE_MAX }}"
+          placeholder="Въведи заглавие"
+          required
+          (ionInput)="showValidation=true"
+        ></ion-input>
+      </ion-item>
+      <div *ngIf="!title && showValidation" class="error-text">Полето е задължително.</div>
+      <div *ngIf="titleLength > TITLE_MAX && showValidation" class="error-text">
+        Заглавието не трябва да надвишава {{ TITLE_MAX }} символа.
+      </div>
     </div>
 
     <!-- Content -->
-    <ion-item [class.invalid-item]="(!content || content.length > 5000) && showValidation">
-      <ion-label>Съдържание</ion-label>
-      <ion-textarea
-        [(ngModel)]="content"
-        name="content"
-        autoGrow="true"
-        maxlength="5000"
-        placeholder="Въведи съдържание"
-        required>
-      </ion-textarea>
-    </ion-item>
-    <div *ngIf="!content && showValidation" class="error-text">
-      Полето е задължително.
-    </div>
-    <div *ngIf="content.length > 5000 && showValidation" class="error-text">
-      Съдържанието не трябва да надвишава 5000 символа.
+    <div class="content-section">
+      <div class="content-label-row">
+        <label class="content-label">Съдържание</label>
+        <span class="length-note" [class.length-error]="contentLength > CONTENT_MAX">
+          {{ contentLength }}/{{ CONTENT_MAX }}
+        </span>
+      </div>
+      <ion-item
+        lines="none"
+        class="content-item"
+        [class.invalid-item]="(!isContentValid && showValidation) || contentLength > CONTENT_MAX"
+      >
+        <ion-textarea
+          [(ngModel)]="content"
+          name="content"
+          autoGrow="true"
+          maxlength="{{ CONTENT_MAX }}"
+          placeholder="Въведи съдържание"
+          required
+          (ionInput)="showValidation=true"
+        ></ion-textarea>
+      </ion-item>
+      <div *ngIf="!content && showValidation" class="error-text">Полето е задължително.</div>
+      <div *ngIf="contentLength > CONTENT_MAX && showValidation" class="error-text">
+        Съдържанието не трябва да надвишава {{ CONTENT_MAX }} символа.
+      </div>
     </div>
 
     <!-- Submit Button -->
-    <ion-button expand="full" type="submit" shape="round" class="add-car-btn">
+    <ion-button 
+      expand="full" 
+      type="submit" 
+      shape="round" 
+      class="add-car-btn"
+      [disabled]="!canSubmit">
       Публикувай
     </ion-button>
   </form>

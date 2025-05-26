@@ -7,16 +7,25 @@
     class="custom-search">
   </ion-searchbar>
 
-  <!-- Blog List -->
-  <ion-card *ngFor="let blog of blogs" class="custom-item" (click)="openBlog(blog.id)">
-    <ion-card-header>
-      <ion-card-title class="blog-title">{{ blog.title }}</ion-card-title>
-      <ion-card-subtitle class="blog-author">от {{ blog.authorName }}</ion-card-subtitle>
-    </ion-card-header>
-  </ion-card>
-
   <!-- Add Blog Button -->
   <ion-button expand="full" shape="round" routerLink="/blog-add" class="add-btn">
     Добави блог
   </ion-button>
+
+  <!-- Blog List -->
+  <ion-card *ngFor="let blog of blogs" class="custom-item" (click)="openBlog(blog.id)">
+    <div class="card-header-flex">
+      <div class="card-header-content">
+        <div class="blog-title">{{ blog.title }}</div>
+        <div class="blog-author">
+          <a class="author-link" (click)="startChat(blog.authorId); $event.stopPropagation()" [style.textDecoration]="'underline'" [style.cursor]="'pointer'">
+            {{ blog.authorUsername }}
+          </a>
+        </div>
+      </div>
+      <ion-button *ngIf="blog.authorId === currentUserId" class="delete-btn" shape="round" (click)="deleteBlog(blog.id); $event.stopPropagation()" fill="solid">
+        Изтрий
+      </ion-button>
+    </div>
+  </ion-card>
 </ion-content>
