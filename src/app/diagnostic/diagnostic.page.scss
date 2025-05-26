@@ -63,6 +63,15 @@ ion-content {
     --background: #ff4d4d;
   }
   
+  ::ng-deep .custom-toast {
+    --background: #1d1d1d;
+    --color: #fff;
+    border-radius: 1.2rem;
+    font-size: 1.09rem;
+    font-weight: bold;
+    text-align: center;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;

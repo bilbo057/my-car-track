@@ -5,8 +5,8 @@
       <div class="image-wrapper">
         <img [src]="carDetails.photoUrl" class="car-image" (click)="showNextImage()">
       </div>
-      <button *ngIf="currentImageIndex > 0" (click)="showPreviousImage()" class="image-nav left">❮</button>
-      <button *ngIf="currentImageIndex < carDetails.photoNames.length - 1" (click)="showNextImage()" class="image-nav right">❯</button>
+      <button *ngIf="currentImageIndex > 0" (click)="showPreviousImage()" class="image-nav left"></button>
+      <button *ngIf="currentImageIndex < carDetails.photoNames.length - 1" (click)="showNextImage()" class="image-nav right"></button>
     </div>
 
     <!-- License Plate -->

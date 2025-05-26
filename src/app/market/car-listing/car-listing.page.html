@@ -5,8 +5,8 @@
       <div class="image-wrapper">
         <img [src]="photoUrls[currentPhotoIndex]" class="car-image" (click)="nextPhoto()">
       </div>
-      <button *ngIf="currentPhotoIndex > 0" (click)="previousPhoto()" class="image-nav left">❮</button>
-      <button *ngIf="currentPhotoIndex < photoUrls.length - 1" (click)="nextPhoto()" class="image-nav right">❯</button>
+      <button *ngIf="currentPhotoIndex > 0" (click)="previousPhoto()" class="image-nav left"></button>
+      <button *ngIf="currentPhotoIndex < photoUrls.length - 1" (click)="nextPhoto()" class="image-nav right"></button>
     </div>
     <div class="license-plate">
       <span class="plate-char">

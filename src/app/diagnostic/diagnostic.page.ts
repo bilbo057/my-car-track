@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BleDevice, BluetoothLe } from '@capacitor-community/bluetooth-le';
+import { ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-diagnostic',
@@ -12,11 +14,23 @@ export class DiagnosticPage implements OnInit {
   selectedDevice: BleDevice | undefined;
   errors: string[] = [];
 
-  constructor() {}
+  constructor(private toastController: ToastController) {}
 
   ngOnInit() {
     this.initializeBluetooth();
   }
+
+    async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2200,
+      color: 'dark',
+      position: 'bottom',
+      cssClass: 'custom-toast',
+    });
+    await toast.present();
+  }
+
 
   async initializeBluetooth() {
     try {
@@ -34,9 +48,9 @@ export class DiagnosticPage implements OnInit {
         optionalServices: ['0000180d-0000-1000-8000-00805f9b34fb'],
       });
       this.devices.push(result);
-      console.log('Device found:', result);
+      this.showToast('Устройство намерено.');
     } catch (error) {
-      console.error('Scan error:', error);
+      this.showToast('Грешка при сканиране за устройства.');
     }
   }
 
@@ -46,24 +60,29 @@ export class DiagnosticPage implements OnInit {
   }
 
   async connectToDevice() {
-    if (!this.deviceId) return console.error('No device selected');
+    if (!this.deviceId) {
+      this.showToast('Моля, изберете или въведете ID на устройство.');
+      return;
+    }
     try {
       await BluetoothLe.connect({ deviceId: this.deviceId });
-      console.log('Connected to:', this.deviceId);
+      this.showToast('Свързано успешно.');
     } catch (error) {
-      console.error('Connect error:', error);
+      this.showToast('Неуспешно свързване.');
     }
   }
 
   async startCommunication() {
-    if (!this.deviceId) return;
-
+    if (!this.deviceId) {
+      this.showToast('Не е избрано устройство.');
+      return;
+    }
     try {
       await BluetoothLe.write({
         deviceId: this.deviceId,
         service: '0000180d-0000-1000-8000-00805f9b34fb',
         characteristic: '00002a37-0000-1000-8000-00805f9b34fb',
-        value: this.encodeHexCommand('0300'), // Mode 03 for request DTCs
+        value: this.encodeHexCommand('0300'),
       });
 
       await BluetoothLe.startNotifications({
@@ -75,22 +94,26 @@ export class DiagnosticPage implements OnInit {
       BluetoothLe.addListener('notification', (data) => {
         if (data && data.value instanceof ArrayBuffer) {
           const response = new TextDecoder().decode(data.value);
-          console.log('OBD-II Response:', response);
           this.errors = this.parseDTCs(response);
         }
       });
+
+      this.showToast('Комуникацията е стартирана.');
     } catch (error) {
-      console.error('Comm error:', error);
+      this.showToast('Грешка при стартиране на комуникацията.');
     }
   }
 
   async disconnect() {
-    if (!this.deviceId) return;
+    if (!this.deviceId) {
+      this.showToast('Не е избрано устройство.');
+      return;
+    }
     try {
       await BluetoothLe.disconnect({ deviceId: this.deviceId });
-      console.log('Disconnected from:', this.deviceId);
+      this.showToast('Връзката е прекъсната.');
     } catch (error) {
-      console.error('Disconnect error:', error);
+      this.showToast('Грешка при прекъсване на връзката.');
     }
   }
 
